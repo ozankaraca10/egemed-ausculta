@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "datasets": [
+    {
+      "id": "hls-cmds-v3",
+      "title": "HLS-CMDS: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope",
+      "authors": [
+        "Yasaman Torabi",
+        "Shahram Shirani",
+        "James P. Reilly"
+      ],
+      "datasetDoi": "10.17632/8972jxbpmp.3",
+      "articleDoi": "10.1109/IEEEDATA.2025.3566012",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "usage": "Kayıtlar klinik manikin üzerinden dijital stetoskop ile alınmıştır; bu modülde eğitim amaçlı olarak kullanılmıştır.",
+      "attributionText": "Torabi, Y., Shirani, S., & Reilly, J. P. HLS-CMDS: Heart and Lung Sounds Dataset Recorded from a Clinical Manikin using Digital Stethoscope (Version 3). Mendeley Data. DOI: 10.17632/8972jxbpmp.3 — CC BY 4.0"
+    },
+    {
+      "id": "fraiwan-lung-2019",
+      "title": "A dataset of lung sounds recorded from the chest wall using an electronic stethoscope",
+      "authors": [
+        "Mohammad Fraiwan",
+        "Luay Fraiwan",
+        "Basheer Khassawneh",
+        "Ali Ibnian"
+      ],
+      "datasetDoi": "10.17632/jwyy9np4gv.2",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "status": "optional — importer hazır, pakete dahil değil",
+      "attributionText": "Fraiwan, M., Fraiwan, L., Khassawneh, B., & Ibnian, A. A dataset of lung sounds recorded from the chest wall using an electronic stethoscope. Mendeley Data. DOI: 10.17632/jwyy9np4gv.2 — CC BY 4.0"
+    }
+  ],
+  "disclaimer": "Sesler klinik manikin kayıtlarından alınmıştır; gerçek hasta kaydı değildir. Simülasyon eğitim amaçlıdır, tek başına klinik tanı koymak için kullanılamaz.",
+  "module": {
+    "product": "EGEMED Ausculta",
+    "subtitle": "Kardiyopulmoner Oskültasyon Simülatörü"
+  },
+  "assets": [
+    {
+      "id": "body-front-back",
+      "title": "İnsan gövdesi anterior/posterior görselleri (retouched)",
+      "authors": [
+        "Mikael Häggström, M.D."
+      ],
+      "source": "Wikimedia Commons",
+      "license": "Creative Commons Zero (CC0 1.0 — kamu malı benzeri)",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "usage": "Modülde hasta ön/arka gövde görseli olarak kullanılmıştır; yalnız gövde bölgesi kırpılmıştır.",
+      "attributionText": "Häggström, M. Anterior/Posterior view of human male (retouched). Wikimedia Commons, CC0 1.0"
+    }
+  ]
+}

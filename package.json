@@ -1,0 +1,36 @@
+{
+  "name": "egemed-ausculta",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "import:hls-cmds": "node scripts/import-hls-cmds.mjs ${SOUNDS_DIR:-/tmp/egemed-ausculta/hls-cmds}",
+    "import:lung": "node scripts/import-lung-dataset.mjs",
+    "validate": "node scripts/validate-audio.mjs",
+    "build:scorm2004": "vite build && node scripts/build-scorm.mjs 2004",
+    "build:scorm12": "vite build && node scripts/build-scorm.mjs 12",
+    "build:scorm": "vite build && node scripts/build-scorm.mjs 2004 && node scripts/build-scorm.mjs 12"
+  },
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "jszip": "^3.10.1",
+    "oxlint": "^1.81.0",
+    "playwright-core": "^1.63.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0",
+    "vitest": "^3.2.4"
+  }
+}
