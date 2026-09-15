@@ -6,6 +6,7 @@ import { validateCase, filterAssessmentPool } from '../src/core/validation'
 import { resolveAssignment, resolveAssignmentEx, resolveCaseSounds, resolveCaseSoundsEx, resolveLibrarySound, RECORDS } from '../src/core/resolver'
 import casesData from '../src/data/cases.json'
 import pointsData from '../src/data/auscultation-points.json'
+import libraryJson from '../src/data/library.json'
 import type { CaseDef, SuspendPayload, Telemetry } from '../src/core/types'
 
 const cases = casesData.cases as unknown as CaseDef[]
@@ -241,6 +242,47 @@ describe('vaka şeması doğrulaması', () => {
     ])
     expect(pool.some((x) => x.id === 'broken_case')).toBe(false)
     expect(pool.some((x) => x.id === c.id)).toBe(true)
+  })
+})
+
+/* ---------------- veri seti senkronizasyonu (§36) ---------------- */
+describe('veri seti ↔ kütüphane ↔ vaka senkronizasyonu', () => {
+  const libraryData = libraryJson as unknown as { groups: { id: string; items: { acousticFinding: string }[] }[] }
+  const libFindings = new Set(libraryData.groups.flatMap((g) => g.items.map((i) => i.acousticFinding)))
+  const heartClasses = new Set(RECORDS.filter((r) => r.category === 'heart').map((r) => r.acousticFinding))
+  const lungClasses = new Set(RECORDS.filter((r) => r.category === 'lung').map((r) => r.acousticFinding))
+  const practice = new Set(cases.filter((c) => c.modes.includes('practice')).map((c) => c.primaryAcousticFinding))
+  const assessment = new Set(cases.filter((c) => c.modes.includes('assessment')).map((c) => c.primaryAcousticFinding))
+
+  it('her veri seti sınıfının kütüphane kalemi var', () => {
+    for (const f of [...heartClasses, ...lungClasses]) expect(libFindings.has(f), `kütüphane: ${f}`).toBe(true)
+  })
+  it('her veri seti sınıfı uygulama modunda kapsanıyor', () => {
+    for (const f of [...heartClasses, ...lungClasses]) expect(practice.has(f), `uygulama: ${f}`).toBe(true)
+  })
+  it('her veri seti sınıfı değerlendirme modunda kapsanıyor', () => {
+    for (const f of [...heartClasses, ...lungClasses]) expect(assessment.has(f), `değerlendirme: ${f}`).toBe(true)
+  })
+  it('kütüphanedeki her ses sınıfı için en az bir çalınabilir kayıt var', () => {
+    for (const f of libFindings) {
+      const playable = RECORDS.some((r) => r.acousticFinding === f && r.validationStatus === 'validated')
+      expect(playable, `kayıt: ${f}`).toBe(true)
+    }
+  })
+  it('kombine (mixed) sesler kütüphanede ve uygulamada temsil ediliyor', () => {
+    const mixedItems = libraryData.groups.find((g) => g.id === 'mixed')?.items ?? []
+    expect(mixedItems.length).toBeGreaterThan(0)
+    const mixedCases = cases.filter((c) => c.primaryAcousticFinding.includes('+') && c.modes.includes('practice'))
+    expect(mixedCases.length).toBeGreaterThan(0)
+  })
+  it('her kütüphane kaleminde ses metaforu var (izleme modu gereksinimi)', () => {
+    const items = (libraryJson as unknown as { groups: { items: { key: string; metaphor?: string }[] }[] }).groups.flatMap((g) => g.items)
+    for (const it of items) expect(it.metaphor && it.metaphor.length > 10, `metafor: ${it.key}`).toBe(true)
+  })
+  it('değerlendirme vakaları doğrulanmış eşlemeye sahip', () => {
+    for (const c of cases.filter((x) => x.modes.includes('assessment'))) {
+      expect(c.mappingValidation, c.id).toBe('validated')
+    }
   })
 })
 

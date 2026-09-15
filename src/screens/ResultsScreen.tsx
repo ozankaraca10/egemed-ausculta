@@ -93,6 +93,7 @@ export function ResultsScreen() {
 
           <div className="card mt-24" style={{ textAlign: 'left' }}>
             <h3 style={{ marginTop: 0 }}>Vaka Raporu</h3>
+            <div className="table-scroll">
             <table className="report-table">
               <thead>
                 <tr>
@@ -113,6 +114,7 @@ export function ResultsScreen() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
 
           <div className="results-actions">

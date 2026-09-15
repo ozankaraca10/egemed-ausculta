@@ -102,6 +102,40 @@ for (const c of cases.cases) {
 }
 for (const [msg] of severityPool) fatal.push(msg)
 
+// ---- veri seti ↔ kütüphane ↔ vaka senkronizasyonu (§36) ----
+{
+  const lib = JSON.parse(fs.readFileSync(path.join(ROOT, 'src', 'data', 'library.json'), 'utf8'))
+  const heartClasses = new Set(m.records.filter((r) => r.category === 'heart').map((r) => r.acousticFinding))
+  const lungClasses = new Set(m.records.filter((r) => r.category === 'lung').map((r) => r.acousticFinding))
+  const libFindings = new Set()
+  for (const g of lib.groups) for (const it of g.items) libFindings.add(it.acousticFinding)
+  const practice = new Set()
+  const assessment = new Set()
+  for (const c of cases.cases) {
+    if ((c.modes || []).includes('practice')) practice.add(c.primaryAcousticFinding)
+    if ((c.modes || []).includes('assessment')) assessment.add(c.primaryAcousticFinding)
+  }
+  const syncRows = []
+  for (const f of [...heartClasses, ...lungClasses]) {
+    const inLib = libFindings.has(f)
+    const inPractice = practice.has(f)
+    const inAssessment = assessment.has(f)
+    syncRows.push([f, inLib, inPractice, inAssessment])
+    if (!inLib) fatal.push(`senkron: '${f}' kütüphanede yok`)
+    if (!inPractice) fatal.push(`senkron: '${f}' uygulama modunda kapsanmıyor`)
+    if (!inAssessment) fatal.push(`senkron: '${f}' değerlendirme modunda kapsanmıyor`)
+  }
+  const mixedLib = lib.groups.find((g) => g.id === 'mixed')?.items?.length ?? 0
+  const mixedCases = cases.cases.filter((c) => c.primaryAcousticFinding.includes('+') && (c.modes || []).includes('practice')).length
+  if (mixedLib === 0) fatal.push('senkron: kombine (mixed) kütüphane grubu yok')
+  if (mixedCases === 0) fatal.push('senkron: kombine sesler için uygulama vakası yok')
+  console.log('=== Senkronizasyon (veri seti ↔ kütüphane ↔ vaka) ===')
+  for (const [f, l, p, a] of syncRows) {
+    console.log(`  ${l ? '✓' : '✗'} kütüphane  ${p ? '✓' : '✗'} uygulama  ${a ? '✓' : '✗'} değerlendirme  ${f}`)
+  }
+  console.log(`  ✓ kombine: ${mixedLib} kütüphane kalemi, ${mixedCases} pratik vaka`)
+}
+
 // ---- görsel varlıklar ----
 for (const asset of [
   'public/assets/body/front.jpg',

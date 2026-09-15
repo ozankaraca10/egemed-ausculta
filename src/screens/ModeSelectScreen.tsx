@@ -1,7 +1,15 @@
 import { useStore } from '../core/store'
 import { Footer, EcgDeco } from '../ui/chrome'
 import { IconGraduation, IconStethoscope, IconChart, IconCheck, IconHeadphones } from '../ui/icons'
-import type { Mode } from '../core/types'
+import type { CaseDef, Mode } from '../core/types'
+import casesData from '../data/cases.json'
+import libraryData from '../data/library.json'
+
+const allCases = casesData.cases as unknown as CaseDef[]
+const assessmentCases = allCases.filter((c) => c.modes.includes('assessment'))
+const practiceCases = allCases.filter((c) => c.modes.includes('practice'))
+const assessmentQuestions = assessmentCases.reduce((s2, c) => s2 + c.questions.length, 0)
+const libraryCount = libraryData.groups.reduce((s2, g) => s2 + g.items.length, 0)
 
 /** Mod seçim ekranı (§44): Öğrenme / Uygulama / Değerlendirme kartları + adım göstergesi. */
 
@@ -24,8 +32,8 @@ export function ModeSelectScreen() {
               kind="learn"
               icon={<IconGraduation />}
               title="Öğrenme Modu"
-              text="Temel ve ileri düzey oskültasyon bilgilerini adım adım öğrenin."
-              items={['Rehberli öğrenme', 'Sınırsız dinleme', 'Detaylı açıklamalar']}
+              text={`${libraryCount} ses sınıfı: kalp, akciğer ve kombine kayıtlar; metaforlar ve dalga formlarıyla rehberli öğrenme.`}
+              items={['Rehberli öğrenme', 'Ses metaforları', 'Sınırsız dinleme']}
               cta="Bu modu seç"
               onPick={() => pick('learn')}
             />
@@ -33,7 +41,7 @@ export function ModeSelectScreen() {
               kind="practice"
               icon={<IconStethoscope />}
               title="Uygulama Modu"
-              text="Klinik vakalarla bilginizi pekiştirin, gerçek hayata hazırlanın."
+              text={`${practiceCases.length} klinik vaka ile bilginizi pekiştirin; ön ve arka bölge dinlemesi yapın.`}
               items={['Klinik vakalar', 'İpucu desteği', 'Detaylı geri bildirim']}
               cta="Bu modu seç"
               onPick={() => pick('practice')}
@@ -42,8 +50,8 @@ export function ModeSelectScreen() {
               kind="assessment"
               icon={<IconChart />}
               title="Değerlendirme Modu"
-              text="Bilginizi ölçün, performansınızı görün ve sertifikasyon sürecini tamamlayın."
-              items={['SCORM değerlendirme', 'İpuçsız', 'Performans puanı']}
+              text={`${assessmentCases.length} vaka · ${assessmentQuestions} soru ile bilginizi ölçün; SCORM uyumlu puanlanır.`}
+              items={['SCORM değerlendirme', 'İpuçsuz', 'Performans puanı']}
               cta="Bu modu seç"
               onPick={() => pick('assessment')}
             />

@@ -64,6 +64,7 @@ button { font-family: inherit; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--blue-600); outline-offset: 2px; border-radius: 4px; }
 
 #root { height: 100%; }
+html { -webkit-text-size-adjust: 100%; }
 .app-shell { height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; }
 .app-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
 .app-bg .bg-wash { position: absolute; inset: 0; background: linear-gradient(115deg, rgba(240,247,255,.92) 0%, rgba(238,246,255,.86) 42%, rgba(250,253,255,.94) 78%, rgba(255,255,255,.97) 100%); }
@@ -79,6 +80,7 @@ button { font-family: inherit; cursor: pointer; }
 .eg-header {
   position: relative; z-index: 30;
   height: var(--head-h); flex-shrink: 0;
+  padding-top: env(safe-area-inset-top, 0px);
   background: linear-gradient(90deg, var(--navy-900) 0%, var(--navy-700) 100%);
   color: #fff; display: flex; align-items: center;
   padding: 0 18px; gap: 14px;
@@ -108,7 +110,7 @@ button { font-family: inherit; cursor: pointer; }
 /* ---------------- Footer ---------------- */
 .eg-footer {
   height: var(--foot-h); flex-shrink: 0; display: flex; align-items: center; gap: 10px;
-  padding: 0 18px; font-size: 12.5px; color: var(--ink-500);
+  padding: 0 18px env(safe-area-inset-bottom, 0px); font-size: 12.5px; color: var(--ink-500);
   background: rgba(255,255,255,.6); border-top: 1px solid var(--border);
 }
 .eg-footer .brand { font-weight: 700; color: var(--ink-700); }
@@ -320,7 +322,9 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ---------------- Öğrenme ---------------- */
 .learn-grid { display: grid; grid-template-columns: 268px minmax(0, 1fr) minmax(320px, 400px); gap: 16px; flex: 1; min-height: 0; padding: 12px 0 14px; align-items: stretch; }
-.lib-col { display: flex; flex-direction: column; min-height: 0; overflow-y: auto; padding-right: 4px; }
+.learn-grid > * { min-width: 0; }
+.sim-grid > * { min-width: 0; }
+.lib-col { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow-y: auto; padding-right: 4px; }
 .lib-col::-webkit-scrollbar { width: 8px; }
 .lib-col::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
 .lib-col h2 { font-size: 23px; color: var(--navy-800); margin: 0 0 2px; }
@@ -340,6 +344,12 @@ button { font-family: inherit; cursor: pointer; }
 .tabbar button { flex: 1; border: 0; background: transparent; border-radius: 8px; padding: 8px 6px; font-size: 13px; font-weight: 600; color: var(--ink-600); display: flex; align-items: center; justify-content: center; gap: 7px; white-space: nowrap; }
 .tabbar button.active { background: var(--blue-600); color: #fff; box-shadow: 0 2px 8px rgba(22,115,230,.3); }
 .info-body { font-size: 14px; color: var(--ink-700); line-height: 1.58; }
+.metaphor-card { display: flex; gap: 11px; align-items: flex-start; background: linear-gradient(90deg, rgba(253,238,205,.75), rgba(255,250,240,.6)); border: 1px solid var(--orange-100); border-radius: 11px; padding: 11px 13px; }
+.metaphor-card .m-ic { width: 34px; height: 34px; border-radius: 9px; background: #fff; color: #b45309; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.metaphor-card b { font-size: 12.5px; color: #92400e; text-transform: uppercase; letter-spacing: .6px; }
+.metaphor-card p { margin: 3px 0 0; font-size: 13.5px; color: #78350f; line-height: 1.5; }
+.lib-cov { margin-left: auto; margin-right: 6px; flex-shrink: 0; }
+.lib-cov .badge { font-size: 10.5px; padding: 3px 8px; white-space: nowrap; }
 .exp-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .exp-card { border: 1px solid var(--border); border-radius: 11px; padding: 11px 13px; display: flex; gap: 11px; align-items: flex-start; background: #fff; }
 .exp-card .chip { min-width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13.5px; }
@@ -417,7 +427,8 @@ button { font-family: inherit; cursor: pointer; }
 .perf-row .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue-500), var(--blue-700)); border-radius: 99px; }
 .perf-row .num { font-weight: 800; color: var(--ink-900); text-align: right; font-variant-numeric: tabular-nums; font-size: 13.5px; }
 .results-actions { display: flex; gap: 12px; justify-content: center; margin-top: 22px; }
-.report-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+.table-scroll { overflow-x: auto; }
+.report-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; text-align: left; }
 .report-table th, .report-table td { border-bottom: 1px solid var(--border); padding: 8px 9px; }
 .report-table th { color: var(--ink-500); font-size: 11.5px; text-transform: uppercase; letter-spacing: .6px; }
 .report-table td.ok { color: var(--green-600); font-weight: 700; }
@@ -467,13 +478,19 @@ button { font-family: inherit; cursor: pointer; }
 
 /* yatay tablet / dar masaüstü: tek sütun simülasyon */
 @media (max-width: 1080px) {
-  body { overflow: auto; }
+  body { overflow-y: auto; overflow-x: hidden; }
   .app-shell { height: auto; min-height: 100dvh; overflow: visible; }
   .sim-grid, .sim-grid.wide-left { grid-template-columns: 1fr; }
   .sim-side { overflow: visible; }
   .stage { min-height: min(58vh, 520px); }
   .learn-grid { grid-template-columns: 1fr; }
   .lib-col { overflow: visible; }
+  /* kütüphane: yatay kaydırılabilir şerit (sahne erken görünür) */
+  .lib-group .lib-items { flex-direction: row; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
+  .lib-item { min-width: 236px; max-width: 280px; }
+  .lib-cov { display: none; }
+  /* araç çubuğu sayfa kaydırmasında altta sabit */
+  .toolbar { position: sticky; bottom: 8px; z-index: 12; }
   .results-grid { grid-template-columns: 1fr; }
   .feature-cards { grid-template-columns: repeat(2, 1fr); }
   .start-wrap { grid-template-columns: 1fr; min-height: auto; }
@@ -481,6 +498,9 @@ button { font-family: inherit; cursor: pointer; }
   .tut-stage-fit { display: none; }
   .chip-text { display: none; }
   .eg-timer { display: none; }
+  .stepper { max-width: 100%; }
+  .step { width: auto; flex: 1; min-width: 0; padding: 0 2px; }
+  .step .lbl { font-size: 12px; text-align: center; }
 }
 @media (max-width: 900px) {
   .eg-lang { display: none; }
@@ -489,7 +509,11 @@ button { font-family: inherit; cursor: pointer; }
 /* telefon / dikey tablet */
 @media (max-width: 720px) {
   .container { padding: 0 14px; }
-  .eg-header { padding: 0 10px; gap: 6px; }
+  /* header gerekirse ikinci satıra sarar (değerlendirmede soru göstergesi sığsın) */
+  .eg-header { padding: 6px 10px; gap: 6px; flex-wrap: wrap; height: auto; min-height: var(--head-h); row-gap: 2px; }
+  .eg-header .spacer { flex: 1 0 24px; }
+  .eg-progress-chip { font-size: 12px; gap: 7px; }
+  .eg-progress-chip .bar { width: 56px; }
   .brand-top { display: none; }
   .brand-name { font-size: 16.5px; }
   .eg-header .divider-v { display: none; }
@@ -503,12 +527,27 @@ button { font-family: inherit; cursor: pointer; }
   .start-actions { gap: 12px; }
   .btn.large { padding: 13px 26px; font-size: 15px; width: 100%; }
   .start-links-sep { display: none; }
-  .stage { min-height: 52vh; }
-  .toolbar { gap: 9px; padding: 8px 10px; }
+  .stage { min-height: 48vh; }
+  .toolbar { gap: 8px; padding: 8px 10px; }
   .vol-group input[type='range'] { width: 84px; }
   .exp-cards { grid-template-columns: 1fr; }
   .tut-step .ic { display: none; }
   .q-text { font-size: 16px; }
   .perf-row { grid-template-columns: 28px 1fr 48px; }
   .perf-row .bar { display: none; }
+  .container { padding: 0 12px; }
+  .card { padding: 13px 14px; }
+  .view-toggle button { padding: 7px 11px; font-size: 12.5px; }
+  .head-toggle button { padding: 7px 12px; font-size: 12.5px; }
+  .btn { padding: 11px 18px; font-size: 14px; }
+  .btn.small { padding: 8px 12px; }
+  .tool-sep { display: none; }
+  .lib-item { min-width: 200px; }
+  .start-desc { font-size: 14.5px; }
+  .hero-logo { width: 100%; margin-left: -6px; }
+  .mode-title { font-size: 26px; }
+  .step .dot { width: 22px; height: 22px; font-size: 11.5px; }
+  .step .lbl { font-size: 11px; }
+  .score-ring { width: 168px; height: 168px; }
+  .results-title { font-size: 24px; }
 }

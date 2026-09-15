@@ -6,7 +6,9 @@
 - Gerçekçi hasta gövdesi: CC0 anterior/posterior fotoğraf (yalnız gövde bölgesi kırpılmış)
 - Üç mod: Öğrenme · Uygulama · Değerlendirme (SCORM 2004 4th Ed. birincil, SCORM 1.2 yedek)
 - Sürüklenebilir sanal stetoskop, Bell/Diyafram seçimi, ön/arka görünüm (etiketli posterior noktalar), konum-duyarlı ses
-- 13 vaka, 16 oskültasyon noktası, alan bazlı deterministik skor (hakimiyet eşiği 80/100)
+- 20 vaka (10 kalp + 6 akciğer sınıfı + 4 kombine), 16 oskültasyon noktası, alan bazlı deterministik skor (eşik 80/100)
+- Veri seti ↔ kütüphane ↔ uygulama ↔ değerlendirme **tam senkron** (otomatik denetimli)
+- İzleme modunda her ses için klinik **metafor** (ör. ince raller = "karda yürüme sesi")
 - 16:9 uyumlu kaydırmasız yerleşim, tam ekran düğmesi, mobil/tablet responsive
 - Kayıtlar ortak RMS düzeyine normalize edilir (medyan ≈ 20× daha yüksek çıkış) + güvenlik limiter'ı
 

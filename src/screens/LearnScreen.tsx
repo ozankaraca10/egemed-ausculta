@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AuscultationPoint, SoundRecord } from '../core/types'
 import pointsData from '../data/auscultation-points.json'
 import libraryData from '../data/library.json'
+import casesData from '../data/cases.json'
 import { engine } from '../audio/engineSingleton'
 import { resolveLibrarySound, resolveLibrarySoundEx } from '../core/resolver'
 import { useStore } from '../core/store'
@@ -10,7 +11,8 @@ import { PatientStage, type StageHandle } from '../ui/PatientStage'
 import { WaveformView } from '../ui/WaveformView'
 import { Toolbar } from '../ui/Toolbar'
 import { Footer, EcgDeco } from '../ui/chrome'
-import { IconHeart, IconLungs, IconWave, IconDoc, IconStethoscope, IconInfo } from '../ui/icons'
+import { IconHeart, IconLungs, IconWave, IconDoc, IconStethoscope, IconInfo, IconCompare } from '../ui/icons'
+import type { CaseDef } from '../core/types'
 
 /** Öğrenme modu (§3A): kütüphane + simülatör. Skor yok; rehberli, sınırsız dinleme. */
 
@@ -19,6 +21,7 @@ interface LibItemFull {
   category: string
   acousticFinding: string
   description: string
+  metaphor?: string
   s1?: string
   s2?: string
   phase?: string
@@ -44,6 +47,20 @@ export function LearnScreen() {
   }, [])
   const item = items[selectedKey]
   const isHeart = item.group === 'heart'
+  const isMixed = item.group === 'mixed'
+
+  // vaka kapsamı (senkronizasyon göstergesi §36)
+  const coverage = useMemo(() => {
+    const map: Record<string, { p: number; a: number }> = {}
+    for (const c of casesData.cases as unknown as CaseDef[]) {
+      const f = c.primaryAcousticFinding
+      const e = map[f] ?? (map[f] = { p: 0, a: 0 })
+      if (c.modes.includes('practice')) e.p++
+      if (c.modes.includes('assessment')) e.a++
+    }
+    return map
+  }, [])
+  const cov = coverage[item.acousticFinding] ?? { p: 0, a: 0 }
 
   // kalem değişince önceki sesi durdur
   useEffect(() => {
@@ -74,13 +91,13 @@ export function LearnScreen() {
         <div className="container tall screen-body no-scroll">
           <div className="learn-grid">
             <div className="lib-col">
-              <h2>{isHeart ? 'Kalp Sesleri' : 'Akciğer Sesleri'}</h2>
+              <h2>{isMixed ? 'Kombine Sesler' : isHeart ? 'Kalp Sesleri' : 'Akciğer Sesleri'}</h2>
               <p className="lib-sub">Dinle, tanı, öğren.</p>
               {libraryData.groups.map((g) => (
                 <div className="lib-group" key={g.id}>
                   <div className="g-title">
-                    {g.id === 'heart' ? <IconHeart /> : <IconLungs />}
-                    {g.id === 'heart' ? 'Kalp Sesleri' : 'Akciğer Sesleri'}
+                    <GroupIcon group={g.id} />
+                    {g.title}
                   </div>
                   <div className="lib-items">
                     {g.items.map((it) => (
@@ -89,10 +106,19 @@ export function LearnScreen() {
                         className={`lib-item ${it.key === selectedKey ? 'active' : ''}`}
                         onClick={() => { setSelectedKey(it.key); setTab('desc') }}
                       >
-                        <span className="ic">{g.id === 'heart' ? <IconHeart /> : <IconLungs />}</span>
+                        <span className="ic"><GroupIcon group={g.id} /></span>
                         <span>
-                          <b>{it.key.startsWith('heart') ? heartLabel(it.key) : lungLabel(it.key)}</b>
-                          <span>{it.key.startsWith('heart') ? heartLibrarySub(it.key) : lungLibrarySub(it.key)}</span>
+                          <b>{libTitle(it.key)}</b>
+                          <span>{libSub(it.key)}</span>
+                        </span>
+                        <span className="lib-cov" title="Vaka kapsamı">
+                          {(() => {
+                            const c = coverage[it.acousticFinding]
+                            if (!c) return <span className="badge gray">vaka yok</span>
+                            return c.a > 0
+                              ? <span className="badge green">{c.p} vaka · değ.</span>
+                              : <span className="badge blue">{c.p} pratik</span>
+                          })()}
                         </span>
                         <span className="chev">›</span>
                       </button>
@@ -156,7 +182,7 @@ export function LearnScreen() {
             <div className="sim-side">
               <div className="card">
                 <div className="card-title-row">
-                  <div className="ic">{isHeart ? <IconHeart /> : <IconLungs />}</div>
+                  <div className="ic"><GroupIcon group={item.group} /></div>
                   <h3>{title}</h3>
                   <span className="badge blue">{findingBadge(item.key)}</span>
                 </div>
@@ -174,6 +200,15 @@ export function LearnScreen() {
                 {tab === 'desc' && (
                   <div className="info-body">
                     <p>{item.description}</p>
+                    {item.metaphor && (
+                      <div className="metaphor-card mt-12">
+                        <span className="m-ic"><IconWave width={20} height={20} /></span>
+                        <div>
+                          <b>Ses metaforu</b>
+                          <p>{item.metaphor}</p>
+                        </div>
+                      </div>
+                    )}
                     {isHeart && item.s1 && item.s2 && (
                       <div className="exp-cards mt-12">
                         <div className="exp-card">
@@ -213,6 +248,11 @@ export function LearnScreen() {
                       <IconInfo />
                       Kaynak: HLS-CMDS v3 — CC BY 4.0 (DOI 10.17632/8972jxbpmp.3)
                     </p>
+                    <p className="src-line">
+                      <IconCompare />
+                      Vaka kapsamı: {cov.p > 0 ? `${cov.p} uygulama vakası` : 'vaka yok'}
+                      {cov.a > 0 ? `, ${cov.a} değerlendirme vakası` : ''}
+                    </p>
                   </div>
                 )}
               </div>
@@ -223,6 +263,29 @@ export function LearnScreen() {
       <Footer />
     </>
   )
+}
+
+function libTitle(key: string): string {
+  if (key.startsWith('heart')) return heartLabel(key)
+  if (key.startsWith('lung')) return lungLabel(key)
+  const map: Record<string, string> = {
+    'mixed.msm_wheezing': 'Üfürüm + Wheezing',
+    'mixed.esm_coarse': 'Üfürüm + Kaba Raller',
+    'mixed.s3_normal': 'S3 + Normal Solunum',
+    'mixed.af_rhonchi': 'Düzensiz Ritim + Ronküs',
+  }
+  return map[key] ?? 'Kombine ses'
+}
+function libSub(key: string): string {
+  if (key.startsWith('heart')) return heartLibrarySub(key)
+  if (key.startsWith('lung')) return lungLibrarySub(key)
+  return 'Kalp + akciğer birlikte'
+}
+
+function GroupIcon({ group, size = 17 }: { group: string; size?: number }) {
+  if (group === 'heart') return <IconHeart width={size} height={size} />
+  if (group === 'mixed') return <IconCompare width={size} height={size} />
+  return <IconLungs width={size} height={size} />
 }
 
 function findingBadge(key: string): string {

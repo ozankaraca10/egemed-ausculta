@@ -108,6 +108,28 @@ clipping uyarısı), dosyaları `public/assets/audio/runtime/{heart,lung,mixed}/
 altına **küçük harf adlarla** kopyalar (vaka-duyarlı LMS sunucularıyla uyum) ve
 sabit iç ID'ler üretir: `heart_normal_rusb_001` biçiminde.
 
+## 4.1 Veri Seti ↔ Kütüphane ↔ Vaka Senkronizasyonu (§36)
+
+Platform üç katmanda **aynı veri seti etiket kümesiyle** hizalıdır ve bu durum otomatik denetlenir:
+
+| Katman | Kapsam |
+|---|---|
+| Veri seti (HLS-CMDS v3) | 10 kalp sınıfı + 6 akciğer sınıfı + 60 kombine (mixed) kombinasyon |
+| Öğrenme kütüphanesi | 10 kalp + 6 akciğer + 4 kombine kalemi (20 kalem, her birinde **ses metaforu**) |
+| Uygulama modu | 20 vaka (tüm sınıflar + 4 kombine vaka) |
+| Değerlendirme modu | 16 vaka / 50 soru (tüm doğrulanmış sınıflar) |
+
+Kurallar `scripts/validate-audio.mjs` (fatal) ve `tests/core.test.ts` (vitest) ile zorlanır:
+her veri seti sınıfı için kütüphane kalemi + en az bir uygulama vakası + en az bir değerlendirme
+vakası bulunmalıdır; kombine kayıtlar kütüphane ve uygulamada temsil edilmelidir (değerlendirme
+dışıdır — `educational_mapping`); her kütüphane kalemi için çalınabilir kayıt olmalıdır.
+
+**Ses metaforları (izleme modu):** her kütüphane kalemi, klinik eğitimde kullanılan işitsel
+benzetmeleri içerir (ör. ince raller → *"karda yürüme sesi / saç oğuşturma"*, kaba raller →
+*"kaynama fokurtusu"*, wheezing → *"çaydanlık düdüğü"*, ronküs → *"uykuda horlama"*,
+plevral frotman → *"kar gıcırtısı"*, S3 → *"ken-ta-ta dörtnal ritmi"*). Metaforlar öğrenme
+modunda ayrı bir kartta gösterilir ve yeni vakaların ipuçlarında da kullanılır.
+
 ## 5. Klinik Doğrulama Katmanı (§6, §19)
 
 - `acousticFinding` (akustik bulgu) ile `clinicalDiagnosis` (tanı) ayrıdır.
@@ -183,8 +205,10 @@ npm run dev        # http://localhost:5173
 - **16:9 uyumu:** Simülasyon ve öğrenme ekranları `100dvh` içinde kaydırmasız çalışır;
   sahne görseli kapsayıcıya sığdırılır, sağ panel kendi içinde kaydırılır (1366×768 ve 1920×1080 doğrulandı).
 - **Tam ekran:** Header'daki "Tam Ekran" düğmesi `requestFullscreen` kullanır.
-- **Responsive:** ≤1080px tek sütun (hasta önce, panel sonra), ≤720px kompakt header
-  ve araç çubuğu; mobilde yatay taşma yok (doğrulandı: 390×844, 1024×768).
+- **Responsive:** ≤1080px tek sütun (hasta önce, panel sonra); kütüphane yatay kaydırılabilir
+  şeride dönüşür, araç çubuğu altta yapışkan kalır; ≤720px header gerekirse ikinci satıra sarar,
+  dokunma hedefleri büyütülür. Yatay taşma yok — doğrulandı: 390×844 (telefon), 820×1180
+  (tablet dikey), 1024×768 (tablet yatay), 1366×768 ve 1920×1080 (masaüstü, kaydırmasız).
 - **Marka:** Header/landing/footer'da `public/brand` SVG kilidi kullanılır; slogan yok.
 
 ## 12. Bilinen Sınırlar (V1)
