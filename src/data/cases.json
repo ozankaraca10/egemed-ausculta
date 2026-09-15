@@ -1837,10 +1837,10 @@
           "recordedLocation": "LUA"
         },
         {
-          "pointId": "lung_right_middle_anterior",
+          "pointId": "lung_right_lower_anterior",
           "category": "lung",
           "acousticFinding": "rhonchi",
-          "recordedLocation": "RMA"
+          "recordedLocation": "RLA"
         },
         {
           "pointId": "lung_left_lower_anterior",
@@ -1855,7 +1855,7 @@
           "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
         },
         {
-          "pointId": "lung_right_middle_posterior",
+          "pointId": "lung_right_lower_posterior",
           "category": "lung",
           "acousticFinding": "rhonchi",
           "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
@@ -1873,7 +1873,7 @@
       "technique": {
         "requiredPoints": [
           "lung_left_upper_anterior",
-          "lung_right_middle_anterior",
+          "lung_right_lower_anterior",
           "lung_left_lower_anterior"
         ],
         "minPointsVisited": 3,

@@ -125,6 +125,32 @@ for (const [msg] of severityPool) fatal.push(msg)
     if (!inPractice) fatal.push(`senkron: '${f}' uygulama modunda kapsanmıyor`)
     if (!inAssessment) fatal.push(`senkron: '${f}' değerlendirme modunda kapsanmıyor`)
   }
+  // her vaka ataması çözülebilir olmalı (posterior fallback dahil)
+  const POST_MAP = {
+    lung_right_upper_posterior: 'lung_right_upper_anterior',
+    lung_left_upper_posterior: 'lung_left_upper_anterior',
+    lung_right_middle_posterior: 'lung_right_middle_anterior',
+    lung_left_middle_posterior: 'lung_left_middle_anterior',
+    lung_right_lower_posterior: 'lung_right_lower_anterior',
+    lung_left_lower_posterior: 'lung_left_lower_anterior',
+  }
+  const findRec = (a, pointId) =>
+    m.records.find(
+      (r) =>
+        r.category === a.category &&
+        r.acousticFinding === a.acousticFinding &&
+        r.validationStatus === 'validated' &&
+        (!r.simulationLocation || r.simulationLocation === pointId) &&
+        (!a.recordedLocation || r.recordedLocation === a.recordedLocation)
+    )
+  for (const c of cases.cases) {
+    for (const a of c.soundAssignments) {
+      let rec = findRec(a, a.pointId)
+      if (!rec && POST_MAP[a.pointId]) rec = findRec(a, POST_MAP[a.pointId])
+      if (!rec) fatal.push(`ses çözülemedi: ${c.id} → ${a.pointId} (${a.category}/${a.acousticFinding}${a.recordedLocation ? '/' + a.recordedLocation : ''})`)
+    }
+  }
+
   const mixedLib = lib.groups.find((g) => g.id === 'mixed')?.items?.length ?? 0
   const mixedCases = cases.cases.filter((c) => c.primaryAcousticFinding.includes('+') && (c.modes || []).includes('practice')).length
   if (mixedLib === 0) fatal.push('senkron: kombine (mixed) kütüphane grubu yok')
