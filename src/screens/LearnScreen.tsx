@@ -7,6 +7,7 @@ import { engine } from '../audio/engineSingleton'
 import { resolveLibrarySound, resolveLibrarySoundEx } from '../core/resolver'
 import { useStore } from '../core/store'
 import { libraryTitle, librarySub } from '../data/terminology'
+import pediatricRef from '../data/pediatric-reference.json'
 import { PatientStage, type StageHandle } from '../ui/PatientStage'
 import { WaveformView } from '../ui/WaveformView'
 import { Toolbar } from '../ui/Toolbar'
@@ -139,6 +140,13 @@ export function LearnScreen() {
                       <IconStethoscope /> Arka Görünüm
                     </button>
                   </div>
+                  <div className="head-toggle" role="group" aria-label="Hasta gövdesi">
+                    {([['erkek', 'Erkek'], ['kadin', 'Kadın'], ['pediatrik', 'Çocuk']] as const).map(([k, l]) => (
+                      <button key={k} className={state.bodySex === k ? 'active' : ''} onClick={() => dispatch({ type: 'setBodySex', sex: k })}>
+                        {l}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <PatientStage
                   ref={stageRef}
@@ -149,6 +157,7 @@ export function LearnScreen() {
                   volume={state.volume}
                   showPoints
                   showLabels
+                  bodyType={state.bodySex}
                   mode="learn"
                   engine={engine}
                   soundFor={soundsForStage}
@@ -256,6 +265,24 @@ export function LearnScreen() {
                   </div>
                 )}
               </div>
+
+              {state.bodySex === 'pediatrik' && (
+                <div className="pediatric-card">
+                  <h4>Pediatrik İpuçları</h4>
+                  <p className="ped-note">{pediatricRef.note}</p>
+                  <table className="ped-table">
+                    <thead><tr><th>Yaş</th><th>Kalp hızı</th><th>Solunum</th></tr></thead>
+                    <tbody>
+                      {pediatricRef.rows.map((r) => (
+                        <tr key={r.age}><td>{r.age}</td><td>{r.hr}/dk</td><td>{r.rr}/dk</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <ul className="ped-notes">
+                    {pediatricRef.auscultationNotes.map((n) => <li key={n}>{n}</li>)}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>

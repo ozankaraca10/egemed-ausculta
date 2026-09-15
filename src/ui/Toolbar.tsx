@@ -15,14 +15,16 @@ interface Props {
   activePoint: string | null
   question?: Question
   onHint?: () => void
+  /** değerlendirme: ipucu, tekrar dinleme ve durum göstergeleri kapalı */
+  strict?: boolean
 }
 
-export function Toolbar({ caseDef, stageRef, playing, activePoint, question, onHint }: Props) {
+export function Toolbar({ caseDef, stageRef, playing, activePoint, question, onHint, strict = false }: Props) {
   const { state, dispatch } = useStore()
   const heads = (caseDef?.allowedHeads ?? ['bell', 'diaphragm']) as StethHead[]
   const [muted, setMuted] = useState(false)
   const [hintOpen, setHintOpen] = useState(false)
-  const showHint = !!question?.hint && !hintOpen && state.hintsUsed === 0
+  const showHint = !strict && !!question?.hint && !hintOpen && state.hintsUsed === 0
 
   const setHead = (h: StethHead) => {
     dispatch({ type: 'setHead', head: h })
@@ -99,20 +101,24 @@ export function Toolbar({ caseDef, stageRef, playing, activePoint, question, onH
         <div className="tool-sep" />
         <div className="play-state">
           <span className="eq"><i /><i /><i /><i /></span>
-          <span>{playing ? 'Dinliyor' : activePoint ? 'Ses yok' : 'Bekliyor'}</span>
+          <span>{strict ? (playing ? 'Kayıt işlendi' : activePoint ? 'Bölge teması' : 'Manuel muayene') : playing ? 'Dinliyor' : activePoint ? 'Ses yok' : 'Bekliyor'}</span>
         </div>
-        <div className="tool-sep" />
-        <button
-          className="btn outline small"
-          onClick={() => {
-            dispatch({ type: 'replay' })
-            stageRef.current?.replay()
-            if (activePoint) bus.emit({ type: 'sound_replayed', pointId: activePoint, at: Date.now() })
-          }}
-          disabled={!activePoint}
-        >
-          <IconVolume /> Tekrar Dinle
-        </button>
+        {!strict && (
+          <>
+            <div className="tool-sep" />
+            <button
+              className="btn outline small"
+              onClick={() => {
+                dispatch({ type: 'replay' })
+                stageRef.current?.replay()
+                if (activePoint) bus.emit({ type: 'sound_replayed', pointId: activePoint, at: Date.now() })
+              }}
+              disabled={!activePoint}
+            >
+              <IconVolume /> Tekrar Dinle
+            </button>
+          </>
+        )}
         <div className="spacer" style={{ flex: 1 }} />
         {showHint && (
           <button

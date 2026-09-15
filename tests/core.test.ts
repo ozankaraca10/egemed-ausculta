@@ -9,6 +9,10 @@ import pointsData from '../src/data/auscultation-points.json'
 import libraryJson from '../src/data/library.json'
 import sourcesJson from '../src/data/sources.json'
 import { mapCircorMurmur, mapCircorLocations } from '../scripts/lib/external-mapping.mjs'
+import { sampleSession, SESSION_SIZE } from '../src/core/session'
+import { poolFor as poolForTest } from '../src/data/pool'
+import { EXTERNAL_RECORDS } from '../src/core/resolver'
+import { computeMetrics } from '../src/data/metrics'
 import type { CaseDef, SuspendPayload, Telemetry } from '../src/core/types'
 
 const cases = casesData.cases as unknown as CaseDef[]
@@ -288,6 +292,83 @@ describe('veri seti ↔ kütüphane ↔ vaka senkronizasyonu', () => {
   })
 })
 
+/* ---------------- oturum örnekleme ve havuz bütünlüğü ---------------- */
+describe('oturum örnekleme (rastgele 10 vaka)', () => {
+  const pool = poolForTest('practice')
+  const assessment = poolForTest('assessment')
+
+  it('her oturumda tam 10 vaka seçilir', () => {
+    expect(sampleSession(pool, 42).length).toBe(SESSION_SIZE)
+    expect(sampleSession(assessment, 7).length).toBe(SESSION_SIZE)
+  })
+  it('aynı tohum aynı örneklemi üretir (deterministik / SCORM uyumlu)', () => {
+    expect(sampleSession(pool, 123)).toEqual(sampleSession(pool, 123))
+  })
+  it('farklı tohumlar farklı örneklem üretir (her oturum farklı)', () => {
+    const a = sampleSession(pool, 1).join(',')
+    const b = sampleSession(pool, 2).join(',')
+    expect(a).not.toBe(b)
+  })
+  it('örneklem havuz dışından vaka içermez ve tekrar etmez', () => {
+    const ids = sampleSession(pool, 99)
+    expect(new Set(ids).size).toBe(ids.length)
+    const poolIds = new Set(pool.map((c) => c.id))
+    for (const id of ids) expect(poolIds.has(id)).toBe(true)
+  })
+  it('vaka havuzu veri seti sınırlarına kadar geniştir', () => {
+    expect(pool.length).toBeGreaterThanOrEqual(100)
+    expect(assessment.length).toBeGreaterThanOrEqual(60)
+  })
+  it('havuzdaki tüm vakalar doğrulanmış ses atamaları çözer', () => {
+    for (const c of pool) {
+      for (const a of c.soundAssignments) {
+        const rec = a.soundId
+          ? RECORDS.find((r) => r.id === a.soundId)
+          : resolveAssignment({ ...a, pointId: a.pointId }) ?? resolveAssignmentEx(a).record
+        expect(rec, `${c.id} → ${a.pointId}`).not.toBeNull()
+      }
+    }
+  })
+  it('otomatik üretilen tüm vakalar şema doğrulamasından geçer', () => {
+    const errs: string[] = []
+    for (const c of [...pool, ...poolForTest('assessment')]) {
+      const issues = validateCase(c, pointIds, soundKeys).filter((i) => i.severity === 'error')
+      if (issues.length) errs.push(`${c.id}: ${issues.map((i) => i.message).join('; ')}`)
+    }
+    expect(errs).toEqual([])
+  })
+  it('pediatrik vakalar mevcut ve pediatrik havuzda temsil ediliyor', () => {
+    const ped = pool.filter((c) => (c as { population?: string }).population === 'pediatrik')
+    expect(ped.length).toBeGreaterThanOrEqual(3)
+  })
+  it('gerçek pediatrik hasta kayıtları (CirCor) vaka havuzuna bağlanmıştır', () => {
+    const pedCases = pool.filter((c) => c.id.startsWith('auto_ped_'))
+    expect(pedCases.length).toBeGreaterThanOrEqual(3)
+    for (const c of pedCases) {
+      const usesReal = c.soundAssignments.some((a) => a.soundId && EXTERNAL_RECORDS.some((r) => r.id === a.soundId))
+      expect(usesReal, c.id).toBe(true)
+    }
+  })
+  it('değerlendirme havuzu yalnız doğrulanmış eşlemeli vakalar içerir', () => {
+    for (const c of assessment) expect(c.mappingValidation).toBe('validated')
+  })
+})
+
+describe('landing metrikleri', () => {
+  it('envanter zenginliği metrikleri hesaplanır ve tutarlıdır', () => {
+    const m = computeMetrics()
+    expect(m.datasets).toBeGreaterThanOrEqual(15)
+    expect(m.datasetsPediatric).toBeGreaterThanOrEqual(3)
+    expect(m.soundClasses).toBeGreaterThanOrEqual(16)
+    expect(m.auscultationPoints).toBeGreaterThanOrEqual(17)
+    expect(m.practicePoolSize).toBeGreaterThanOrEqual(100)
+    expect(m.assessmentPoolSize).toBeGreaterThanOrEqual(60)
+    expect(m.assessmentQuestions).toBeGreaterThanOrEqual(150)
+    expect(m.pediatricCases).toBeGreaterThanOrEqual(7)
+    expect(m.bundledRecordings).toBeGreaterThanOrEqual(200)
+  })
+})
+
 /* ---------------- veri seti envanteri ve dış eşleme (§5, §6, §34) ---------------- */
 describe('veri seti envanteri', () => {
   const sources = sourcesJson as unknown as {
@@ -299,8 +380,17 @@ describe('veri seti envanteri', () => {
     }[]
   }
 
-  it('envanterde en az 6 veri seti araştırılmıştır', () => {
-    expect(sources.inventory.length).toBeGreaterThanOrEqual(6)
+  it('envanterde en az 15 veri seti araştırılmıştır', () => {
+    expect(sources.inventory.length).toBeGreaterThanOrEqual(15)
+  })
+  it('her envanter kaydında etiket kalitesi bilgisi vardır', () => {
+    for (const it of sources.inventory as unknown as { id: string; labelTypes?: string[] }[]) {
+      expect(Array.isArray(it.labelTypes) && it.labelTypes!.length > 0, `etiket: ${it.id}`).toBe(true)
+    }
+  })
+  it('en az 3 pediatrik odaklı veri seti envanterdedir', () => {
+    const ped = sources.inventory.filter((x) => /pediatrik|pediatric|çocuk|fetal/i.test(`${x.population} ${x.title} ${x.notes}`))
+    expect(ped.length).toBeGreaterThanOrEqual(3)
   })
   it('her envanter kaydı lisans, atıf ve erişim bağlantısı içerir', () => {
     for (const it of sources.inventory) {
@@ -308,7 +398,7 @@ describe('veri seti envanteri', () => {
       expect(it.licenseUrl.length, `lisans bağlantısı: ${it.id}`).toBeGreaterThan(8)
       expect(it.attributionText.length, `atıf: ${it.id}`).toBeGreaterThan(10)
       expect(it.accessUrl.startsWith('http'), `erişim: ${it.id}`).toBe(true)
-      expect(it.recordings).toBeGreaterThan(0)
+      if (it.recordings != null) expect(it.recordings).toBeGreaterThan(0)
     }
   })
   it('pakete dahil veri setleri doğrulanmış lisansa sahiptir', () => {

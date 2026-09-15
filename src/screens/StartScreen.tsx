@@ -4,6 +4,9 @@ import { bus } from '../core/events'
 import { Footer, HeadphoneBanner, EcgDeco } from '../ui/chrome'
 import { IconDatabase, IconNetwork, IconMonitor, IconShieldCheck, IconArrowRight, IconBook, IconStethoscope } from '../ui/icons'
 import { useState } from 'react'
+import { computeMetrics } from '../data/metrics'
+
+const M = computeMetrics()
 
 /** Başlangıç ekranı (§44): marka kilidi, kulaklık önerisi, ses düzeyi kontrolü, mod seçimine giriş. */
 
@@ -50,7 +53,7 @@ export function StartScreen() {
               />
               <p className="start-desc">
                 Gerçek klinik seslerle kalp ve akciğer oskültasyonunu öğrenin. Normal ve patolojik sesleri
-                dinleyin, karşılaştırın, yorumlayın; klinik dinleme becerinizi geliştirin.
+                dinleyin, karşılaştırın, yorumlayın; yetişkin kadın/erkek ve pediatrik gövde üzerinde çalışın.
               </p>
               <div className="start-actions">
                 <button className="btn primary large" onClick={begin}>
@@ -65,6 +68,16 @@ export function StartScreen() {
                 <button className="start-link" onClick={() => dispatch({ type: 'goto', screen: 'sources' })}>
                   <IconBook /> Kaynaklar
                 </button>
+              </div>
+              <div className="metric-strip" role="list" aria-label="Simülatör içerik metrikleri">
+                <Metric value={M.datasets} label="veri seti envanteri" tip={`${M.datasets} açık erişimli veri seti araştırıldı; ${M.datasetsVerified} tanesinin lisansı doğrulandı. ${M.datasetsPediatric} tanesi pediatrik odaklı.`} />
+                <Metric value={M.bundledRecordings} label="paketlenmiş klinik kayıt" tip="Pakete dahil doğrulanmış kayıt sayısı (HLS-CMDS v3)." />
+                <Metric value={M.externalRecordings} label="envanter kaydı (gerçek hasta)" tip="Gerçek hastalardan alınmış envanter kayıtları (ör. CirCor, ODC-BY 1.0)." />
+                <Metric value={M.soundClasses} label="ses sınıfı ve metafor" tip="Kalp, akciğer ve kombine ses sınıfları; her biri için klinik metafor ve dalga formu." />
+                <Metric value={M.auscultationPoints} label="oskültasyon noktası" tip="Ön/arka, yetişkin ve pediatrik gövdede konumlandırılmış noktalar." />
+                <Metric value={M.practicePoolSize} label="vaka havuzu" tip={`Her oturumda havuzdan rastgele 10 vaka sunulur. Toplam havuz: ${M.totalCases} vaka (${M.mixedCases} kombine).`} />
+                <Metric value={M.assessmentPoolSize} label="değerlendirme vakası" tip={`Doğrulanmış eşlemeli ${M.assessmentPoolSize} vaka ve toplam ${M.assessmentQuestions} soru; her oturumda rastgele 10 vaka.`} />
+                <Metric value={M.pediatricCases} label="pediatrik vaka" tip="Pediatrik gövde, yaşa uygun vitaller ve pediatrik bağlam bilgisiyle vaka seti." />
               </div>
               <div className="vol-check">
                 <button className="btn outline small" onClick={() => void playTone()}>
@@ -91,6 +104,15 @@ export function StartScreen() {
       </div>
       <Footer />
     </>
+  )
+}
+
+function Metric({ value, label, tip }: { value: number; label: string; tip: string }) {
+  return (
+    <div className="metric" role="listitem" title={tip}>
+      <b>{value.toLocaleString('tr-TR')}</b>
+      <span>{label}</span>
+    </div>
   )
 }
 

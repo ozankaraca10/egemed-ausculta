@@ -18,6 +18,8 @@ export function serializeSuspend(p: SuspendPayload): string {
     at: p.attempts,
     v2: visits,
     o: p.order,
+    si: p.sessionIds,
+    sd: p.sessionSeed,
     r: p.caseResults.map((r) => [
       r.caseId,
       Math.round(r.total),
@@ -42,6 +44,8 @@ export function deserializeSuspend(raw: string | null | undefined): SuspendPaylo
       at: number
       v2: [string, number, number, number, number][]
       o: string[]
+      si?: string[]
+      sd?: number
       r: [string, number, number, [string, number, number][]][]
     }
     const modes: Record<string, SuspendPayload['mode']> = { l: 'learn', p: 'practice', a: 'assessment' }
@@ -75,6 +79,8 @@ export function deserializeSuspend(raw: string | null | undefined): SuspendPaylo
       visits,
       order: o.o ?? [],
       attempts: o.at ?? 0,
+      sessionIds: o.si ?? [],
+      sessionSeed: o.sd ?? 0,
     }
   } catch {
     return null

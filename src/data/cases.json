@@ -3675,6 +3675,583 @@
         "systematic": 10
       },
       "masteryThreshold": 80
+    },
+    {
+      "id": "case_pediatric_normal_heart",
+      "title": "Pediatrik Normal Kardiyak Oskültasyon",
+      "modes": [
+        "practice",
+        "assessment"
+      ],
+      "population": "pediatrik",
+      "patient": {
+        "age": 6,
+        "sex": "kadın"
+      },
+      "chiefComplaint": "Okul öncesi rutin muayene",
+      "history": "6 yaşında çocuk, rutin kontrol. Efor kapasitesi yaşına uygun, kardiyak yakınma yok.",
+      "vitalSigns": {
+        "hr": 100,
+        "rr": 22,
+        "bp": "98/62",
+        "spo2": 99,
+        "temp": "36.6 °C"
+      },
+      "objectives": [
+        "Çocukta normal S1–S2 ritmini tanımak",
+        "Pediatrik kalp hızı aralığını bilmek",
+        "Masum üfürümlerin sıklığını kavramak"
+      ],
+      "tasks": [
+        "Odakları sistematik dinleyin.",
+        "Ek ses/üfürüm var mı bakın.",
+        "Pediatrik hız farkını değerlendirin."
+      ],
+      "views": [
+        "front"
+      ],
+      "allowedHeads": [
+        "bell",
+        "diaphragm"
+      ],
+      "soundAssignments": [
+        {
+          "pointId": "cardiac_aortic",
+          "category": "heart",
+          "acousticFinding": "normal",
+          "recordedLocation": "RUSB"
+        },
+        {
+          "pointId": "cardiac_pulmonary",
+          "category": "heart",
+          "acousticFinding": "normal",
+          "recordedLocation": "LUSB"
+        },
+        {
+          "pointId": "cardiac_tricuspid",
+          "category": "heart",
+          "acousticFinding": "normal",
+          "recordedLocation": "LLSB"
+        },
+        {
+          "pointId": "cardiac_mitral",
+          "category": "heart",
+          "acousticFinding": "normal",
+          "recordedLocation": "Apex"
+        }
+      ],
+      "primaryAcousticFinding": "normal",
+      "clinicalDiagnosis": null,
+      "mappingValidation": "validated",
+      "mappingNote": "Akustik sınıf (normal S1–S2) doğrulanmıştır; pediatrik bağlam bilgi olarak eklenmiştir. Kayıt klinik manikinden alınmıştır (popülasyon farkı kullanıcıya bildirilir).",
+      "technique": {
+        "requiredPoints": [
+          "cardiac_aortic",
+          "cardiac_pulmonary",
+          "cardiac_tricuspid",
+          "cardiac_mitral"
+        ],
+        "minPointsVisited": 4,
+        "minDwellMs": 1500,
+        "minListenMsPerPoint": 2000,
+        "systematicOrder": true
+      },
+      "questions": [
+        {
+          "id": "q1",
+          "type": "sound_identify",
+          "domain": "recognition",
+          "prompt": "Duyduğunuz ses hangisidir?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Normal kalp sesleri (S1–S2)"
+            },
+            {
+              "id": "b",
+              "label": "Sistolik üfürüm"
+            },
+            {
+              "id": "c",
+              "label": "S3"
+            },
+            {
+              "id": "d",
+              "label": "S4"
+            }
+          ],
+          "correct": [
+            "a"
+          ],
+          "feedbackCorrect": "Doğru. Çocukta S1–S2 düzenli; ek ses ve üfürüm yoktur.",
+          "feedbackIncorrect": "Kayıtta yalnız S1–S2 vardır; çocuklarda S3 sıklıkla fizyolojiktir ancak bu kayıtta duyulmuyor.",
+          "hint": "Lub-dub düzenini sayın: fazladan vuruş var mı?"
+        },
+        {
+          "id": "q2",
+          "type": "single_choice",
+          "domain": "interpretation",
+          "prompt": "6 yaş çocukta istirahat kalp hızı için beklenen aralık hangisidir?",
+          "options": [
+            {
+              "id": "a",
+              "label": "70–110/dk"
+            },
+            {
+              "id": "b",
+              "label": "40–60/dk"
+            },
+            {
+              "id": "c",
+              "label": "120–160/dk"
+            },
+            {
+              "id": "d",
+              "label": "30–50/dk"
+            }
+          ],
+          "correct": [
+            "a"
+          ],
+          "feedbackCorrect": "Doğru. Okul öncesi/okul çağı çocukta istirahat hızı yaklaşık 70–110/dk'dır; yetişkinden yüksektir.",
+          "feedbackIncorrect": "Çocukta kalp hızı yaşla azalır: 6 yaşta ~70–110/dk beklenir."
+        },
+        {
+          "id": "q3",
+          "type": "multi_choice",
+          "domain": "interpretation",
+          "prompt": "Çocuklarda masum (innocent) üfürümler için doğru olanlar hangileridir?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Sağlıklı çocuklarda sık görülür"
+            },
+            {
+              "id": "b",
+              "label": "Genellikle düşük şiddette ve kısa sistoliktir"
+            },
+            {
+              "id": "c",
+              "label": "Her zaman kalp hastalığı gösterir"
+            },
+            {
+              "id": "d",
+              "label": "Pozisyonla değişebilir"
+            }
+          ],
+          "correct": [
+            "a",
+            "b",
+            "d"
+          ],
+          "feedbackCorrect": "Doğru. Masum üfürümler sık, kısa sistolik ve pozisyonla değişebilir; tek başına hastalık göstermez.",
+          "feedbackIncorrect": "Masum üfürümler sağlıklı çocuklarda sık görülür; 'her zaman hastalık gösterir' ifadesi yanlıştır."
+        }
+      ],
+      "feedback": {
+        "summary": "Pediatrik normal kardiyak oskültasyon: S1–S2 düzenli, hız yaşa göre yüksek. Çocuklarda S3 fizyolojik olabilir; masum üfürümler sıktır.",
+        "techniqueNotes": "Çocuklarda göğüs duvarı incedir; oskültasyon genellikle daha kolaydır, ancak hasta uyumu ve sessiz ortam önemlidir."
+      },
+      "references": [
+        "HLS-CMDS v3 — Normal kalp sesi kayıtları",
+        "Pediatrik bağlam bilgisi: yaşa göre normal hız aralıkları (klinik eğitim notu)"
+      ],
+      "scoringWeights": {
+        "technique": 20,
+        "localization": 25,
+        "recognition": 40,
+        "interpretation": 15,
+        "diagnosis": 0,
+        "systematic": 0
+      },
+      "masteryThreshold": 80
+    },
+    {
+      "id": "case_pediatric_wheezing",
+      "title": "Pediatrik Wheezing (Obstrüktif Patern)",
+      "modes": [
+        "practice",
+        "assessment"
+      ],
+      "population": "pediatrik",
+      "patient": {
+        "age": 3,
+        "sex": "erkek"
+      },
+      "chiefComplaint": "Öksürük ve hırıltılı solunum",
+      "history": "3 yaşında çocuk, üst solunum yolu enfeksiyonu sonrası hırıltılı solunum ve öksürük tarif ediliyor.",
+      "vitalSigns": {
+        "hr": 118,
+        "rr": 34,
+        "bp": "92/58",
+        "spo2": 95,
+        "temp": "37.6 °C"
+      },
+      "objectives": [
+        "Çocukta wheezing'i tanımak",
+        "Yaşa uygun solunum sayısını bilmek",
+        "Yaygın bilateral obstrüktif paterni değerlendirmek"
+      ],
+      "tasks": [
+        "Bilateral ve posterior dinleyin.",
+        "Sesi tanımlayın.",
+        "Solunum sayısını yorumlayın."
+      ],
+      "views": [
+        "front",
+        "back"
+      ],
+      "allowedHeads": [
+        "bell",
+        "diaphragm"
+      ],
+      "soundAssignments": [
+        {
+          "pointId": "lung_right_upper_anterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "recordedLocation": "RUA"
+        },
+        {
+          "pointId": "lung_left_upper_anterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "recordedLocation": "LUA"
+        },
+        {
+          "pointId": "lung_right_lower_anterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "recordedLocation": "RLA"
+        },
+        {
+          "pointId": "lung_left_lower_anterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "recordedLocation": "LLA"
+        },
+        {
+          "pointId": "lung_right_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing"
+        },
+        {
+          "pointId": "lung_left_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing"
+        },
+        {
+          "pointId": "lung_right_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing"
+        },
+        {
+          "pointId": "lung_left_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing"
+        }
+      ],
+      "primaryAcousticFinding": "wheezing",
+      "clinicalDiagnosis": null,
+      "mappingValidation": "validated",
+      "mappingNote": "Akustik sınıf (wheezing) doğrulanmıştır; hastalık tanısı (bronşiolit/astım) iddia edilmez. Posterior noktalarda kayıt anterior alandan fallback ile gelir.",
+      "technique": {
+        "requiredPoints": [
+          "lung_right_upper_anterior",
+          "lung_left_upper_anterior",
+          "lung_right_lower_anterior",
+          "lung_left_lower_anterior"
+        ],
+        "minPointsVisited": 6,
+        "minDwellMs": 1200,
+        "minListenMsPerPoint": 1800,
+        "systematicOrder": true
+      },
+      "questions": [
+        {
+          "id": "q1",
+          "type": "sound_identify",
+          "domain": "recognition",
+          "prompt": "Duyduğunuz ses hangisidir?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Wheezing"
+            },
+            {
+              "id": "b",
+              "label": "İnce raller"
+            },
+            {
+              "id": "c",
+              "label": "Plevral frotman"
+            },
+            {
+              "id": "d",
+              "label": "Normal solunum"
+            }
+          ],
+          "correct": [
+            "a"
+          ],
+          "feedbackCorrect": "Doğru. Müzikal, sürekli ve ekspiryumda belirgin ses wheezing'dir.",
+          "feedbackIncorrect": "Ses kesintili değil; müzikal ve süreklidir — wheezing.",
+          "hint": "Çaydanlık düdüğü benzetmesini düşünün."
+        },
+        {
+          "id": "q2",
+          "type": "single_choice",
+          "domain": "interpretation",
+          "prompt": "3 yaşında beklenen istirahat solunum sayısı aralığı hangisidir?",
+          "options": [
+            {
+              "id": "a",
+              "label": "22–38/dk"
+            },
+            {
+              "id": "b",
+              "label": "12–16/dk"
+            },
+            {
+              "id": "c",
+              "label": "40–60/dk"
+            },
+            {
+              "id": "d",
+              "label": "8–12/dk"
+            }
+          ],
+          "correct": [
+            "a"
+          ],
+          "feedbackCorrect": "Doğru. Okul öncesi çocukta solunum sayısı dakikada ~22–38'dir.",
+          "feedbackIncorrect": "Yaşla solunum sayısı azalır: 3 yaşta ~22–38/dk beklenir."
+        }
+      ],
+      "feedback": {
+        "summary": "Pediatrik wheezing: yaygın obstrüktif patern; küçük çocuklarda sık görülür. Tanı tek oskültasyonla konmaz; klinik bağlam gerekir.",
+        "techniqueNotes": "Küçük çocuklarda bilateral ve posterior karşılaştırma önemlidir."
+      },
+      "references": [
+        "HLS-CMDS v3 — Wheezing kayıtları"
+      ],
+      "scoringWeights": {
+        "technique": 20,
+        "localization": 25,
+        "recognition": 40,
+        "interpretation": 15,
+        "diagnosis": 0,
+        "systematic": 0
+      },
+      "masteryThreshold": 80
+    },
+    {
+      "id": "case_pediatric_innocent_murmur",
+      "title": "Pediatrik Masum Üfürüm (Gerçek Pediatrik Kayıt)",
+      "modes": [
+        "practice",
+        "assessment"
+      ],
+      "population": "pediatrik",
+      "patient": {
+        "age": 5,
+        "sex": "erkek"
+      },
+      "chiefComplaint": "Ateşli hastalık sırasında fark edilen üfürüm",
+      "history": "5 yaşında çocuk, ateşli üst solunum yolu enfeksiyonu sırasında kalp sesleri dinlendiğinde kısa bir sistolik üfürüm duyulmuş. Çocuğun genel durumu iyi, efor kapasitesi normal.",
+      "vitalSigns": {
+        "hr": 112,
+        "rr": 24,
+        "bp": "96/60",
+        "spo2": 98,
+        "temp": "38.1 °C"
+      },
+      "objectives": [
+        "Kısa sistolik üfürümü tanımak",
+        "Masum/patolojik ayrımının tek oskültasyonla YAPILAMAYACAĞINI kavramak"
+      ],
+      "tasks": [
+        "Odakları dinleyin.",
+        "Üfürümün zamanlamasını belirleyin.",
+        "En belirgin odağı seçin."
+      ],
+      "views": [
+        "front"
+      ],
+      "allowedHeads": [
+        "bell",
+        "diaphragm"
+      ],
+      "soundAssignments": [
+        {
+          "soundId": "circor_early_systolic_murmur_cardiac_aortic_001",
+          "pointId": "cardiac_aortic",
+          "category": "heart",
+          "acousticFinding": "early_systolic_murmur"
+        },
+        {
+          "pointId": "cardiac_pulmonary",
+          "category": "heart",
+          "acousticFinding": "early_systolic_murmur",
+          "recordedLocation": "LUSB"
+        },
+        {
+          "pointId": "cardiac_tricuspid",
+          "category": "heart",
+          "acousticFinding": "early_systolic_murmur",
+          "recordedLocation": "LLSB"
+        },
+        {
+          "pointId": "cardiac_mitral",
+          "category": "heart",
+          "acousticFinding": "early_systolic_murmur",
+          "recordedLocation": "Apex"
+        }
+      ],
+      "primaryAcousticFinding": "early_systolic_murmur",
+      "clinicalDiagnosis": null,
+      "mappingValidation": "validated",
+      "mappingNote": "Aort odağı kaydı GERÇEK PEDİATRİK HASTADAN alınmıştır (CirCor DigiScope, ODC-BY 1.0, doğrulanmış erken sistolik zamanlama). Diğer odaklar manikin kayıtlarıdır. Masum/patolojik ayrımı iddia edilmez.",
+      "technique": {
+        "requiredPoints": [
+          "cardiac_aortic",
+          "cardiac_pulmonary",
+          "cardiac_tricuspid",
+          "cardiac_mitral"
+        ],
+        "minPointsVisited": 4,
+        "minDwellMs": 1500,
+        "minListenMsPerPoint": 2000,
+        "systematicOrder": true
+      },
+      "questions": [
+        {
+          "id": "q1",
+          "type": "sound_identify",
+          "domain": "recognition",
+          "prompt": "Duyduğunuz üfürümün zamanlaması hangisidir?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Erken sistolik"
+            },
+            {
+              "id": "b",
+              "label": "Geç sistolik"
+            },
+            {
+              "id": "c",
+              "label": "Geç diyastolik"
+            },
+            {
+              "id": "d",
+              "label": "Sürekli"
+            }
+          ],
+          "correct": [
+            "a"
+          ],
+          "feedbackCorrect": "Doğru. Üfürüm S1'i izleyip kısa sürede söner (gerçek pediatrik kayıt, doğrulanmış zamanlama).",
+          "feedbackIncorrect": "S1 ile başlayıp erken sönen üfürüm erken sistoliktir.",
+          "hint": "Kısa bir 'fışş' gibi çabuk sönen üfürüme odaklanın."
+        },
+        {
+          "id": "q2",
+          "type": "interpretation",
+          "domain": "interpretation",
+          "prompt": "Ateşli hastalıkta duyulan kısa sistolik üfürüm için en doğru yaklaşım hangisidir?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Klinik bağlam, ateş sonrası yeniden muayene ve gereğinde ileri tetkik ile değerlendirmek"
+            },
+            {
+              "id": "b",
+              "label": "Doğrudan kapak ameliyatı planlamak"
+            },
+            {
+              "id": "c",
+              "label": "Üfürümü tamamen yok saymak"
+            },
+            {
+              "id": "d",
+              "label": "Yalnız oskültasyonla masum demek"
+            }
+          ],
+          "correct": [
+            "a"
+          ],
+          "feedbackCorrect": "Doğru. Ateşli hastalıkta üfürüm sık ve sıklıkla geçicidir; klinik bağlam ve gerektiğinde ateş sonrası yeniden değerlendirme/ileri tetkik gerekir.",
+          "feedbackIncorrect": "Oskültasyon tek başına masum/patolojik ayrımı yapamaz; klinik bağlam ve ileri değerlendirme gerekir."
+        },
+        {
+          "id": "q3",
+          "type": "localization",
+          "domain": "localization",
+          "prompt": "Gerçek pediatrik kayıt hangi odaktan alınmıştır?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Aort odağı (sağ üst sternal kenar)"
+            },
+            {
+              "id": "b",
+              "label": "Mitral odak (apeks)"
+            },
+            {
+              "id": "c",
+              "label": "Pulmoner odak (sol üst sternal kenar)"
+            },
+            {
+              "id": "d",
+              "label": "Triküspit odak (sol alt sternal kenar)"
+            }
+          ],
+          "correct": [
+            "a"
+          ],
+          "feedbackCorrect": "Doğru. Pediatrik hasta kaydı aort odağından alınmıştır (CirCor).",
+          "feedbackIncorrect": "Pediatrik hasta kaydı aort odağından alınmıştır."
+        },
+        {
+          "id": "q4",
+          "type": "bell_diaphragm",
+          "domain": "interpretation",
+          "prompt": "Üfürüm değerlendirmesinde hangi kafa tercih edilir?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Bell"
+            },
+            {
+              "id": "b",
+              "label": "Diyafram"
+            }
+          ],
+          "correct": [
+            "b"
+          ],
+          "feedbackCorrect": "Doğru. Orta-yüksek frekanslı üfürüm bileşenleri diyaframla daha iyi duyulur.",
+          "feedbackIncorrect": "Üfürüm için diyafram uygundur."
+        }
+      ],
+      "feedback": {
+        "summary": "Pediatrik erken sistolik üfürüm: aort odağında gerçek hasta kaydı. Ateşli dönemde duyulan kısa sistolik üfürümler sık görülür; masum/patolojik ayrımı klinik bağlam ve gerekirse ileri tetkik ile yapılır.",
+        "differential": "Kapak lezyonu veya masum üfürüm ayrımı bu içerikte İDDİA EDİLMEZ; karar klinik bütünlük içinde verilir."
+      },
+      "references": [
+        "CirCor DigiScope (PhysioNet v1.0.3) — gerçek pediatrik kayıt, ODC-BY 1.0",
+        "HLS-CMDS v3 — diğer odak kayıtları"
+      ],
+      "scoringWeights": {
+        "technique": 20,
+        "localization": 25,
+        "recognition": 40,
+        "interpretation": 15,
+        "diagnosis": 0,
+        "systematic": 0
+      },
+      "masteryThreshold": 80
     }
   ]
 }

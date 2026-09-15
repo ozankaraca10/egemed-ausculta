@@ -1,11 +1,19 @@
 import type { SoundAssignment, SoundRecord, SoundsManifest } from './types'
 import soundsManifest from '../data/sounds.json'
+import externalManifest from '../data/sounds-external.json'
 
 /** Kayıt çözümleyici (§2 konum-duyarlı ses, §14). Ses atamalarını deterministik olarak
  *  sounds.json kayıtlarına eşler. Varsayılan sıralama: kaynak konum eşleşmesi > cinsiyet "any" > id. */
 
 export const manifest = soundsManifest as unknown as SoundsManifest
-export const RECORDS: SoundRecord[] = manifest.records
+/** Birincil (HLS-CMDS) + envanter kayıtları (ör. CirCor — pediatrik, ODC-BY 1.0).
+ *  Kütüphane/vaka çözümünde birincil veri seti tercih edilir; harici kayıtlar
+ *  yalnızca açıkça soundId ile hedeflendiğinde kullanılır. */
+export const RECORDS: SoundRecord[] = [
+  ...manifest.records,
+  ...((externalManifest as unknown as { records?: SoundRecord[] }).records ?? []),
+]
+export const EXTERNAL_RECORDS: SoundRecord[] = RECORDS.filter((r) => r.sourceDataset !== 'hls-cmds-v3')
 
 const byId = new Map(RECORDS.map((r) => [r.id, r]))
 
@@ -81,7 +89,7 @@ export function resolveCaseSounds(assignments: SoundAssignment[]): Record<string
 /** Öğrenme kütüphanesi sesi: kategori + akustik bulgu + tercihen odak noktası konumu. */
 export function resolveLibrarySound(category: string, finding: string, simLocation?: string): SoundRecord | null {
   let pool = RECORDS.filter(
-    (r) => r.category === category && r.acousticFinding === finding && r.validationStatus === 'validated'
+    (r) => r.category === category && r.acousticFinding === finding && r.validationStatus === 'validated' && r.sourceDataset === 'hls-cmds-v3'
   )
   if (simLocation) {
     const loc = pool.filter((r) => r.simulationLocation === simLocation)

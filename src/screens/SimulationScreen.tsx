@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AuscultationPoint, CaseDef, Question } from '../core/types'
 import pointsData from '../data/auscultation-points.json'
-import casesData from '../data/cases.json'
+import { ALL_CASES, poolFor } from '../data/pool'
+import type { BodyType } from '../ui/PatientStage'
 import { engine } from '../audio/engineSingleton'
 import { resolveCaseSoundsEx } from '../core/resolver'
 import { useStore, computeAggregate } from '../core/store'
@@ -14,17 +15,22 @@ import { IconDoc, IconTarget, IconArrowRight, IconInfo, IconBodyFront, IconBodyB
 
 /** Simülasyon ekranı — Uygulama & Değerlendirme (§3B, §3C): hasta solda, olgu/görev/soru sağda. */
 
-const cases = casesData.cases as unknown as CaseDef[]
+const cases = ALL_CASES
 const points = pointsData.points as AuscultationPoint[]
 
 export function SimulationScreen() {
   const { state, dispatch, runtime } = useStore()
-  const caseList = state.mode === 'assessment' ? cases.filter((c) => c.modes.includes('assessment')) : cases
+  // oturum örneklemi: rastgele 10 vaka (yoksa havuzun tamamı)
+  const sessionIds = state.mode === 'assessment' ? state.session.assessmentIds : state.session.practiceIds
+  const byId = new Map(cases.map((c) => [c.id, c]))
+  const sessionCases = sessionIds.map((id) => byId.get(id)).filter((c): c is CaseDef => !!c)
+  const caseList = sessionCases.length ? sessionCases : poolFor(state.mode)
   const caseDef = caseList[state.caseIndex] ?? caseList[0]
   const stageRef = useRef<StageHandle>(null)
   const [playing, setPlaying] = useState(false)
   const [activePoint, setActivePoint] = useState<string | null>(null)
 
+  const isAssessment = state.mode === 'assessment'
   const resolved = useMemoSounds(caseDef)
   const q: Question | undefined = caseDef.questions[state.step]
   const canSubmit = !!q && (state.answers[q.id]?.length ?? 0) > 0
@@ -74,20 +80,28 @@ export function SimulationScreen() {
                       <IconBodyBack /> Arka Görünüm
                     </button>
                   </div>
-                  <label className="points-toggle">
-                    <input type="checkbox" checked={state.showPoints} onChange={(e) => dispatch({ type: 'togglePoints', show: e.target.checked })} />
-                    {state.mode === 'assessment' ? 'Bölge işaretleri' : 'Dinleme noktalarını göster'}
-                  </label>
+                  {state.mode !== 'assessment' ? (
+                    <label className="points-toggle">
+                      <input type="checkbox" checked={state.showPoints} onChange={(e) => dispatch({ type: 'togglePoints', show: e.target.checked })} />
+                      Dinleme noktalarını göster
+                    </label>
+                  ) : (
+                    <span className="strict-note" title="Değerlendirmede işaret, ipucu ve tekrar dinleme yoktur; muayene tamamen manueldir.">
+                      Manuel muayene modu — işaret/ipucu yok
+                    </span>
+                  )}
                 </div>
                 <PatientStage
                   key={state.caseIndex}
                   ref={stageRef}
                   points={points}
                   filterIds={caseDef.soundAssignments.map((a) => a.pointId)}
+                  bodyType={((caseDef as CaseDef & { population?: string }).population === 'pediatrik' ? 'pediatrik' : caseDef.patient.sex === 'kadın' ? 'kadin' : 'erkek') as BodyType}
+                  strict={isAssessment}
                   view={state.view}
                   head={state.head}
                   volume={state.volume}
-                  showPoints={state.showPoints}
+                  showPoints={state.mode !== 'assessment' && state.showPoints}
                   showLabels={state.mode !== 'assessment' && state.showPoints}
                   mode={state.mode}
                   engine={engine}
@@ -97,7 +111,17 @@ export function SimulationScreen() {
                   onListen={(pointId, listenMs) => dispatch({ type: 'listen', pointId, listenMs })}
                   onPlayingChange={(pl, pt) => { setPlaying(pl); setActivePoint(pt) }}
                 />
-                {activePoint && resolved.fallbacks[activePoint] && (
+                <div className="region-list-title sr-only-until-focus">Bölge listesi (klavye ile erişim)</div>
+                <div className="region-list sr-only-until-focus">
+                  {points
+                    .filter((pt) => pt.view === state.view && caseDef.soundAssignments.some((a) => a.pointId === pt.id))
+                    .map((pt) => (
+                      <button key={pt.id} onClick={() => stageRef.current?.placeAt(pt.id)}>
+                        {pt.fullLabel}
+                      </button>
+                    ))}
+                </div>
+                {!isAssessment && activePoint && resolved.fallbacks[activePoint] && (
                   <div className="note-strip" style={{ marginTop: 0 }}>
                     <IconInfo width={16} height={16} />
                     <span className="small">
@@ -115,6 +139,7 @@ export function SimulationScreen() {
                 activePoint={activePoint}
                 question={state.mode === 'practice' ? q : undefined}
                 onHint={() => dispatch({ type: 'useHint' })}
+                strict={isAssessment}
               />
             </div>
 

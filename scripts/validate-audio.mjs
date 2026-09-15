@@ -29,6 +29,9 @@ if (!fs.existsSync(manifestPath)) {
   process.exit(1)
 }
 const m = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
+const externalPath = path.join(ROOT, 'src', 'data', 'sounds-external.json')
+const external = fs.existsSync(externalPath) ? JSON.parse(fs.readFileSync(externalPath, 'utf8')) : { records: [] }
+const allRecords = [...m.records, ...(external.records ?? [])]
 const sources = JSON.parse(fs.readFileSync(sourcesFile, 'utf8'))
 const points = JSON.parse(fs.readFileSync(pointsFile, 'utf8'))
 const cases = JSON.parse(fs.readFileSync(casesFile, 'utf8'))
@@ -82,10 +85,14 @@ for (const r of m.records) {
 }
 
 // ---- vaka ↔ ses eşleşmesi (§19: değerlendirme havuzu doğrulama katmanı) ----
-const soundIds = new Set(m.records.map((r) => r.id))
+const soundIds = new Set(allRecords.map((r) => r.id))
 const pointIds = new Set(points.points.map((p) => p.id))
+// otomatik üretilen vakalar da doğrulama kapsamında
+const autoPath = path.join(ROOT, 'src', 'data', 'cases-auto.json')
+const autoCases = fs.existsSync(autoPath) ? JSON.parse(fs.readFileSync(autoPath, 'utf8')) : { cases: [] }
+const allCaseDefs = [...cases.cases, ...(autoCases.cases ?? [])]
 const severityPool = []
-for (const c of cases.cases) {
+for (const c of allCaseDefs) {
   for (const a of c.soundAssignments) {
     if (a.soundId && !soundIds.has(a.soundId)) severityPool.push([`${c.id}: atıf sesId yok: ${a.soundId}`])
   }
@@ -111,7 +118,7 @@ for (const [msg] of severityPool) fatal.push(msg)
   for (const g of lib.groups) for (const it of g.items) libFindings.add(it.acousticFinding)
   const practice = new Set()
   const assessment = new Set()
-  for (const c of cases.cases) {
+  for (const c of allCaseDefs) {
     if ((c.modes || []).includes('practice')) practice.add(c.primaryAcousticFinding)
     if ((c.modes || []).includes('assessment')) assessment.add(c.primaryAcousticFinding)
   }
@@ -135,7 +142,7 @@ for (const [msg] of severityPool) fatal.push(msg)
     lung_left_lower_posterior: 'lung_left_lower_anterior',
   }
   const findRec = (a, pointId) =>
-    m.records.find(
+    allRecords.find(
       (r) =>
         r.category === a.category &&
         r.acousticFinding === a.acousticFinding &&
@@ -143,16 +150,16 @@ for (const [msg] of severityPool) fatal.push(msg)
         (!r.simulationLocation || r.simulationLocation === pointId) &&
         (!a.recordedLocation || r.recordedLocation === a.recordedLocation)
     )
-  for (const c of cases.cases) {
+  for (const c of allCaseDefs) {
     for (const a of c.soundAssignments) {
-      let rec = findRec(a, a.pointId)
+      let rec = a.soundId ? allRecords.find((r) => r.id === a.soundId) : findRec(a, a.pointId)
       if (!rec && POST_MAP[a.pointId]) rec = findRec(a, POST_MAP[a.pointId])
       if (!rec) fatal.push(`ses çözülemedi: ${c.id} → ${a.pointId} (${a.category}/${a.acousticFinding}${a.recordedLocation ? '/' + a.recordedLocation : ''})`)
     }
   }
 
   const mixedLib = lib.groups.find((g) => g.id === 'mixed')?.items?.length ?? 0
-  const mixedCases = cases.cases.filter((c) => c.primaryAcousticFinding.includes('+') && (c.modes || []).includes('practice')).length
+  const mixedCases = allCaseDefs.filter((c) => c.primaryAcousticFinding.includes('+') && (c.modes || []).includes('practice')).length
   if (mixedLib === 0) fatal.push('senkron: kombine (mixed) kütüphane grubu yok')
   if (mixedCases === 0) fatal.push('senkron: kombine sesler için uygulama vakası yok')
   console.log('=== Senkronizasyon (veri seti ↔ kütüphane ↔ vaka) ===')
@@ -160,6 +167,11 @@ for (const [msg] of severityPool) fatal.push(msg)
     console.log(`  ${l ? '✓' : '✗'} kütüphane  ${p ? '✓' : '✗'} uygulama  ${a ? '✓' : '✗'} değerlendirme  ${f}`)
   }
   console.log(`  ✓ kombine: ${mixedLib} kütüphane kalemi, ${mixedCases} pratik vaka`)
+  const pedDatasets = (sources.inventory ?? []).filter((x) => /pediatrik|çocuk|pediatric/i.test(`${x.population} ${x.title} ${x.notes}`)).length
+  const pedCases = allCaseDefs.filter((c) => c.population === 'pediatrik').length
+  console.log(`  ✓ pediatrik: ${pedDatasets} veri seti, ${pedCases} vaka`)
+  if (pedDatasets < 2) fatal.push('pediatrik: en az 2 pediatrik veri seti envanterde olmalı')
+  if (pedCases < 3) fatal.push('pediatrik: en az 3 pediatrik vaka olmalı')
 }
 
 // ---- veri seti envanteri bütünlüğü (§5, §34) ----
@@ -167,6 +179,15 @@ for (const [msg] of severityPool) fatal.push(msg)
   const inv = sources.inventory ?? []
   if (inv.length < 6) fatal.push(`envanter: en az 6 veri seti beklenir, ${inv.length} bulundu`)
   const bundledDs = new Set(m.records.map((r) => r.sourceDataset))
+  // harici kayıtlar: lisans/atıf izlenebilir olmalı ve dosyaları doğrulanmalı
+  for (const r of external.records ?? []) {
+    if (!sources.inventory?.some((x) => x.id === r.sourceDataset)) fatal.push(`harici kayıt ${r.id}: envanterde karşılığı yok`)
+    const f = path.join(ROOT, 'public', r.runtimeUrl)
+    if (!fs.existsSync(f)) fatal.push(`harici kayıt ${r.id}: dosya yok ${r.runtimeUrl}`)
+    if (!['validated', 'educational_mapping'].includes(r.mappingStatus ?? 'validated')) {
+      fatal.push(`harici kayıt ${r.id}: geçersiz eşleme durumu (${r.mappingStatus})`)
+    }
+  }
   for (const it of inv) {
     if (!it.license || it.license.length < 3) fatal.push(`envanter: ${it.id} lisans bilgisi eksik`)
     if (!it.licenseUrl?.startsWith('http')) fatal.push(`envanter: ${it.id} lisans bağlantısı eksik`)

@@ -1,0 +1,42 @@
+{
+  "note": "Yaşa göre normal aralıklar — klinik eğitim referansı (Türkiye pediatri pratiği ile uyumlu yaklaşık değerler).",
+  "rows": [
+    {
+      "age": "Yenidoğan (0–1 ay)",
+      "hr": "100–180",
+      "rr": "30–60"
+    },
+    {
+      "age": "Bebek (1–12 ay)",
+      "hr": "90–160",
+      "rr": "24–50"
+    },
+    {
+      "age": "Küçük çocuk (1–3 yaş)",
+      "hr": "80–140",
+      "rr": "22–38"
+    },
+    {
+      "age": "Okul öncesi (3–6 yaş)",
+      "hr": "70–120",
+      "rr": "20–30"
+    },
+    {
+      "age": "Okul çağı (6–12 yaş)",
+      "hr": "70–110",
+      "rr": "18–25"
+    },
+    {
+      "age": "Adölesan (12–18 yaş)",
+      "hr": "60–100",
+      "rr": "12–20"
+    }
+  ],
+  "auscultationNotes": [
+    "Çocuklarda göğüs duvarı incedir; sesler daha yüksek duyulur ve yayılımı daha geniştir.",
+    "S3 çocuklarda sıklıkla fizyolojiktir; S4 genellikle patolojiktir.",
+    "Masum üfürümler sağlıklı çocuklarda sıktır (Still, pulmoner akım, venöz hum); kısa, sistolik ve pozisyonla değişkendir.",
+    "Hızlı solunum, inleme, retraksiyon ve burun kanadı solunumu pediatrik distres işaretleridir.",
+    "Wheezing küçük çocuklarda sıktır; tek başına astım tanısı koydurmaz."
+  ]
+}

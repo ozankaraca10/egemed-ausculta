@@ -249,3 +249,35 @@ npm run dev        # http://localhost:5173
 - Erb noktası için veri setinde ayrı kayıt yoktur; nokta eğitim amaçlı işaretlenir, ses yok.
 - Dalga formu oynatıcıda 10 s geri/ileri atlama stub (transport butonları devre dışı).
 - SCORM 1.2 paketinde etkileşim sayısı ve suspend boyutu 1.2 limitlerine tabidir.
+
+
+---
+
+## v2 Güncellemesi — Ölçek, Pediatri ve Maksimum Zorluk
+
+### Gövde çeşitliliği
+- `auscultation-points.json` artık görünüm × gövde tipi (`male`, `female`, `pediatric`) matrisi tutar; her nokta `x/y`, `xf/yf` (kadın), `xp/yp` (pediatrik) koordinatlarına sahiptir.
+- Kadın gövdesi Wikimedia Commons CC0 fotoğraflarından türetilmiştir (`front-female.jpg`, `back-female.jpg`).
+- Pediatrik gövde **şematik SVG**'dir (`src/ui/torso-pediatric.tsx`); çocuk hastalarda fotoğraf kullanılmaz. Öğrenme modunda Erkek/Kadın/Çocuk seçilebilir; vaka modlarında gövde otomatik seçilir (`population: 'pediatrik'`).
+- Öğrenme modunda pediatrik gövde seçilince yaşa göre kalp hızı/solunum referans kartı (`pediatric-reference.json`) görünür.
+
+### Vaka havuzu ve oturum örneklemesi
+- `scripts/generate-cases.mjs` ses veri setinden vaka üretir: kalp 30, akciğer 31, kombine 111, pediatrik gerçek kayıt 4 → `cases-auto.json` (176 otomatik vaka).
+- Toplam havuz 199 vaka; her oturumda `sampleSession` ile **rastgele 10 vaka** seçilir (katmanlı: önce farklı bulgulardan birer, sonra doldurma).
+- Örneklem tohumu oturum başında üretilir ve suspend verisine yazılır (`si/sd`) — SCORM devam ettirmede aynı 10 vaka korunur.
+- Mod kartlarında ve başlangıç ekranında bilgilendirme ipuçları (tooltip) vardır.
+
+### Maksimum zorluk değerlendirmesi
+- Değerlendirmede: işaret/hotspot yok, bölge etiketi yok, nokta listesi görsel olarak gizli (klavye için `sr-only-until-focus`), ipucu yok, "Tekrar Dinle" yok.
+- **Tek dinleme kuralı**: her nokta oturumda bir kez dinlenebilir; tekrar denemede ses çalınmaz ve nötr bilgi gösterilir.
+- Tüm ölçüm manuel muayeneyle yapılır; durum göstergesi nötrdür ("Manuel muayene", "Bölge teması").
+
+### Pediatrik bakış
+- Pediatrik veri setleri envantere etiket kalitesiyle eklendi (CirCor, SPRSound, DigiScope, Fetal PCG).
+- Gerçek pediatrik hasta kayıtları (CirCor, ODC-BY 1.0) vaka havuzuna bağlandı; manikin karışımı olan vakalarda `mappingNote` bunu açıkça belirtir.
+- Üç çekirdek pediatrik vaka: normal kardiyak oskültasyon (masum üfürüm bilgisiyle), wheezing (obstrüktif patern, yaşa uygun solunum sayısı), gerçek pediatrik erken sistolik üfürüm.
+- §6 gereği: pediatrik vakalarda da hastalık/kapak tanısı iddia edilmez.
+
+### Envanter
+- `sources.json` envanteri 19 veri setine genişletildi; her kayıtta `labelTypes` (etiket türleri), `population`, `licenseVerified` alanları var.
+- Doğrulama script'i pediatrik kapsamı ve harici kayıt bütünlüğünü zorunlu tutar (`validate-audio.mjs`).

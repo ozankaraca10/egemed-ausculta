@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "views": {
     "front": {
       "image": "assets/body/front.jpg",
@@ -24,7 +24,11 @@
       "x": 0.458,
       "y": 0.27,
       "color": "s1",
-      "tagSide": "left"
+      "tagSide": "left",
+      "xf": 0.44,
+      "yf": 0.26,
+      "xp": 0.452,
+      "yp": 0.286
     },
     {
       "id": "cardiac_pulmonary",
@@ -37,7 +41,11 @@
       "x": 0.548,
       "y": 0.27,
       "color": "s2",
-      "tagSide": "right"
+      "tagSide": "right",
+      "xf": 0.54,
+      "yf": 0.26,
+      "xp": 0.548,
+      "yp": 0.286
     },
     {
       "id": "cardiac_erb",
@@ -50,7 +58,11 @@
       "x": 0.553,
       "y": 0.325,
       "color": "erb",
-      "tagSide": "right"
+      "tagSide": "right",
+      "xf": 0.545,
+      "yf": 0.315,
+      "xp": 0.552,
+      "yp": 0.328
     },
     {
       "id": "cardiac_tricuspid",
@@ -63,7 +75,11 @@
       "x": 0.542,
       "y": 0.475,
       "color": "trik",
-      "tagSide": "left"
+      "tagSide": "left",
+      "xf": 0.527,
+      "yf": 0.45,
+      "xp": 0.538,
+      "yp": 0.418
     },
     {
       "id": "cardiac_mitral",
@@ -76,7 +92,11 @@
       "x": 0.632,
       "y": 0.515,
       "color": "mit",
-      "tagSide": "right"
+      "tagSide": "right",
+      "xf": 0.615,
+      "yf": 0.465,
+      "xp": 0.612,
+      "yp": 0.452
     },
     {
       "id": "lung_right_upper_anterior",
@@ -89,7 +109,11 @@
       "x": 0.395,
       "y": 0.25,
       "color": "lung",
-      "tagSide": "left"
+      "tagSide": "left",
+      "xf": 0.38,
+      "yf": 0.24,
+      "xp": 0.396,
+      "yp": 0.29
     },
     {
       "id": "lung_left_upper_anterior",
@@ -102,7 +126,11 @@
       "x": 0.615,
       "y": 0.25,
       "color": "lung",
-      "tagSide": "right"
+      "tagSide": "right",
+      "xf": 0.6,
+      "yf": 0.24,
+      "xp": 0.604,
+      "yp": 0.29
     },
     {
       "id": "lung_right_middle_anterior",
@@ -115,7 +143,11 @@
       "x": 0.35,
       "y": 0.44,
       "color": "lung",
-      "tagSide": "left"
+      "tagSide": "left",
+      "xf": 0.33,
+      "yf": 0.4,
+      "xp": 0.352,
+      "yp": 0.42
     },
     {
       "id": "lung_left_middle_anterior",
@@ -128,7 +160,11 @@
       "x": 0.66,
       "y": 0.44,
       "color": "lung",
-      "tagSide": "right"
+      "tagSide": "right",
+      "xf": 0.64,
+      "yf": 0.4,
+      "xp": 0.648,
+      "yp": 0.42
     },
     {
       "id": "lung_right_lower_anterior",
@@ -141,7 +177,11 @@
       "x": 0.37,
       "y": 0.565,
       "color": "lung",
-      "tagSide": "left"
+      "tagSide": "left",
+      "xf": 0.35,
+      "yf": 0.53,
+      "xp": 0.372,
+      "yp": 0.552
     },
     {
       "id": "lung_left_lower_anterior",
@@ -154,7 +194,11 @@
       "x": 0.645,
       "y": 0.565,
       "color": "lung",
-      "tagSide": "right"
+      "tagSide": "right",
+      "xf": 0.63,
+      "yf": 0.53,
+      "xp": 0.628,
+      "yp": 0.552
     },
     {
       "id": "lung_right_upper_posterior",
@@ -167,7 +211,11 @@
       "x": 0.61,
       "y": 0.273,
       "color": "post",
-      "tagSide": "right"
+      "tagSide": "right",
+      "xf": 0.61,
+      "yf": 0.27,
+      "xp": 0.604,
+      "yp": 0.3
     },
     {
       "id": "lung_left_upper_posterior",
@@ -180,7 +228,11 @@
       "x": 0.39,
       "y": 0.273,
       "color": "post",
-      "tagSide": "left"
+      "tagSide": "left",
+      "xf": 0.39,
+      "yf": 0.27,
+      "xp": 0.396,
+      "yp": 0.3
     },
     {
       "id": "lung_right_middle_posterior",
@@ -193,7 +245,11 @@
       "x": 0.635,
       "y": 0.459,
       "color": "post",
-      "tagSide": "right"
+      "tagSide": "right",
+      "xf": 0.62,
+      "yf": 0.42,
+      "xp": 0.62,
+      "yp": 0.43
     },
     {
       "id": "lung_left_middle_posterior",
@@ -206,7 +262,11 @@
       "x": 0.365,
       "y": 0.459,
       "color": "post",
-      "tagSide": "left"
+      "tagSide": "left",
+      "xf": 0.38,
+      "yf": 0.42,
+      "xp": 0.38,
+      "yp": 0.43
     },
     {
       "id": "lung_right_lower_posterior",
@@ -219,7 +279,11 @@
       "x": 0.61,
       "y": 0.635,
       "color": "post",
-      "tagSide": "right"
+      "tagSide": "right",
+      "xf": 0.6,
+      "yf": 0.56,
+      "xp": 0.6,
+      "yp": 0.56
     },
     {
       "id": "lung_left_lower_posterior",
@@ -232,7 +296,47 @@
       "x": 0.39,
       "y": 0.635,
       "color": "post",
-      "tagSide": "left"
+      "tagSide": "left",
+      "xf": 0.4,
+      "yf": 0.56,
+      "xp": 0.4,
+      "yp": 0.56
     }
-  ]
+  ],
+  "images": {
+    "front": {
+      "male": {
+        "image": "assets/body/front.jpg",
+        "width": 1000,
+        "height": 933
+      },
+      "female": {
+        "image": "assets/body/front-female.jpg",
+        "width": 1000,
+        "height": 853
+      },
+      "pediatric": {
+        "svg": "pediatric-front",
+        "width": 1000,
+        "height": 900
+      }
+    },
+    "back": {
+      "male": {
+        "image": "assets/body/back.jpg",
+        "width": 1000,
+        "height": 915
+      },
+      "female": {
+        "image": "assets/body/back-female.jpg",
+        "width": 1000,
+        "height": 853
+      },
+      "pediatric": {
+        "svg": "pediatric-back",
+        "width": 1000,
+        "height": 900
+      }
+    }
+  }
 }

@@ -213,6 +213,9 @@ export interface SuspendPayload {
   visits: Record<string, PointVisit>
   order: string[]
   attempts: number
+  /** oturum örneklemi (rastgele 10 vaka) — devam eden oturumda aynı kalır */
+  sessionIds: string[]
+  sessionSeed: number
 }
 
 /* ---------- internal analytics bus events (§28) ---------- */

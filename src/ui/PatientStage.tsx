@@ -2,6 +2,9 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRe
 import type { AuscultationPoint, PatientView, SoundRecord, StethHead } from '../core/types'
 import pointsConfig from '../data/auscultation-points.json'
 import { Chestpiece } from './stethoscope'
+import { TorsoPediatricFront, TorsoPediatricBack } from './torso-pediatric'
+
+export type BodyType = 'erkek' | 'kadin' | 'pediatrik'
 import { AUDIO_CONFIG } from '../audio/audioConfig'
 import type { AudioEngine } from '../audio/engine'
 
@@ -17,6 +20,10 @@ export interface StageHandle {
 interface Props {
   points: AuscultationPoint[]
   filterIds?: string[]
+  /** hasta gövdesi: yetişkin erkek/kadın fotoğrafı veya pediatrik şematik gövde */
+  bodyType?: BodyType
+  /** değerlendirme sıkı modu: işaret/etiket yok, tek dinleme */
+  strict?: boolean
   view: PatientView
   head: StethHead
   volume: number
@@ -31,11 +38,19 @@ interface Props {
   onPlayingChange: (playing: boolean, pointId: string | null) => void
 }
 
-const VIEWS = pointsConfig.views as Record<PatientView, { image: string; width: number; height: number }>
+type ViewCfg = { image?: string; svg?: string; width: number; height: number }
+const IMAGES = pointsConfig.images as unknown as Record<PatientView, Record<string, ViewCfg>>
+const COORD_KEYS: Record<BodyType, [string, string]> = {
+  erkek: ['x', 'y'],
+  kadin: ['xf', 'yf'],
+  pediatrik: ['xp', 'yp'],
+}
+const IMAGE_KEY: Record<BodyType, string> = { erkek: 'male', kadin: 'female', pediatrik: 'pediatric' }
 
 export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage(
   {
-    points, filterIds, view, head, volume, showPoints, showLabels, mode, engine, soundFor,
+    points, filterIds, bodyType = 'erkek', strict = false,
+    view, head, volume, showPoints, showLabels, mode, engine, soundFor,
     onVisit, onDwell, onListen, onPlayingChange,
   },
   ref
@@ -49,6 +64,9 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
   const snappedRef = useRef<string | null>(null)
   const playingRef = useRef(false)
   const timersRef = useRef<{ dwell?: number; playDelay?: number; dwellAcc: number; listenAcc: number }>({ dwellAcc: 0, listenAcc: 0 })
+  /** strict (değerlendirme): her nokta yalnızca bir kez dinlenebilir */
+  const listenedRef = useRef<Set<string>>(new Set())
+  const [spentNotice, setSpentNotice] = useState(false)
   const lastHeadRef = useRef(head)
 
   const [snapped, setSnapped] = useState<string | null>(null)
@@ -56,7 +74,12 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
   const [dragging, setDragging] = useState(false)
   const [pulseKey, setPulseKey] = useState(0)
 
-  const cfg = VIEWS[view]
+  const cfg = IMAGES[view][IMAGE_KEY[bodyType]] ?? IMAGES[view].male
+  const [ckx, cky] = COORD_KEYS[bodyType]
+  const coordOf = (p: AuscultationPoint & Record<string, unknown>) => ({
+    x: Number(p[ckx] ?? p.x),
+    y: Number(p[cky] ?? p.y),
+  })
 
   // görseli, kapsayıcıya sığan en büyük dikdörtgen olarak ölçekle (letterbox yok → hotspot hizası tam)
   useEffect(() => {
@@ -122,7 +145,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
     (pointId: string) => {
       const p = points.find((x) => x.id === pointId)
       if (!p || p.view !== view) return
-      posRef.current = { x: p.x, y: p.y }
+      posRef.current = coordOf(p as AuscultationPoint & Record<string, unknown>)
       applyPos()
       setPulseKey((k) => k + 1)
       onVisit(pointId)
@@ -136,6 +159,11 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
         if (snappedRef.current) onDwell(snappedRef.current, 500)
         if (playingRef.current) t.listenAcc += 500
       }, 500)
+      if (strict && listenedRef.current.has(pointId)) {
+        setSpentNotice(true)
+        onPlayingChange(false, pointId)
+        return
+      }
       t.playDelay = window.setTimeout(async () => {
         const snd = soundFor(pointId)
         if (!snd) {
@@ -144,6 +172,8 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
         }
         try {
           await engine.play(pointId, snd, head)
+          listenedRef.current.add(pointId)
+          setSpentNotice(false)
           playingRef.current = true
           setPlaying(true)
           onPlayingChange(true, pointId)
@@ -154,7 +184,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
         }
       }, AUDIO_CONFIG.dwellToPlayMs)
     },
-    [points, view, onVisit, onDwell, engine, head, soundFor, onPlayingChange, applyPos]
+    [points, view, onVisit, onDwell, engine, head, soundFor, onPlayingChange, applyPos, strict]
   )
   const placeRef = useRef(place)
   placeRef.current = place
@@ -176,6 +206,10 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
       replay: () => {
         const pointId = snappedRef.current
         if (!pointId) return
+        if (strict && listenedRef.current.has(pointId)) {
+          setSpentNotice(true)
+          return
+        }
         const snd = soundFor(pointId)
         if (!snd) return
         engine.replay(pointId, snd, head).catch(() => undefined)
@@ -192,7 +226,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
         placeRef.current(pointId)
       },
     }),
-    [soundFor, head, engine, unplace, onPlayingChange]
+    [soundFor, head, engine, unplace, onPlayingChange, strict]
   )
 
   /* --- pointer sürükleme (görsel kutusu referans alınır) --- */
@@ -224,7 +258,8 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
     for (const p of points) {
       if (p.view !== view) continue
       if (filterIds && !filterIds.includes(p.id)) continue
-      const d = Math.hypot(p.x * rect.width - px, p.y * rect.height - py)
+      const c = coordOf(p as AuscultationPoint & Record<string, unknown>)
+      const d = Math.hypot(c.x * rect.width - px, c.y * rect.height - py)
       if (!best || d < best.d) best = { id: p.id, d }
     }
     const tol = Math.min(60, rect.width * 0.07)
@@ -258,21 +293,29 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
     <div className={`stage ${dragging ? 'dragging' : ''}`}>
       <div ref={fitRef} className="stage-fit">
       <div ref={wrapRef} className="body-wrap" style={{ width: box.w || undefined, height: box.h || undefined }}>
-        <img
-          src={cfg.image}
-          alt={view === 'front' ? 'Hasta ön gövde görünümü' : 'Hasta arka gövde görünümü'}
-          draggable={false}
-          className="body-img"
-        />
+        {cfg.svg === 'pediatric-front' || cfg.svg === 'pediatric-back' ? (
+          view === 'front' ? <TorsoPediatricFront /> : <TorsoPediatricBack />
+        ) : (
+          <img
+            src={cfg.image ?? 'assets/body/front.jpg'}
+            alt={view === 'front' ? 'Hasta ön gövde görünümü' : 'Hasta arka gövde görünümü'}
+            draggable={false}
+            className="body-img"
+          />
+        )}
         {visiblePoints.map((p) => (
           <div
             key={p.id}
             className={['hotspot', p.color, snapped === p.id ? 'active-point' : ''].join(' ')}
-            style={{ left: `${p.x * 100}%`, top: `${p.y * 100}%`, display: showPoints || snapped === p.id ? 'flex' : 'none' }}
+            style={{
+              left: `${coordOf(p as AuscultationPoint & Record<string, unknown>).x * 100}%`,
+              top: `${coordOf(p as AuscultationPoint & Record<string, unknown>).y * 100}%`,
+              display: showPoints || snapped === p.id ? 'flex' : 'none',
+            }}
           >
             <span className="ring" />
             <span className="dot" />
-            {showLabels && showPoints && !hideTags && (
+            {showLabels && showPoints && !hideTags && !strict && (
               <span className={`tag ${p.tagSide}`}>{p.label}</span>
             )}
           </div>
@@ -304,6 +347,9 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
           <div className="dwell-hint">
             Bu görünümde bu içerik için işaretli oskültasyon bölgesi yok — diğer görünümü kullanın.
           </div>
+        )}
+        {strict && snapped && spentNotice && (
+          <div className="dwell-hint">Bu bölge için dinleme hakkı kullanıldı — manuel muayenede tek dinleme kuralı.</div>
         )}
       </div>
       </div>

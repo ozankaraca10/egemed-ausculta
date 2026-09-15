@@ -12,6 +12,8 @@ import casesData from '../data/cases.json'
 /* ---------------- state ---------------- */
 export interface AppState {
   screen: Screen
+  /** hasta gövde cinsiyeti (vakadan gelir; öğrenme modunda değiştirilebilir) */
+  bodySex: 'kadin' | 'erkek' | 'pediatrik'
   mode: Mode
   caseIndex: number
   step: number
@@ -31,6 +33,8 @@ export interface AppState {
   assessmentTimer: number
   lastFeedback: { correct: boolean; qid: string } | null
   dragStarted: boolean
+  /** oturum örneklemi (rastgele 10 vaka) — suspend ile korunur */
+  session: { practiceIds: string[]; assessmentIds: string[]; seed: number }
 }
 
 export const initialTelemetry: Telemetry = {
@@ -43,6 +47,7 @@ export const initialTelemetry: Telemetry = {
 
 const initialState: AppState = {
   screen: 'start',
+  bodySex: 'erkek',
   mode: 'practice',
   caseIndex: 0,
   step: 0,
@@ -62,11 +67,14 @@ const initialState: AppState = {
   assessmentTimer: 0,
   lastFeedback: null,
   dragStarted: false,
+  session: { practiceIds: [], assessmentIds: [], seed: 0 },
 }
 
 export type Action =
   | { type: 'goto'; screen: Screen }
   | { type: 'startMode'; mode: Mode }
+  | { type: 'setBodySex'; sex: 'kadin' | 'erkek' | 'pediatrik' }
+  | { type: 'startSession'; practiceIds: string[]; assessmentIds: string[]; seed: number }
   | { type: 'setView'; view: PatientView }
   | { type: 'setHead'; head: StethHead }
   | { type: 'setVolume'; volume: number }
@@ -99,6 +107,10 @@ function reducer(s: AppState, a: Action): AppState {
       }
     case 'setView':
       return { ...s, view: a.view }
+    case 'setBodySex':
+      return { ...s, bodySex: a.sex }
+    case 'startSession':
+      return { ...s, session: { practiceIds: a.practiceIds, assessmentIds: a.assessmentIds, seed: a.seed } }
     case 'setHead':
       if (s.head === a.head) return s
       bus.emit({ type: 'filter_changed', head: a.head, at: Date.now() })
@@ -332,6 +344,8 @@ export function StoreProvider({ children, cases }: { children: ReactNode; cases:
       visits: state.telemetry.visits,
       order: state.telemetry.order,
       attempts: state.attempts,
+      sessionIds: state.session.practiceIds.concat(state.session.assessmentIds),
+      sessionSeed: state.session.seed,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.mode, state.caseIndex, state.step, state.attempts, state.tutorialDone])
@@ -345,6 +359,16 @@ export function StoreProvider({ children, cases }: { children: ReactNode; cases:
   }, [state.mode, state.screen])
 
   // vaka olayı + akım vaka id
+  // vaka başlangıcında hasta gövdesini vakaya göre ayarla (pediatrik öncelikli)
+  useEffect(() => {
+    const def = (casesData.cases as CaseDef[]).find((c) => c.id === state_caseId)
+    if (!def) return
+    const pop = (def as CaseDef & { population?: string }).population
+    const sex: 'kadin' | 'erkek' | 'pediatrik' = pop === 'pediatrik' ? 'pediatrik' : def.patient.sex === 'kadın' ? 'kadin' : 'erkek'
+    if (state.bodySex !== sex) dispatch({ type: 'setBodySex', sex })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state_caseId])
+
   useEffect(() => {
     const current = cases[state.caseIndex]
     if (state.screen === 'simulation' && current) {

@@ -193,6 +193,12 @@ html { -webkit-text-size-adjust: 100%; }
 .headphone-banner strong { color: var(--blue-700); }
 .headphone-banner button { margin-left: auto; white-space: nowrap; }
 .start-note { margin-top: 10px; font-size: 12.5px; color: var(--ink-500); }
+.metric-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin: 4px 0 14px; }
+.metric { background: #fff; border: 1px solid var(--border); border-radius: 11px; padding: 9px 11px; text-align: left; box-shadow: 0 1px 3px rgba(13,52,111,.05); cursor: help; }
+.metric b { display: block; font-size: 19px; color: var(--navy-800); line-height: 1.15; font-variant-numeric: tabular-nums; }
+.metric span { font-size: 11px; color: var(--ink-500); line-height: 1.3; display: block; }
+@media (max-width: 1280px) { .metric-strip { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 720px) { .metric-strip { grid-template-columns: repeat(2, 1fr); } }
 .vol-check { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 12.5px; color: var(--ink-600); flex-wrap: wrap; }
 
 /* ---------------- Mod seçimi ---------------- */
@@ -218,6 +224,7 @@ html { -webkit-text-size-adjust: 100%; }
 .mode-card.learn h3 { color: var(--green-600); }
 .mode-card.practice h3 { color: var(--blue-700); }
 .mode-card.assessment h3 { color: var(--purple-600); }
+.mode-tip { margin: 0; font-size: 11.5px; color: var(--blue-700); background: var(--blue-50); border: 1px dashed var(--blue-200); border-radius: 8px; padding: 6px 9px; line-height: 1.4; cursor: help; }
 .mode-card .desc { color: var(--ink-600); font-size: 13.5px; min-height: 40px; margin: 0; }
 .mode-card ul { list-style: none; margin: 2px 0 8px; padding: 9px 4px 0; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; text-align: left; }
 .mode-card ul li { display: flex; gap: 10px; align-items: center; font-size: 13.5px; color: var(--ink-700); }
@@ -260,6 +267,7 @@ html { -webkit-text-size-adjust: 100%; }
 .view-toggle { display: flex; background: #fff; border: 1.5px solid var(--border-strong); border-radius: 11px; padding: 3px; gap: 3px; }
 .view-toggle button { border: 0; background: transparent; color: var(--ink-600); font-size: 13.5px; font-weight: 600; padding: 8px 16px; border-radius: 8px; display: flex; align-items: center; gap: 7px; }
 .view-toggle button.active { background: var(--blue-600); color: #fff; box-shadow: 0 2px 8px rgba(22,115,230,.35); }
+.strict-note { font-size: 12px; color: #b45309; background: var(--orange-100); border: 1px solid #fcd34d; padding: 6px 11px; border-radius: 10px; font-weight: 600; cursor: help; }
 .points-toggle { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-600); background: #fff; border: 1px solid var(--border); padding: 7px 11px; border-radius: 10px; }
 .points-toggle input { accent-color: var(--blue-600); }
 
@@ -295,6 +303,15 @@ html { -webkit-text-size-adjust: 100%; }
 .steth.placed .contact-pulse { animation: contact .55s ease; }
 @keyframes contact { 0% { opacity: .9; transform: scale(.8); } 100% { opacity: 0; transform: scale(1.25); } }
 
+.sr-only-until-focus { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sr-only-until-focus:focus-within { position: static; width: auto; height: auto; clip: auto; overflow: visible; }
+.pediatric-card { margin-top: 12px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.pediatric-card h4 { margin: 0 0 6px; font-size: 13px; color: var(--navy-800); }
+.ped-note { font-size: 11px; color: var(--ink-500); margin: 0 0 8px; }
+.ped-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-bottom: 8px; }
+.ped-table th { text-align: left; color: var(--ink-500); font-weight: 600; border-bottom: 1px solid var(--border); padding: 3px 4px; }
+.ped-table td { padding: 3px 4px; border-bottom: 1px solid #f1f5f9; }
+.ped-notes { margin: 0; padding-left: 16px; font-size: 11.5px; color: var(--ink-700); line-height: 1.45; }
 .region-list { display: flex; flex-wrap: wrap; gap: 7px; padding: 6px 2px 2px; flex-shrink: 0; }
 .region-list button { border: 1px solid var(--border-strong); background: #fff; color: var(--ink-700); font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 99px; }
 .region-list button:hover { background: var(--blue-50); }

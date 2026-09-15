@@ -74,7 +74,12 @@
       "downloadSizeMb": 38,
       "importScript": "npm run import:hls-cmds",
       "notes": "Birincil veri seti. Tüm modların (kütüphane/uygulama/değerlendirme) temeli; pakete dahildir.",
-      "attributionText": "Torabi, Y., Shirani, S., & Reilly, J. P. HLS-CMDS (Version 3). Mendeley Data. DOI: 10.17632/8972jxbpmp.3 — CC BY 4.0"
+      "attributionText": "Torabi, Y., Shirani, S., & Reilly, J. P. HLS-CMDS (Version 3). Mendeley Data. DOI: 10.17632/8972jxbpmp.3 — CC BY 4.0",
+      "labelTypes": [
+        "akustik sınıf",
+        "kayıt konumu",
+        "cinsiyet"
+      ]
     },
     {
       "id": "fraiwan-lung-2019",
@@ -99,7 +104,14 @@
       "downloadSizeMb": 700,
       "importScript": "node scripts/import-lung-dataset.mjs <zip>",
       "notes": "Posterior/aksiller kayıt konumları ve klinik tanı etiketleri içerir; posterior oskültasyon genişlemesi için birincil aday. Klinik tanı etiketleri eğitim eşlemesi olarak işaretlenir, değerlendirmeye doğrudan girmez.",
-      "attributionText": "Fraiwan, M., Fraiwan, L., Khassawneh, B., & Ibnian, A. Mendeley Data. DOI: 10.17632/jwyy9np4gv.2 — CC BY 4.0"
+      "attributionText": "Fraiwan, M., Fraiwan, L., Khassawneh, B., & Ibnian, A. Mendeley Data. DOI: 10.17632/jwyy9np4gv.2 — CC BY 4.0",
+      "labelTypes": [
+        "akustik sınıf",
+        "göğüs duvarı konumu",
+        "klinik tanı",
+        "filtre modu",
+        "hasta kimliği"
+      ]
     },
     {
       "id": "physionet-circor",
@@ -133,7 +145,15 @@
       "downloadSizeMb": 449,
       "importScript": "node scripts/import-circor.mjs <dizin>",
       "notes": "Gerçek hastalardan (pediatrik) üfürüm kayıtları — manikin kayıtlarını tamamlar. 4 örnek kayıt envantere aktarılmıştır (paket dışı, ayrı manifest). Erken/Orta/Geç sistolik eşlemeleri doğrulanmış; holosistolik eğitim eşlemesidir.",
-      "attributionText": "Oliveira, J., et al. (2022). The CirCor DigiScope Phonocardiogram Dataset (v1.0.3). PhysioNet. https://doi.org/10.13026/cy60-yn18 — ODC-BY 1.0"
+      "attributionText": "Oliveira, J., et al. (2022). The CirCor DigiScope Phonocardiogram Dataset (v1.0.3). PhysioNet. https://doi.org/10.13026/cy60-yn18 — ODC-BY 1.0",
+      "labelTypes": [
+        "üfürüm zamanlaması",
+        "üfürüm şekli",
+        "gradyan",
+        "odağı",
+        "S1/S2 segmentasyonu",
+        "yaş/cinsiyet"
+      ]
     },
     {
       "id": "physionet-cinc2016",
@@ -163,7 +183,12 @@
       "downloadSizeMb": 169,
       "importScript": null,
       "notes": "Etiketler yalnız normal/anormal olduğundan ince akustik sınıflara eşlenemez (§6) — eğitim içeriğine alınmaz; makine öğrenmesi/araştırma envanteri.",
-      "attributionText": "Liu, C., et al. (2016). PhysioNet/CinC Challenge 2016. PhysioNet. https://doi.org/10.13026/C2K01R — ODC-BY 1.0"
+      "attributionText": "Liu, C., et al. (2016). PhysioNet/CinC Challenge 2016. PhysioNet. https://doi.org/10.13026/C2K01R — ODC-BY 1.0",
+      "labelTypes": [
+        "normal/anormal",
+        "yaş/cinsiyet",
+        "kayıt konumu"
+      ]
     },
     {
       "id": "sprsound",
@@ -206,7 +231,13 @@
       "downloadSizeMb": 900,
       "importScript": null,
       "notes": "Taksonomimizdeki ince/kaba raller ayrımını ve stridor sınıfını içermez; wheezing/rhonchi/normal için gelecekte importer yazılabilir.",
-      "attributionText": "Zhang, Q., et al. SPRSound: Open-Source SJTU Paediatric Respiratory Sound Database. IEEE Dataport. DOI: 10.21227/nfkk-1x47 — CC BY 4.0"
+      "attributionText": "Zhang, Q., et al. SPRSound: Open-Source SJTU Paediatric Respiratory Sound Database. IEEE Dataport. DOI: 10.21227/nfkk-1x47 — CC BY 4.0",
+      "labelTypes": [
+        "olay bazlı adventisyal ses",
+        "solunum fazı",
+        "yaş",
+        "konum"
+      ]
     },
     {
       "id": "ephnogram",
@@ -228,7 +259,10 @@
       "downloadSizeMb": 50,
       "importScript": null,
       "notes": "Yol haritasındaki 'EKG korelasyonu' özelliği için aday; lisans sayfası doğrulandıktan sonra envantere alınacak.",
-      "attributionText": "EPHNOGRAM — PhysioNet (lisans doğrulaması bekliyor)"
+      "attributionText": "EPHNOGRAM — PhysioNet (lisans doğrulaması bekliyor)",
+      "labelTypes": [
+        "sınıf etiketi"
+      ]
     },
     {
       "id": "icbhi-2017",
@@ -252,7 +286,10 @@
       "downloadSizeMb": 1300,
       "importScript": null,
       "notes": "§34 gereği pakete ALINMAZ. Yeniden dağıtım koşulları netleşirse importer yazılabilir.",
-      "attributionText": "Rocha, B. M., et al. ICBHI 2017 Respiratory Sound Database — lisans incelemesi bekliyor"
+      "attributionText": "Rocha, B. M., et al. ICBHI 2017 Respiratory Sound Database — lisans incelemesi bekliyor",
+      "labelTypes": [
+        "sınıf etiketi"
+      ]
     },
     {
       "id": "hf-lung-v1",
@@ -276,7 +313,10 @@
       "downloadSizeMb": null,
       "importScript": null,
       "notes": "Erişim için başvuru gerektiğinden pakete alınmaz; gelecekte değerlendirilecek.",
-      "attributionText": "Hsu, F.-S., et al. HF_Lung_V1 — lisans/erişim doğrulaması bekliyor"
+      "attributionText": "Hsu, F.-S., et al. HF_Lung_V1 — lisans/erişim doğrulaması bekliyor",
+      "labelTypes": [
+        "sınıf etiketi"
+      ]
     },
     {
       "id": "kauh-respiratory",
@@ -299,7 +339,280 @@
       "downloadSizeMb": null,
       "importScript": null,
       "notes": "Fraiwan veri setiyle aynı ekibin genişletilmiş çalışması; lisans sayfası doğrulandıktan sonra değerlendirilecek.",
-      "attributionText": "Fraiwan, M., et al. KAUH Respiratory Sounds — lisans doğrulaması bekliyor"
+      "attributionText": "Fraiwan, M., et al. KAUH Respiratory Sounds — lisans doğrulaması bekliyor",
+      "labelTypes": [
+        "sınıf etiketi"
+      ]
+    },
+    {
+      "id": "pascal-2011",
+      "title": "Classifying Heart Sounds Challenge (PASCAL) 2011",
+      "authors": [
+        "Peter Bentley",
+        "Glenn Nordehn",
+        "Andrew Coenen",
+        "Sandra Mannor"
+      ],
+      "organization": "PASCAL Network",
+      "type": "heart",
+      "population": "Yetişkin + pediatrik (veri seti A/B)",
+      "classes": "Normal, Murmur, Ekstra ses, Artefakt (B veri setinde normal/murmur/ekstrasistol)",
+      "recordings": 176,
+      "sampleRateHz": null,
+      "license": "Araştırma amaçlı ücretsiz; yeniden dağıtım koşulları net değil",
+      "licenseUrl": "https://istethoscope.peterjbentley.com/heartchallenge/",
+      "licenseVerified": false,
+      "status": "license_review",
+      "accessUrl": "https://istethoscope.peterjbentley.com/heartchallenge/",
+      "downloadSizeMb": 60,
+      "importScript": null,
+      "notes": "Etiketler yalnız sınıf düzeyinde (zamanlama/odak yok) → taksonomiye doğrudan eşlenemez; lisans netleşirse 'ekstra ses' sınıfı için değerlendirilir.",
+      "attributionText": "Bentley, P., et al. Classifying Heart Sounds Challenge 2011 — lisans incelemesi bekliyor",
+      "labelTypes": [
+        "sınıf etiketi (normal/murmur/ekstra ses)"
+      ]
+    },
+    {
+      "id": "digiscope-2018",
+      "title": "DigiScope Pediatric Heart Sounds (Oliveira et al., 2018)",
+      "authors": [
+        "Jorge Oliveira",
+        "et al."
+      ],
+      "organization": "Universidade Portucalense / CirCor",
+      "type": "heart",
+      "population": "Pediatrik (6 ay–17 yaş)",
+      "classes": "29 hastadan kalp sesleri; S1/S2 işaretleri",
+      "recordings": 29,
+      "sampleRateHz": 4000,
+      "license": "Talep üzerine (araştırma)",
+      "licenseUrl": "https://www.physionet.org/",
+      "licenseVerified": false,
+      "status": "license_review",
+      "accessUrl": "https://www.physionet.org/",
+      "downloadSizeMb": null,
+      "importScript": null,
+      "notes": "CirCor'un öncülü, küçük pediatrik set; CirCor zaten envanterde olduğundan öncelik düşük.",
+      "attributionText": "Oliveira, J., et al. (2018). DigiScope pediatric heart sounds — erişim/lisans doğrulaması bekliyor",
+      "labelTypes": [
+        "S1/S2 segmentasyonu",
+        "yaş"
+      ]
+    },
+    {
+      "id": "mendeley-valvular",
+      "title": "Heart Sound Dataset with Valvular Disease Labels (Yaseen & Kwon türü Mendeley setleri)",
+      "authors": [
+        "Çeşitli (Mendeley Data)"
+      ],
+      "organization": "Mendeley Data",
+      "type": "heart",
+      "population": "Yetişkin",
+      "classes": "MVP, MS, MR, AS, AR vb. kapak etiketleri + normal",
+      "recordings": null,
+      "sampleRateHz": null,
+      "license": "CC BY 4.0 (kayıt bazında doğrulanacak)",
+      "licenseUrl": "https://data.mendeley.com/",
+      "licenseVerified": false,
+      "status": "license_review",
+      "accessUrl": "https://data.mendeley.com/",
+      "downloadSizeMb": null,
+      "importScript": null,
+      "notes": "KAPAK TANISI ETİKETLİ veri setleri vaka havuzunu 'doğrulanmış tanı' sınıfına taşıyabilir; lisans + klinik doğrulama sonrası importer yazılacak. Bu tür eşlemeler yalnız validated işaretiyle değerlendirmeye girebilir (§6).",
+      "attributionText": "Mendeley Data — kapak etiketli kalp sesi setleri; kayıt bazında lisans doğrulaması bekliyor",
+      "labelTypes": [
+        "kapak tanısı",
+        "akustik sınıf"
+      ]
+    },
+    {
+      "id": "respiratorydatabase-tr",
+      "title": "RespiratoryDatabase@TR (Multimedia Respiratory Database)",
+      "authors": [
+        "Gökhan Altan",
+        "Yakup Kutlu",
+        "Yusuf Garbi",
+        "Adnan Özhan Pekmezci",
+        "Serkan Nural"
+      ],
+      "organization": "MKÜ / Mendeley Data",
+      "type": "lung",
+      "population": "Yetişkin",
+      "classes": "Obstrüktif / sağlıklı patern; astım-COPD bağlamı; göğüs X-ray eşlemesi",
+      "recordings": 168,
+      "sampleRateHz": null,
+      "license": "CC BY 4.0 (doğrulanacak)",
+      "licenseUrl": "https://data.mendeley.com/",
+      "licenseVerified": false,
+      "status": "license_review",
+      "accessUrl": "https://data.mendeley.com/",
+      "downloadSizeMb": null,
+      "importScript": null,
+      "notes": "Obstrüktif patern etiketi + X-ray eşlemesi ile ileri seviye vakalar (astım/KOAH bağlamı) için aday.",
+      "attributionText": "Altan, G., et al. RespiratoryDatabase@TR — lisans doğrulaması bekliyor",
+      "labelTypes": [
+        "klinik patern (obstrüktif/sağlıklı)",
+        "X-ray",
+        "konum"
+      ]
+    },
+    {
+      "id": "physionet-fetal-pcg",
+      "title": "Fetal PCG (abdominal ECG + phonocardiogram) — PhysioNet",
+      "authors": [
+        "PhysioNet katkıcıları"
+      ],
+      "organization": "PhysioNet (MIT-LCP)",
+      "type": "heart",
+      "population": "Fetal / pediatrik bakış",
+      "classes": "Fetal kalp sesi + abdominal EKG",
+      "recordings": null,
+      "sampleRateHz": null,
+      "license": "ODC-BY 1.0 (doğrulanacak)",
+      "licenseUrl": "https://physionet.org/",
+      "licenseVerified": false,
+      "status": "license_review",
+      "accessUrl": "https://physionet.org/",
+      "downloadSizeMb": null,
+      "importScript": null,
+      "notes": "Obstetrik/fetal bakış açısı; V2 kapsamı için aday. Taksonomiye eşlenmesi ayrı tasarım gerektirir.",
+      "attributionText": "PhysioNet fetal PCG — lisans doğrulaması bekliyor",
+      "labelTypes": [
+        "fetal kalp hızı",
+        "EKG eşzamanlı"
+      ]
+    },
+    {
+      "id": "coswara",
+      "title": "Coswara — Ses Tabanlı Solunum Tanı Veri Seti (IISc)",
+      "authors": [
+        "Sriram Ganapathy",
+        "et al."
+      ],
+      "organization": "Indian Institute of Science",
+      "type": "both",
+      "population": "Yetişkin",
+      "classes": "Öksürük, nefes, ses; COVID-19 durum etiketi",
+      "recordings": 2000,
+      "sampleRateHz": 44100,
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseVerified": true,
+      "status": "inventory_only",
+      "accessUrl": "https://github.com/iiscleap/Coswara-Data",
+      "downloadSizeMb": 30000,
+      "importScript": null,
+      "notes": "Stetoskop sesi değil, akustik solunum/öksürük kayıtları — oskültasyon taksonomisine eşlenemez; gelecekte 'hasta öksürüğü' modülü için envanter.",
+      "attributionText": "Ganapathy, S., et al. Coswara — CC BY 4.0",
+      "labelTypes": [
+        "öksürük/nefes/ses",
+        "klinik durum"
+      ]
+    },
+    {
+      "id": "cambridge-covid19-sounds",
+      "title": "Cambridge COVID-19 Sounds",
+      "authors": [
+        "Cecilia Mascolo",
+        "et al."
+      ],
+      "organization": "University of Cambridge",
+      "type": "both",
+      "population": "Yetişkin",
+      "classes": "Öksürük, nefes, ses; COVID durumu",
+      "recordings": 30000,
+      "sampleRateHz": 44100,
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseVerified": true,
+      "status": "inventory_only",
+      "accessUrl": "https://www.covid19-sounds.org/",
+      "downloadSizeMb": 100000,
+      "importScript": null,
+      "notes": "Oskültasyon dışı akustik veri; ayrı bir 'solunum akustiği' modülü için aday.",
+      "attributionText": "Mascolo, C., et al. Cambridge COVID-19 Sounds — CC BY 4.0",
+      "labelTypes": [
+        "öksürük/nefes",
+        "klinik durum"
+      ]
+    },
+    {
+      "id": "coughvid",
+      "title": "COUGHVID (EPFL Cough Sound Dataset)",
+      "authors": [
+        "Lara Orlandic",
+        "Tomás Teijeiro",
+        "David Atienza"
+      ],
+      "organization": "EPFL",
+      "type": "both",
+      "population": "Yetişkin",
+      "classes": "Öksürük kayıtları + klinik etiketler",
+      "recordings": 25000,
+      "sampleRateHz": 44100,
+      "license": "CC BY 4.0 (veri seti sayfasında doğrulanacak)",
+      "licenseUrl": "https://zenodo.org/record/4498364",
+      "licenseVerified": false,
+      "status": "license_review",
+      "accessUrl": "https://zenodo.org/record/4498364",
+      "downloadSizeMb": 20000,
+      "importScript": null,
+      "notes": "Oskültasyon dışı; envanterde araştırma bağlamı için tutulur.",
+      "attributionText": "Orlandic, L., et al. COUGHVID — lisans doğrulaması bekliyor",
+      "labelTypes": [
+        "öksürük",
+        "klinik durum"
+      ]
+    },
+    {
+      "id": "kaggle-heartbeat-2016",
+      "title": "Heartbeat Sounds (PhysioNet/CinC 2016 aynası — Kaggle)",
+      "authors": [
+        "Kaggle topluluğu"
+      ],
+      "organization": "Kaggle",
+      "type": "heart",
+      "population": "Çocuk + yetişkin",
+      "classes": "Normal / Anormal (2 sınıf)",
+      "recordings": 3126,
+      "sampleRateHz": 2000,
+      "license": "Kaynak lisansı ile aynı (ODC-BY 1.0) — ayna doğrulanacak",
+      "licenseUrl": "https://www.kaggle.com/",
+      "licenseVerified": false,
+      "status": "inventory_only",
+      "accessUrl": "https://www.kaggle.com/",
+      "downloadSizeMb": 170,
+      "importScript": null,
+      "notes": "Birincil kaynağı (PhysioNet 2016) envanterde mevcut; ayna kopya olduğu için içeriğe alınmaz.",
+      "attributionText": "Kaggle ayna — kaynak: PhysioNet/CinC 2016 (ODC-BY 1.0)",
+      "labelTypes": [
+        "normal/anormal"
+      ]
+    },
+    {
+      "id": "vocal-sound-lung",
+      "title": "Vocal Sound & Lung Sound Datasets (Kardiyopulmoner tarama setleri, araştırma)",
+      "authors": [
+        "Çeşitli"
+      ],
+      "organization": "Zenodo / Kaggle topluluk setleri",
+      "type": "lung",
+      "population": "Yetişkin",
+      "classes": "Ral/hışıltı etiketli topluluk setleri",
+      "recordings": null,
+      "sampleRateHz": null,
+      "license": "Kayıt bazında değişken (çoğu CC BY)",
+      "licenseUrl": "https://zenodo.org/",
+      "licenseVerified": false,
+      "status": "license_review",
+      "accessUrl": "https://zenodo.org/",
+      "downloadSizeMb": null,
+      "importScript": null,
+      "notes": "Topluluk setleri kayıt bazında lisans/etiket doğrulaması gerektirir; yalnız doğrulananlar envantere alınır.",
+      "attributionText": "Zenodo/Kaggle topluluk akciğer sesi setleri — kayıt bazında doğrulama bekliyor",
+      "labelTypes": [
+        "akustik sınıf (değişken)"
+      ]
     }
   ]
 }
