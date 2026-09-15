@@ -1039,6 +1039,42 @@
           "category": "lung",
           "acousticFinding": "normal",
           "recordedLocation": "LLA"
+        },
+        {
+          "pointId": "lung_right_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "normal",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "normal",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_right_middle_posterior",
+          "category": "lung",
+          "acousticFinding": "normal",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_middle_posterior",
+          "category": "lung",
+          "acousticFinding": "normal",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_right_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "normal",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "normal",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
         }
       ],
       "primaryAcousticFinding": "normal",
@@ -1236,6 +1272,42 @@
           "category": "lung",
           "acousticFinding": "wheezing",
           "recordedLocation": "LLA"
+        },
+        {
+          "pointId": "lung_right_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_right_middle_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_middle_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_right_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "wheezing",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
         }
       ],
       "primaryAcousticFinding": "wheezing",
@@ -1415,6 +1487,24 @@
           "category": "lung",
           "acousticFinding": "fine_crackles",
           "recordedLocation": "RUA"
+        },
+        {
+          "pointId": "lung_left_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "fine_crackles",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_right_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "fine_crackles",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_right_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "fine_crackles",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
         }
       ],
       "primaryAcousticFinding": "fine_crackles",
@@ -1593,6 +1683,24 @@
           "category": "lung",
           "acousticFinding": "coarse_crackles",
           "recordedLocation": "LMA"
+        },
+        {
+          "pointId": "lung_right_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "coarse_crackles",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "coarse_crackles",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_middle_posterior",
+          "category": "lung",
+          "acousticFinding": "coarse_crackles",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
         }
       ],
       "primaryAcousticFinding": "coarse_crackles",
@@ -1738,6 +1846,24 @@
           "category": "lung",
           "acousticFinding": "rhonchi",
           "recordedLocation": "LLA"
+        },
+        {
+          "pointId": "lung_left_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "rhonchi",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_right_middle_posterior",
+          "category": "lung",
+          "acousticFinding": "rhonchi",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_lower_posterior",
+          "category": "lung",
+          "acousticFinding": "rhonchi",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
         }
       ],
       "primaryAcousticFinding": "rhonchi",
@@ -1883,6 +2009,24 @@
           "category": "lung",
           "acousticFinding": "pleural_rub",
           "recordedLocation": "LUA"
+        },
+        {
+          "pointId": "lung_left_middle_posterior",
+          "category": "lung",
+          "acousticFinding": "pleural_rub",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_right_middle_posterior",
+          "category": "lung",
+          "acousticFinding": "pleural_rub",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
+        },
+        {
+          "pointId": "lung_left_upper_posterior",
+          "category": "lung",
+          "acousticFinding": "pleural_rub",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
         }
       ],
       "primaryAcousticFinding": "pleural_rub",
@@ -2266,6 +2410,12 @@
           "category": "mixed",
           "acousticFinding": "mid_systolic_murmur+wheezing",
           "recordedLocation": "LUA"
+        },
+        {
+          "pointId": "lung_left_upper_posterior",
+          "category": "mixed",
+          "acousticFinding": "mid_systolic_murmur+wheezing",
+          "simulationNote": "eğitim eşlemesi: kayıt anterior bölgeden alınmıştır"
         }
       ],
       "primaryAcousticFinding": "mid_systolic_murmur+wheezing",

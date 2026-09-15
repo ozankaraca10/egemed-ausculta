@@ -13,6 +13,15 @@ export function getSound(id: string): SoundRecord | undefined {
   return byId.get(id)
 }
 
+const POSTERIOR_TO_ANTERIOR: Record<string, string> = {
+  lung_right_upper_posterior: 'lung_right_upper_anterior',
+  lung_left_upper_posterior: 'lung_left_upper_anterior',
+  lung_right_middle_posterior: 'lung_right_middle_anterior',
+  lung_left_middle_posterior: 'lung_left_middle_anterior',
+  lung_right_lower_posterior: 'lung_right_lower_anterior',
+  lung_left_lower_posterior: 'lung_left_lower_anterior',
+}
+
 export function resolveAssignment(a: SoundAssignment): SoundRecord | null {
   if (a.soundId) return byId.get(a.soundId) ?? null
   const matches = RECORDS.filter(
@@ -29,6 +38,37 @@ export function resolveAssignment(a: SoundAssignment): SoundRecord | null {
   // deterministik: dosya adına göre sabit sıralama
   matches.sort((x, y) => x.sourceFile.localeCompare(y.sourceFile))
   return matches[0] ?? null
+}
+
+/** Posterior noktaya atama yapıldığında, doğrulanmış posterior kayıt yoksa aynı bulgunun
+ *  anterior kaydına düşer ve kaynak bölge `fallbackFrom` ile bildirilir (§14 dürüstlük kuralı). */
+export function resolveAssignmentEx(a: SoundAssignment): { record: SoundRecord | null; fallbackFrom?: string } {
+  const strict = resolveAssignment(a)
+  if (strict) return { record: strict }
+  if (a.pointId && POSTERIOR_TO_ANTERIOR[a.pointId]) {
+    const source = POSTERIOR_TO_ANTERIOR[a.pointId]
+    const rec = resolveAssignment({ ...a, pointId: source })
+    if (rec) return { record: rec, fallbackFrom: source }
+  }
+  return { record: null }
+}
+
+export interface CaseSoundsResolution {
+  sounds: Record<string, SoundRecord | null>
+  /** pointId → kaydın gerçekten alındığı bölge (fallback durumunda dolu) */
+  fallbacks: Record<string, string>
+}
+
+/** Vaka ses haritası + fallback bilgisi (posterior noktalar dahil). */
+export function resolveCaseSoundsEx(assignments: SoundAssignment[]): CaseSoundsResolution {
+  const sounds: Record<string, SoundRecord | null> = {}
+  const fallbacks: Record<string, string> = {}
+  for (const a of assignments) {
+    const res = resolveAssignmentEx(a)
+    sounds[a.pointId] = res.record
+    if (res.fallbackFrom) fallbacks[a.pointId] = res.fallbackFrom
+  }
+  return { sounds, fallbacks }
 }
 
 /** Bir vaka için pointId → kayıt haritasını çözer. Eksikler `{pointId: null}`. */
@@ -52,15 +92,6 @@ export function resolveLibrarySound(category: string, finding: string, simLocati
   }
   pool.sort((x, y) => x.sourceFile.localeCompare(y.sourceFile))
   return pool[0] ?? null
-}
-
-const POSTERIOR_TO_ANTERIOR: Record<string, string> = {
-  lung_right_upper_posterior: 'lung_right_upper_anterior',
-  lung_left_upper_posterior: 'lung_left_upper_anterior',
-  lung_right_middle_posterior: 'lung_right_middle_anterior',
-  lung_left_middle_posterior: 'lung_left_middle_anterior',
-  lung_right_lower_posterior: 'lung_right_lower_anterior',
-  lung_left_lower_posterior: 'lung_left_lower_anterior',
 }
 
 export interface LibrarySoundResult {

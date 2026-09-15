@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AuscultationPoint, SoundRecord } from '../core/types'
 import pointsData from '../data/auscultation-points.json'
 import libraryData from '../data/library.json'
@@ -44,6 +44,11 @@ export function LearnScreen() {
   }, [])
   const item = items[selectedKey]
   const isHeart = item.group === 'heart'
+
+  // kalem değişince önceki sesi durdur
+  useEffect(() => {
+    engine.stop()
+  }, [selectedKey])
 
   const stageSounds = useMemo(() => {
     const cache = new Map<string, ReturnType<typeof resolveLibrarySoundEx>>()

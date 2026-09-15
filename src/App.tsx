@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { StoreProvider, useStore } from './core/store'
+import { engine } from './audio/engineSingleton'
 import casesData from './data/cases.json'
 import { validateCase } from './core/validation'
 import { RECORDS } from './core/resolver'
@@ -28,6 +29,10 @@ if (import.meta.env.DEV) {
 
 function Shell() {
   const { state, dispatch } = useStore()
+  // ekran değişiminde önceki ekrandan kalan sesi durdur
+  useEffect(() => {
+    engine.stop()
+  }, [state.screen])
   // öğretici: ilk kullanımda göster (§45)
   useEffect(() => {
     if (state.screen === 'modes' && !state.tutorialDone) dispatch({ type: 'goto', screen: 'tutorial' })

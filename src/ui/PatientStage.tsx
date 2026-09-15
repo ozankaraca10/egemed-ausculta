@@ -236,6 +236,18 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view])
 
+  // ekran/bileşen kaldırıldığında ses ve zamanlayıcılar kesin olarak durdurulur (§29)
+  const unplaceRef = useRef(unplace)
+  unplaceRef.current = unplace
+  useEffect(() => {
+    return () => {
+      clearTimers()
+      if (playingRef.current || engine.getActive()) engine.stop()
+      playingRef.current = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const visiblePoints = useMemo(
     () => points.filter((p) => p.view === view && (!filterIds || filterIds.includes(p.id))),
     [points, view, filterIds]
@@ -285,8 +297,13 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
             <span>Oskültasyon</span>
           </div>
         )}
-        {!snapped && !playing && (
+        {!snapped && !playing && visiblePoints.length > 0 && (
           <div className="dwell-hint">Stetoskopu oskültasyon bölgesine sürükleyin</div>
+        )}
+        {visiblePoints.length === 0 && (
+          <div className="dwell-hint">
+            Bu görünümde bu içerik için işaretli oskültasyon bölgesi yok — diğer görünümü kullanın.
+          </div>
         )}
       </div>
       </div>

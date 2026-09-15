@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
-import type { AuscultationPoint, CaseDef, Question, SoundRecord } from '../core/types'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { AuscultationPoint, CaseDef, Question } from '../core/types'
 import pointsData from '../data/auscultation-points.json'
 import casesData from '../data/cases.json'
 import { engine } from '../audio/engineSingleton'
-import { resolveCaseSounds } from '../core/resolver'
+import { resolveCaseSoundsEx } from '../core/resolver'
 import { useStore, computeAggregate } from '../core/store'
 import { bus } from '../core/events'
 import { PatientStage, type StageHandle } from '../ui/PatientStage'
@@ -80,6 +80,7 @@ export function SimulationScreen() {
                   </label>
                 </div>
                 <PatientStage
+                  key={state.caseIndex}
                   ref={stageRef}
                   points={points}
                   filterIds={caseDef.soundAssignments.map((a) => a.pointId)}
@@ -90,12 +91,22 @@ export function SimulationScreen() {
                   showLabels={state.mode !== 'assessment' && state.showPoints}
                   mode={state.mode}
                   engine={engine}
-                  soundFor={(pointId) => resolved[pointId] ?? null}
+                  soundFor={(pointId) => resolved.sounds[pointId] ?? null}
                   onVisit={(pointId) => { dispatch({ type: 'visit', pointId }); bus.emit({ type: 'auscultation_started', pointId, at: Date.now() }) }}
                   onDwell={(pointId, dwellMs) => dispatch({ type: 'dwell', pointId, dwellMs })}
                   onListen={(pointId, listenMs) => dispatch({ type: 'listen', pointId, listenMs })}
                   onPlayingChange={(pl, pt) => { setPlaying(pl); setActivePoint(pt) }}
                 />
+                {activePoint && resolved.fallbacks[activePoint] && (
+                  <div className="note-strip" style={{ marginTop: 0 }}>
+                    <IconInfo width={16} height={16} />
+                    <span className="small">
+                      Bu bölge için doğrulanmış posterior kayıt yok; aynı bulgunun{' '}
+                      <strong>{points.find((x) => x.id === resolved.fallbacks[activePoint])?.fullLabel}</strong> kaydı
+                      çalınmaktadır (kaynak bölge dürüstçe belirtilir).
+                    </span>
+                  </div>
+                )}
               </div>
               <Toolbar
                 caseDef={caseDef}
@@ -179,17 +190,9 @@ export function SimulationScreen() {
   )
 }
 
-/* soru başına çalışacak ses haritası — useMemo ile vaka bazında */
+/* vaka bazında ses haritası + fallback bilgisi (dürüst posterior eğitimi §14) */
 function useMemoSounds(caseDef: CaseDef) {
-  return useRef(
-    (() => {
-      let cache: { def: CaseDef; map: Record<string, SoundRecord | null> } | null = null
-      return (def: CaseDef) => {
-        if (cache?.def !== def) cache = { def, map: resolveCaseSounds(def.soundAssignments) }
-        return cache.map
-      }
-    })()
-  ).current(caseDef)
+  return useMemo(() => resolveCaseSoundsEx(caseDef.soundAssignments), [caseDef])
 }
 
 function KV({ k, v }: { k: string; v: string }) {

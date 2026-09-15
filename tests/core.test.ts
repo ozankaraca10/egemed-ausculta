@@ -3,7 +3,7 @@ import { MockAdapter, detectScorm, makeScorm, Scorm2004Adapter, Scorm12Adapter }
 import { serializeSuspend, deserializeSuspend } from '../src/core/suspend'
 import { scoreCase, aggregateResults, practiceAdjusted, MASTERY_THRESHOLD } from '../src/core/scoring'
 import { validateCase, filterAssessmentPool } from '../src/core/validation'
-import { resolveAssignment, resolveCaseSounds, resolveLibrarySound, RECORDS } from '../src/core/resolver'
+import { resolveAssignment, resolveAssignmentEx, resolveCaseSounds, resolveCaseSoundsEx, resolveLibrarySound, RECORDS } from '../src/core/resolver'
 import casesData from '../src/data/cases.json'
 import pointsData from '../src/data/auscultation-points.json'
 import type { CaseDef, SuspendPayload, Telemetry } from '../src/core/types'
@@ -276,6 +276,22 @@ describe('ses eşleme', () => {
   it('crackles kütüphane kalemleri kayıtlı (C→FC dosya eşlemesi)', () => {
     expect(resolveLibrarySound('lung', 'fine_crackles')).not.toBeNull()
     expect(resolveLibrarySound('lung', 'coarse_crackles')).not.toBeNull()
+  })
+
+  it('posterior nokta ataması anterior kayda fallback yapar ve kaynak bölgeyi bildirir (§14)', () => {
+    const res = resolveAssignmentEx({ pointId: 'lung_left_upper_posterior', category: 'lung', acousticFinding: 'normal' })
+    expect(res.record).not.toBeNull()
+    expect(res.record!.simulationLocation).toBe('lung_left_upper_anterior')
+    expect(res.fallbackFrom).toBe('lung_left_upper_anterior')
+  })
+
+  it('posterior fallback ile tüm akciğer vakaları arka görünümde ses üretir', () => {
+    const lungCases = cases.filter((c) => c.soundAssignments.some((a) => a.pointId.startsWith('lung_')))
+    for (const c of lungCases) {
+      const { sounds } = resolveCaseSoundsEx(c.soundAssignments)
+      const posterior = Object.entries(sounds).filter(([pid, rec]) => pid.includes('posterior') && rec)
+      expect(posterior.length, `${c.id} posterior ses üretmeli`).toBeGreaterThan(0)
+    }
   })
 
   it('tüm vaka atamalarının en az bir yarısı çözülür (eksikler bilinçli)', () => {

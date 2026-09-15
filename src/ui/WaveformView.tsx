@@ -42,6 +42,15 @@ export function WaveformView({ sound, engine, head, annotations, title, height }
     return () => { cancelled = true }
   }, [sound, engine])
 
+  // bileşen kaldırılırsa çalan sesi durdur
+  useEffect(() => {
+    return () => {
+      const active = engine.getActive()
+      if (active && active.soundId === sound.id) engine.stop()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sound])
+
   useEffect(() => {
     let raf = 0
     const draw = () => {
