@@ -135,24 +135,55 @@ function bare(key: string): string {
   return key.replace(/^(heart|lung)\./, '')
 }
 
+/** Kombine (mixed) kalem başlıkları — veri seti mixed grupları */
+export const MIXED_TITLES: Record<string, { title: string; sub: string }> = {
+  'mixed.msm_wheezing': { title: 'Üfürüm + Wheezing', sub: 'Kalp + akciğer birlikte' },
+  'mixed.esm_coarse': { title: 'Üfürüm + Kaba Raller', sub: 'Kalp + akciğer birlikte' },
+  'mixed.s3_normal': { title: 'S3 + Normal Solunum', sub: 'Kalp + akciğer birlikte' },
+  'mixed.af_rhonchi': { title: 'Düzensiz Ritim + Ronküs', sub: 'Kalp + akciğer birlikte' },
+}
+
+/** Kütüphane kalemi başlığı — bilinmeyen anahtar çökme yerine okunur bir yedek döndürür */
+export function libraryTitle(key: string): string {
+  try {
+    if (key.startsWith('heart')) return heartLabel(key)
+    if (key.startsWith('lung')) return lungLabel(key)
+  } catch {
+    /* yedek aşağıda */
+  }
+  return MIXED_TITLES[key]?.title ?? 'Kombine ses'
+}
+
+export function librarySub(key: string): string {
+  try {
+    if (key.startsWith('heart')) return heartLibrarySub(key)
+    if (key.startsWith('lung')) return lungLibrarySub(key)
+  } catch {
+    /* yedek aşağıda */
+  }
+  return MIXED_TITLES[key]?.sub ?? 'Kalp + akciğer birlikte'
+}
+
 export function heartLabel(key: string): string {
   const k = bare(key)
   if (k.startsWith('murmur.')) {
     const sub = k.split('.')[1] as keyof typeof TERMINOLOGY.heart.murmur
-    return TERMINOLOGY.heart.murmur[sub].title
+    const t = TERMINOLOGY.heart.murmur[sub]
+    if (t) return t.title
   }
   const t = TERMINOLOGY.heart[k as Exclude<HeartFindingKey, `murmur.${string}`>]
-  return t.title
+  return t?.title ?? 'Kalp sesi'
 }
 
 export function heartLibrarySub(key: string): string {
   const k = bare(key)
   if (k.startsWith('murmur.')) {
     const sub = k.split('.')[1] as keyof typeof TERMINOLOGY.heart.murmur
-    return TERMINOLOGY.heart.murmur[sub].librarySub
+    const t = TERMINOLOGY.heart.murmur[sub]
+    if (t) return t.librarySub
   }
   const t = TERMINOLOGY.heart[k as Exclude<HeartFindingKey, `murmur.${string}`>]
-  return t.librarySub
+  return t?.librarySub ?? 'Kalp sesi kaydı'
 }
 
 export function heartFindingText(key: string): string {
@@ -166,11 +197,11 @@ export function heartFindingText(key: string): string {
 }
 
 export function lungLabel(key: string): string {
-  return TERMINOLOGY.lung[bare(key) as LungFindingKey].title
+  return TERMINOLOGY.lung[bare(key) as LungFindingKey]?.title ?? 'Akciğer sesi'
 }
 
 export function lungLibrarySub(key: string): string {
-  return TERMINOLOGY.lung[bare(key) as LungFindingKey].librarySub
+  return TERMINOLOGY.lung[bare(key) as LungFindingKey]?.librarySub ?? 'Akciğer sesi kaydı'
 }
 
 export function lungFindingText(key: string): string {

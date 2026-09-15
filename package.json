@@ -15,7 +15,8 @@
     "validate": "node scripts/validate-audio.mjs",
     "build:scorm2004": "vite build && node scripts/build-scorm.mjs 2004",
     "build:scorm12": "vite build && node scripts/build-scorm.mjs 12",
-    "build:scorm": "vite build && node scripts/build-scorm.mjs 2004 && node scripts/build-scorm.mjs 12"
+    "build:scorm": "vite build && node scripts/build-scorm.mjs 2004 && node scripts/build-scorm.mjs 12",
+    "import:circor": "node scripts/import-circor.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

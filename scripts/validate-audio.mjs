@@ -162,6 +162,24 @@ for (const [msg] of severityPool) fatal.push(msg)
   console.log(`  ✓ kombine: ${mixedLib} kütüphane kalemi, ${mixedCases} pratik vaka`)
 }
 
+// ---- veri seti envanteri bütünlüğü (§5, §34) ----
+{
+  const inv = sources.inventory ?? []
+  if (inv.length < 6) fatal.push(`envanter: en az 6 veri seti beklenir, ${inv.length} bulundu`)
+  const bundledDs = new Set(m.records.map((r) => r.sourceDataset))
+  for (const it of inv) {
+    if (!it.license || it.license.length < 3) fatal.push(`envanter: ${it.id} lisans bilgisi eksik`)
+    if (!it.licenseUrl?.startsWith('http')) fatal.push(`envanter: ${it.id} lisans bağlantısı eksik`)
+    if (!it.attributionText || it.attributionText.length < 10) fatal.push(`envanter: ${it.id} atıf metni eksik`)
+    if (!it.accessUrl?.startsWith('http')) fatal.push(`envanter: ${it.id} erişim bağlantısı eksik`)
+    if (it.status === 'bundled' && !bundledDs.has(it.id)) fatal.push(`envanter: ${it.id} 'bundled' ama ses kaydı pakette yok`)
+    if (it.status === 'bundled' && !it.licenseVerified) fatal.push(`envanter: ${it.id} pakette ama lisansı doğrulanmamış`)
+  }
+  const icbhi = inv.find((x) => x.id === 'icbhi-2017')
+  if (icbhi && icbhi.status === 'bundled') fatal.push('envanter: ICBHI 2017 pakete alınamaz (§34)')
+  console.log(`=== Veri seti envanteri: ${inv.length} kayıt (paket: ${inv.filter((x) => x.status === 'bundled').length}, lisans incelemesi: ${inv.filter((x) => x.status === 'license_review').length}) ===`)
+}
+
 // ---- görsel varlıklar ----
 for (const asset of [
   'public/assets/body/front.jpg',

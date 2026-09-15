@@ -130,6 +130,38 @@ benzetmeleri içerir (ör. ince raller → *"karda yürüme sesi / saç oğuştu
 plevral frotman → *"kar gıcırtısı"*, S3 → *"ken-ta-ta dörtnal ritmi"*). Metaforlar öğrenme
 modunda ayrı bir kartta gösterilir ve yeni vakaların ipuçlarında da kullanılır.
 
+## 4.2 Veri Seti Envanteri (§5, §34)
+
+Araştırılan açık erişimli veri setleri `src/data/sources.json` → `inventory` altında tutulur
+(makine okunur; "Kaynaklar" ekranında durum çipleriyle gösterilir). Durum kodları:
+
+| Durum | Anlam |
+|---|---|
+| `bundled` | Pakete dahil (lisans doğrulanmış) |
+| `samples_included` | Örnek kayıtlar envantere aktarıldı (paket dışı manifest) |
+| `importer_ready` | Import scripti hazır, kullanıcı veriyi indirip çalıştırır |
+| `inventory_only` | Etiketler taksonomiye birebir uymuyor — içeriğe alınmaz |
+| `license_review` | Lisans/yeniden dağıtım koşulları doğrulanmadı — pakete alınmaz |
+
+Envanterdeki veri setleri (özet): HLS-CMDS v3 (paket, CC BY 4.0) · Fraiwan akciğer (CC BY 4.0,
+posterior adayı) · **CirCor DigiScope** (ODC-BY 1.0, pediatrik üfürüm, 4 örnek aktarıldı) ·
+PhysioNet/CinC 2016 (ODC-BY 1.0, yalnız normal/anormal → envanter) · SPRSound (CC BY 4.0,
+ince/kaba ral ayrımı yok → envanter) · EPHNOGRAM (EKG korelasyonu adayı) · ICBHI 2017
+(lisans incelemesi; §34 gereği pakete alınmaz) · HF_Lung_V1 ve KAUH (erişim/lisans doğrulaması).
+
+**Posterior kuralları:** veri setinde posterior kayıt yoksa aynı bulgunun anterior kaydı
+"fallback" olarak, kaynak bölge açıkça bildirilerek çalınır (§14).
+
+**CirCor içe aktarma:**
+```bash
+# 1) Veriyi indir (449 MB, ODC-BY 1.0): https://physionet.org/content/circor-heart-sound/1.0.3/
+node scripts/import-circor.mjs /yol/circor-heart-sound-1.0.3
+# → public/assets/audio/runtime/external/circor/*.wav + src/data/sounds-external.json + rapor
+```
+Eşleme kuralları `scripts/lib/external-mapping.mjs` içinde saf fonksiyonlardır ve test edilir:
+Erken/Orta/Geç sistolik zamanlamalar doğrulanmış; holosistolik `educational_mapping`
+(değerlendirmeye girmez); uymayan etiketler uydurulmaz, rapora yazılır.
+
 ## 5. Klinik Doğrulama Katmanı (§6, §19)
 
 - `acousticFinding` (akustik bulgu) ile `clinicalDiagnosis` (tanı) ayrıdır.

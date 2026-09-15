@@ -164,10 +164,10 @@
       "fullLabel": "Sağ üst bölge (posterior)",
       "detail": "Sağ akciğer üst lob posterior alanı",
       "side": "right",
-      "x": 0.39,
+      "x": 0.61,
       "y": 0.273,
       "color": "post",
-      "tagSide": "left"
+      "tagSide": "right"
     },
     {
       "id": "lung_left_upper_posterior",
@@ -177,10 +177,10 @@
       "fullLabel": "Sol üst bölge (posterior)",
       "detail": "Sol akciğer üst lob posterior alanı",
       "side": "left",
-      "x": 0.61,
+      "x": 0.39,
       "y": 0.273,
       "color": "post",
-      "tagSide": "right"
+      "tagSide": "left"
     },
     {
       "id": "lung_right_middle_posterior",
@@ -190,10 +190,10 @@
       "fullLabel": "Sağ orta bölge (posterior)",
       "detail": "Sağ akciğer orta lob posterior alanı",
       "side": "right",
-      "x": 0.365,
+      "x": 0.635,
       "y": 0.459,
       "color": "post",
-      "tagSide": "left"
+      "tagSide": "right"
     },
     {
       "id": "lung_left_middle_posterior",
@@ -203,10 +203,10 @@
       "fullLabel": "Sol orta bölge (posterior)",
       "detail": "Sol akciğer alt lob posterior alanı",
       "side": "left",
-      "x": 0.635,
+      "x": 0.365,
       "y": 0.459,
       "color": "post",
-      "tagSide": "right"
+      "tagSide": "left"
     },
     {
       "id": "lung_right_lower_posterior",
@@ -216,10 +216,10 @@
       "fullLabel": "Sağ alt bölge (posterior)",
       "detail": "Sağ akciğer alt lob posterior alanı",
       "side": "right",
-      "x": 0.39,
+      "x": 0.61,
       "y": 0.635,
       "color": "post",
-      "tagSide": "left"
+      "tagSide": "right"
     },
     {
       "id": "lung_left_lower_posterior",
@@ -229,10 +229,10 @@
       "fullLabel": "Sol alt bölge (posterior)",
       "detail": "Sol akciğer alt lob posterior alanı",
       "side": "left",
-      "x": 0.61,
+      "x": 0.39,
       "y": 0.635,
       "color": "post",
-      "tagSide": "right"
+      "tagSide": "left"
     }
   ]
 }

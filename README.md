@@ -9,6 +9,8 @@
 - 20 vaka (10 kalp + 6 akciğer sınıfı + 4 kombine), 16 oskültasyon noktası, alan bazlı deterministik skor (eşik 80/100)
 - Veri seti ↔ kütüphane ↔ uygulama ↔ değerlendirme **tam senkron** (otomatik denetimli)
 - İzleme modunda her ses için klinik **metafor** (ör. ince raller = "karda yürüme sesi")
+- **Veri seti envanteri**: 9 açık erişimli veri seti araştırılıp lisans durumuyla kaydedildi;
+  CirCor import hattı (ODC-BY 1.0) hazır — `npm run import:circor <dizin>`
 - 16:9 uyumlu kaydırmasız yerleşim, tam ekran düğmesi, mobil/tablet responsive
 - Kayıtlar ortak RMS düzeyine normalize edilir (medyan ≈ 20× daha yüksek çıkış) + güvenlik limiter'ı
 

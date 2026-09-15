@@ -5,6 +5,36 @@ import { IconInfo } from '../ui/icons'
 
 /** Kaynaklar ve Veri Setleri (§33). Attribution sources.json'dan UI'a ve makine okunur şekilde. */
 
+export interface InventoryEntry {
+  id: string
+  title: string
+  type: string
+  population: string
+  recordings: number
+  sampleRateHz: number | null
+  license: string
+  licenseVerified: boolean
+  status: string
+  accessUrl: string
+  notes: string
+  importScript: string | null
+  attributionText: string
+}
+
+function statusLabel(s: string): string {
+  const map: Record<string, string> = {
+    bundled: 'pakete dahil',
+    samples_included: 'örnekler aktarıldı',
+    importer_ready: 'içe aktarılabilir',
+    inventory_only: 'envanter (eşleme uygun değil)',
+    license_review: 'lisans incelemesi gerekli',
+  }
+  return map[s] ?? s
+}
+function typeLabel(t: string): string {
+  return t === 'heart' ? 'kalp sesleri' : t === 'lung' ? 'akciğer sesleri' : 'kalp + akciğer'
+}
+
 export function SourcesScreen() {
   const { dispatch } = useStore()
   return (
@@ -13,7 +43,39 @@ export function SourcesScreen() {
       <div className="screen" style={{ position: 'relative', zIndex: 1 }}>
         <div className="src-wrap screen-body">
           <h1 className="src-title">Kaynaklar ve Veri Setleri</h1>
-          <p className="src-sub">Bu modülde kullanılan klinik ses kayıtları ve atıf bilgileri.</p>
+          <p className="src-sub">Bu modülde kullanılan klinik ses kayıtları, atıf bilgileri ve araştırılan veri seti envanteri.</p>
+
+          <h2 className="inv-title">Veri Seti Envanteri</h2>
+          <p className="src-sub">
+            Platformun taksonomisiyle karşılaştırılan açık erişimli veri setleri. Yalnız lisansı doğrulanmış ve
+            etiketleri birebir eşlenebilen veri setleri içeriğe alınır; uymayan etiketler uydurulmaz.
+          </p>
+          <div className="inv-rows">
+            {(sourcesData.inventory as InventoryEntry[]).map((it) => (
+              <div className={`inv-row ${it.status}`} key={it.id}>
+                <div className="inv-head">
+                  <b>{it.title}</b>
+                  <span className={`inv-chip ${it.status}`}>{statusLabel(it.status)}</span>
+                  {it.licenseVerified
+                    ? <span className="inv-chip lic-ok">lisans doğrulandı</span>
+                    : <span className="inv-chip lic-review">lisans incelemesi</span>}
+                </div>
+                <div className="inv-meta">
+                  <span>{typeLabel(it.type)}</span>
+                  <span>{it.population}</span>
+                  <span>{it.recordings.toLocaleString('tr-TR')} kayıt</span>
+                  {it.sampleRateHz ? <span>{it.sampleRateHz} Hz</span> : null}
+                  <span>{it.license}</span>
+                </div>
+                <div className="inv-notes">{it.notes}</div>
+                <div className="inv-foot">
+                  <span className="muted small">{it.attributionText}</span>
+                  <a className="small" href={it.accessUrl} target="_blank" rel="noreferrer">kaynağa git ↗</a>
+                </div>
+                {it.importScript && <div className="inv-cmd"><code>{it.importScript}</code></div>}
+              </div>
+            ))}
+          </div>
 
           {sourcesData.datasets.map((d) => (
             <div className="card src-card" key={d.id}>

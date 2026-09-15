@@ -444,6 +444,30 @@ html { -webkit-text-size-adjust: 100%; }
 .src-kv { display: grid; grid-template-columns: 120px 1fr; gap: 5px 13px; font-size: 13px; }
 .src-kv .k { color: var(--ink-500); font-weight: 600; }
 .src-kv .v { color: var(--ink-900); word-break: break-word; }
+.inv-title { font-size: 22px; color: var(--navy-800); margin: 26px 0 4px; }
+.inv-rows { display: flex; flex-direction: column; gap: 12px; }
+.inv-row { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--border-strong); border-radius: var(--r-md); padding: 13px 15px; box-shadow: var(--shadow-card); }
+.inv-row.bundled { border-left-color: var(--green-600); }
+.inv-row.samples_included { border-left-color: var(--blue-600); }
+.inv-row.importer_ready { border-left-color: var(--blue-400); }
+.inv-row.inventory_only { border-left-color: var(--ink-300); }
+.inv-row.license_review { border-left-color: var(--orange-500); }
+.inv-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.inv-head b { font-size: 14.5px; color: var(--ink-900); }
+.inv-chip { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+.inv-chip.bundled { background: var(--green-100); color: var(--green-600); }
+.inv-chip.samples_included { background: var(--blue-100); color: var(--blue-700); }
+.inv-chip.importer_ready { background: var(--blue-50); color: var(--blue-600); }
+.inv-chip.inventory_only { background: #eef2f8; color: var(--ink-600); }
+.inv-chip.license_review { background: var(--orange-100); color: #b45309; }
+.inv-chip.lic-ok { background: var(--green-50); color: var(--green-600); }
+.inv-chip.lic-review { background: #fef3c7; color: #92400e; }
+.inv-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink-500); margin: 7px 0 6px; }
+.inv-notes { font-size: 13px; color: var(--ink-700); line-height: 1.5; }
+.inv-foot { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; margin-top: 8px; }
+.inv-foot a { color: var(--blue-700); font-weight: 600; text-decoration: none; }
+.inv-cmd { margin-top: 7px; }
+.inv-cmd code { background: #0f172a; color: #93c5fd; font-size: 11.5px; padding: 5px 9px; border-radius: 7px; display: inline-block; word-break: break-all; }
 .license-chip { display: inline-block; background: var(--green-50); color: var(--green-600); border: 1px solid var(--green-100); padding: 3px 9px; border-radius: 99px; font-size: 11.5px; font-weight: 700; }
 
 /* ---------------- Geliştirici paneli ---------------- */

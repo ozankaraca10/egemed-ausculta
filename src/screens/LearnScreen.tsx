@@ -6,7 +6,7 @@ import casesData from '../data/cases.json'
 import { engine } from '../audio/engineSingleton'
 import { resolveLibrarySound, resolveLibrarySoundEx } from '../core/resolver'
 import { useStore } from '../core/store'
-import { heartLabel, heartLibrarySub, lungLabel, lungLibrarySub } from '../data/terminology'
+import { libraryTitle, librarySub } from '../data/terminology'
 import { PatientStage, type StageHandle } from '../ui/PatientStage'
 import { WaveformView } from '../ui/WaveformView'
 import { Toolbar } from '../ui/Toolbar'
@@ -81,7 +81,7 @@ export function LearnScreen() {
   const soundsForStage = (pointId: string): SoundRecord | null => stageSounds.resolve(pointId).record
   const activeFallback = activePoint ? stageSounds.resolve(activePoint).fallbackFrom : undefined
 
-  const title = isHeart ? heartLabel(item.key) : lungLabel(item.key)
+  const title = libraryTitle(item.key)
   const libSound = resolveLibrarySound(item.category, item.acousticFinding)
 
   return (
@@ -108,8 +108,8 @@ export function LearnScreen() {
                       >
                         <span className="ic"><GroupIcon group={g.id} /></span>
                         <span>
-                          <b>{libTitle(it.key)}</b>
-                          <span>{libSub(it.key)}</span>
+                          <b>{libraryTitle(it.key)}</b>
+                          <span>{librarySub(it.key)}</span>
                         </span>
                         <span className="lib-cov" title="Vaka kapsamı">
                           {(() => {
@@ -265,23 +265,6 @@ export function LearnScreen() {
   )
 }
 
-function libTitle(key: string): string {
-  if (key.startsWith('heart')) return heartLabel(key)
-  if (key.startsWith('lung')) return lungLabel(key)
-  const map: Record<string, string> = {
-    'mixed.msm_wheezing': 'Üfürüm + Wheezing',
-    'mixed.esm_coarse': 'Üfürüm + Kaba Raller',
-    'mixed.s3_normal': 'S3 + Normal Solunum',
-    'mixed.af_rhonchi': 'Düzensiz Ritim + Ronküs',
-  }
-  return map[key] ?? 'Kombine ses'
-}
-function libSub(key: string): string {
-  if (key.startsWith('heart')) return heartLibrarySub(key)
-  if (key.startsWith('lung')) return lungLibrarySub(key)
-  return 'Kalp + akciğer birlikte'
-}
-
 function GroupIcon({ group, size = 17 }: { group: string; size?: number }) {
   if (group === 'heart') return <IconHeart width={size} height={size} />
   if (group === 'mixed') return <IconCompare width={size} height={size} />
@@ -289,6 +272,7 @@ function GroupIcon({ group, size = 17 }: { group: string; size?: number }) {
 }
 
 function findingBadge(key: string): string {
+  if (key.startsWith('mixed')) return 'Kombine'
   if (key === 'heart.normal') return 'S1 – S2'
   if (key === 'heart.s3') return 'S3'
   if (key === 'heart.s4') return 'S4'

@@ -7,6 +7,8 @@ import { resolveAssignment, resolveAssignmentEx, resolveCaseSounds, resolveCaseS
 import casesData from '../src/data/cases.json'
 import pointsData from '../src/data/auscultation-points.json'
 import libraryJson from '../src/data/library.json'
+import sourcesJson from '../src/data/sources.json'
+import { mapCircorMurmur, mapCircorLocations } from '../scripts/lib/external-mapping.mjs'
 import type { CaseDef, SuspendPayload, Telemetry } from '../src/core/types'
 
 const cases = casesData.cases as unknown as CaseDef[]
@@ -283,6 +285,73 @@ describe('veri seti ↔ kütüphane ↔ vaka senkronizasyonu', () => {
     for (const c of cases.filter((x) => x.modes.includes('assessment'))) {
       expect(c.mappingValidation, c.id).toBe('validated')
     }
+  })
+})
+
+/* ---------------- veri seti envanteri ve dış eşleme (§5, §6, §34) ---------------- */
+describe('veri seti envanteri', () => {
+  const sources = sourcesJson as unknown as {
+    datasets: { id: string; title: string; license: string; authors: string[]; attributionText: string }[]
+    inventory: {
+      id: string; title: string; authors: string[]; license: string; licenseUrl: string
+      licenseVerified: boolean; status: string; accessUrl: string; notes: string
+      recordings: number; attributionText: string; importScript: string | null
+    }[]
+  }
+
+  it('envanterde en az 6 veri seti araştırılmıştır', () => {
+    expect(sources.inventory.length).toBeGreaterThanOrEqual(6)
+  })
+  it('her envanter kaydı lisans, atıf ve erişim bağlantısı içerir', () => {
+    for (const it of sources.inventory) {
+      expect(it.license.length, `lisans: ${it.id}`).toBeGreaterThan(3)
+      expect(it.licenseUrl.length, `lisans bağlantısı: ${it.id}`).toBeGreaterThan(8)
+      expect(it.attributionText.length, `atıf: ${it.id}`).toBeGreaterThan(10)
+      expect(it.accessUrl.startsWith('http'), `erişim: ${it.id}`).toBe(true)
+      expect(it.recordings).toBeGreaterThan(0)
+    }
+  })
+  it('pakete dahil veri setleri doğrulanmış lisansa sahiptir', () => {
+    for (const it of sources.inventory.filter((x) => ['bundled', 'samples_included', 'importer_ready'].includes(x.status))) {
+      expect(it.licenseVerified, `${it.id} lisansı doğrulanmış olmalı`).toBe(true)
+    }
+  })
+  it('ICBHI 2017 pakete alınmaz (§34)', () => {
+    const icbhi = sources.inventory.find((x) => x.id === 'icbhi-2017')
+    expect(icbhi).toBeDefined()
+    expect(['license_review', 'inventory_only']).toContain(icbhi!.status)
+    expect(icbhi!.importScript).toBeNull()
+  })
+  it('paketlenen seslerin kaynak atıfları tanımlıdır (datasets ↔ inventory)', () => {
+    const bundled = RECORDS.find((r) => r.sourceDataset === 'hls-cmds-v3')
+    expect(bundled).toBeDefined()
+    expect(sources.inventory.some((it) => it.id === 'hls-cmds-v3' && it.status === 'bundled')).toBe(true)
+    expect(sources.datasets.some((d) => d.id === 'hls-cmds-v3' && d.license.includes('CC BY 4.0'))).toBe(true)
+  })
+})
+
+describe('CirCor dış eşleme kuralları (§6)', () => {
+  it('Murmur=Absent → normal (validated)', () => {
+    expect(mapCircorMurmur('Absent', 'nan', 'nan')).toMatchObject({ finding: 'normal', mappingStatus: 'validated' })
+  })
+  it('zamanlama birebir eşleşince validated olur', () => {
+    expect(mapCircorMurmur('Present', 'Early-systolic', 'nan')).toMatchObject({ finding: 'early_systolic_murmur', mappingStatus: 'validated' })
+    expect(mapCircorMurmur('Present', 'Mid-systolic', 'nan')).toMatchObject({ finding: 'mid_systolic_murmur', mappingStatus: 'validated' })
+    expect(mapCircorMurmur('Present', 'Late-systolic', 'nan')).toMatchObject({ finding: 'late_systolic_murmur', mappingStatus: 'validated' })
+  })
+  it('holosistolik yalnız eğitim eşlemesidir (değerlendirmeye giremez)', () => {
+    const r = mapCircorMurmur('Present', 'Holosystolic', 'nan')
+    expect(r.finding).toBe('mid_systolic_murmur')
+    expect(r.mappingStatus).toBe('educational_mapping')
+  })
+  it('uyumsuz etiketler uydurulmaz (unsupported)', () => {
+    expect(mapCircorMurmur('Present', 'nan', 'nan').finding).toBeNull()
+    expect(mapCircorMurmur('Present', 'nan', 'Early-diastolic').finding).toBeNull()
+    expect(mapCircorMurmur('Unknown', 'nan', 'nan').finding).toBeNull()
+  })
+  it('konum kodları simülasyon noktalarına eşlenir', () => {
+    expect(mapCircorLocations('AV+PV+TV+MV')).toEqual(['cardiac_aortic', 'cardiac_pulmonary', 'cardiac_tricuspid', 'cardiac_mitral'])
+    expect(mapCircorLocations('MV')).toEqual(['cardiac_mitral'])
   })
 })
 
