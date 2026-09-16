@@ -51,6 +51,9 @@ Her bulgu için: önem derecesi (kritik/orta/düşük), kanıt (`dosya:satır`),
 - Ses verileri depoda tutulmaz (lisans/boyut); `scripts/import-*` ile üretilir. Bu nedenle
   ses dosyaları olmadan `npm run dev` sessiz çalışır, arayüz ve mantık testleri etkilenmez.
 
+## İleri seviye denetim
+Tam kapsamlı, çok disiplinli denetim istemi için: **docs/DENETIM-ILERI.md** (kopyala-yapıştır).
+
 ## Hazır denetim istemi (kopyala-yapıştır)
 > Bu depoyu UI, UX, güvenlik, SCORM 1.2, mantık ve tıbbi tutarlılık açılarından denetle.
 > Önce README.md ve docs/AUSCULTA.md'yi oku; oradaki ilkeleri ölçüt kabul et.
