@@ -2,13 +2,34 @@ import type { CaseResult, SuspendPayload } from './types'
 
 /** Suspend data serileştirme (§27). Kompakt; 1.2 limitine (≤4096 karakter) uygun. */
 
-export function serializeSuspend(p: SuspendPayload): string {
-  // örnek şeklini küçült
-  const visits: [string, number, number, number, number][] = Object.entries(p.visits).map(
-    ([k, v]) => [k, v.dwellMs, v.listenMs, v.visits, v.firstOrder]
-  )
+/** SCORM suspend_data boyut limitleri: 1.2 → 4096, 2004 → 64000 karakter.
+ *  Limit aşılırsa veri kademeli olarak küçültülür (önce örneklik ayrıntısı, sonra
+ *  telemetri, en son alan skorları); oturum kimliği/ilerleme her zaman korunur. */
+export const SUSPEND_LIMIT_12 = 4000
+export const SUSPEND_LIMIT_2004 = 64000
+
+export function serializeSuspend(p: SuspendPayload, maxLen = SUSPEND_LIMIT_2004): string {
+  const levels = 5
+  for (let level = 0; level < levels; level++) {
+    const out = build(p, level)
+    if (out.length <= maxLen) return out
+  }
+  return build(p, levels - 1)
+}
+
+function build(p: SuspendPayload, level: number): string {
+  // level 0: tam · 1: örneklik saniyeye yuvarlanır · 2: örneklik yok · 3: alan skorları yok · 4: vaka sonuçları yok
+  const visits: [string, number, number, number, number][] =
+    level >= 2
+      ? []
+      : Object.entries(p.visits).map(([k, v]) =>
+          level >= 1
+            ? [k, Math.round(v.dwellMs / 1000), Math.round(v.listenMs / 1000), v.visits, 0]
+            : [k, v.dwellMs, v.listenMs, v.visits, v.firstOrder]
+        )
   const obj = {
     v: p.v,
+    u: level === 1 ? 1 : 0,
     m: p.mode[0], // l | p | a
     c: p.caseIndex,
     s: p.step,
@@ -17,15 +38,18 @@ export function serializeSuspend(p: SuspendPayload): string {
     t: p.tutorialDone ? 1 : 0,
     at: p.attempts,
     v2: visits,
-    o: p.order,
+    o: level >= 2 ? [] : p.order,
     si: p.sessionIds,
     sd: p.sessionSeed,
-    r: p.caseResults.map((r) => [
-      r.caseId,
-      Math.round(r.total),
-      r.mastery ? 1 : 0,
-      Object.entries(r.domains).map(([k, d]) => [k, Math.round(d.earned * 100) / 100, d.max]),
-    ]),
+    r:
+      level >= 4
+        ? []
+        : p.caseResults.map((r) => [
+            r.caseId,
+            Math.round(r.total),
+            r.mastery ? 1 : 0,
+            level >= 3 ? [] : Object.entries(r.domains).map(([k, d]) => [k, Math.round(d.earned * 100) / 100, d.max]),
+          ]),
   }
   return JSON.stringify(obj)
 }
@@ -43,15 +67,17 @@ export function deserializeSuspend(raw: string | null | undefined): SuspendPaylo
       t: number
       at: number
       v2: [string, number, number, number, number][]
+      u?: number
       o: string[]
       si?: string[]
       sd?: number
       r: [string, number, number, [string, number, number][]][]
     }
     const modes: Record<string, SuspendPayload['mode']> = { l: 'learn', p: 'practice', a: 'assessment' }
+    const unit = o.u ? 1000 : 1
     const visits: SuspendPayload['visits'] = {}
     for (const [k, dwell, listen, n, first] of o.v2 ?? []) {
-      visits[k] = { dwellMs: dwell, listenMs: listen, visits: n, firstOrder: first }
+      visits[k] = { dwellMs: dwell * unit, listenMs: listen * unit, visits: n, firstOrder: first }
     }
     return {
       v: o.v,

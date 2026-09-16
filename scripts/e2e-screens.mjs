@@ -26,7 +26,7 @@ async function shot(browser, name, vp, flow) {
 }
 
 const toModes = async (page) => {
-  await page.getByRole('button', { name: /^Başla/ }).click()
+  await page.getByRole('button', { name: /Simülatörü başlat/ }).click()
   await page.waitForTimeout(500)
   await page.locator('input[type=checkbox]').first().check()
   await page.getByRole('button', { name: /Anladım/ }).click()
@@ -38,7 +38,7 @@ const run = async () => {
 
   // Masaüstü 16:9
   const p1 = await shot(browser, 'desktop-01-start', { width: 1600, height: 900 }, async () => {})
-  await p1.getByRole('button', { name: /^Başla/ }).click()
+  await p1.getByRole('button', { name: /Simülatörü başlat/ }).click()
   await p1.waitForTimeout(500)
   await p1.screenshot({ path: `${OUT}/desktop-02-tutorial.png` })
   await p1.locator('input[type=checkbox]').first().check()

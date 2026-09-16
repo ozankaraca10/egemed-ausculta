@@ -13,6 +13,7 @@ import { sampleSession, SESSION_SIZE } from '../src/core/session'
 import { poolFor as poolForTest } from '../src/data/pool'
 import { EXTERNAL_RECORDS } from '../src/core/resolver'
 import { computeMetrics } from '../src/data/metrics'
+import { serializeSuspend, deserializeSuspend, SUSPEND_LIMIT_12, SUSPEND_LIMIT_2004 } from '../src/core/suspend'
 import type { CaseDef, SuspendPayload, Telemetry } from '../src/core/types'
 
 const cases = casesData.cases as unknown as CaseDef[]
@@ -406,6 +407,45 @@ describe('tıbbi tutarlılık (pediatrik vitaller + soru bütünlüğü)', () =>
       if ((c as { population?: string }).population !== 'pediatrik') continue
       expect(/pediatrik|çocuk/i.test(c.title), c.id).toBe(true)
     }
+  })
+})
+
+describe('SCORM suspend boyut koruması (§27)', () => {
+  const bigPayload = () => {
+    const visits: Record<string, { dwellMs: number; listenMs: number; visits: number; firstOrder: number }> = {}
+    for (let i = 0; i < 200; i++) visits[`lung_right_lower_posterior_${i}`] = { dwellMs: 12345, listenMs: 23456, visits: 3, firstOrder: i }
+    const caseResults = Array.from({ length: 10 }, (_, i) => ({
+      caseId: `auto_mixed_normal_wheezing_lung_right_lower_anterior_${String(i).padStart(3, '0')}`,
+      total: 87.5, max: 100, mastery: true,
+      domains: { technique: { earned: 20, max: 20 }, localization: { earned: 25, max: 25 }, recognition: { earned: 40, max: 40 }, interpretation: { earned: 15, max: 15 }, diagnosis: { earned: 0, max: 0 }, systematic: { earned: 5, max: 5 } } as never,
+      answers: [], hintsUsed: 0,
+    }))
+    return {
+      v: 3, mode: 'assessment' as const, caseIndex: 7, step: 3,
+      answers: { q1: ['a'], q2: ['b', 'c'] }, hintsUsed: 0, tutorialDone: true, attempts: 1,
+      visits, order: Object.keys(visits), caseResults,
+      sessionIds: Array.from({ length: 20 }, (_, i) => `auto_ped_early_systolic_murmur_aortic_${String(i).padStart(3, '0')}`),
+      sessionSeed: 123456789,
+    }
+  }
+  it('SCORM 1.2 limitinde (4096) serialize edilir ve geri okunur', () => {
+    const s1 = serializeSuspend(bigPayload(), SUSPEND_LIMIT_12)
+    expect(s1.length).toBeLessThanOrEqual(SUSPEND_LIMIT_12)
+    const back = deserializeSuspend(s1)
+    expect(back).not.toBeNull()
+    expect(back!.mode).toBe('assessment')
+    expect(back!.caseIndex).toBe(7)
+    expect(back!.step).toBe(3)
+    expect(back!.sessionIds.length).toBe(20)
+    expect(back!.sessionSeed).toBe(123456789)
+  })
+  it('küçük yükte tam ayrıntı korunur (birim kaybı yok)', () => {
+    const p = bigPayload()
+    p.visits = { cardiac_aortic: { dwellMs: 4321, listenMs: 5000, visits: 2, firstOrder: 1 } }
+    const s1 = serializeSuspend(p, SUSPEND_LIMIT_2004)
+    const back = deserializeSuspend(s1)!
+    expect(back.visits.cardiac_aortic.dwellMs).toBe(4321)
+    expect(back.visits.cardiac_aortic.firstOrder).toBe(1)
   })
 })
 

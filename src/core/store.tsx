@@ -4,7 +4,7 @@ import type {
 } from './types'
 import { bus } from './events'
 import { makeScorm, type ScormApi } from './scorm'
-import { deserializeSuspend, serializeSuspend } from './suspend'
+import { deserializeSuspend, serializeSuspend, SUSPEND_LIMIT_12, SUSPEND_LIMIT_2004 } from './suspend'
 import { scoreCase, aggregateResults } from './scoring'
 import { resolveCaseSounds } from './resolver'
 import casesData from '../data/cases.json'
@@ -256,7 +256,10 @@ export class ScormRuntime {
   }
 
   saveProgress(payload: SuspendPayload) {
-    this.api.set('cmi.suspend_data', serializeSuspend(payload))
+    const limit = this.api.version === '1.2' ? SUSPEND_LIMIT_12 : SUSPEND_LIMIT_2004
+    const data = serializeSuspend(payload, limit)
+    const okSet = this.api.set('cmi.suspend_data', data)
+    if (!okSet) console.warn('[Ausculta] suspend_data yazılamadı (LMS limiti)')
     this.api.set(
       this.api.version === '2004' ? 'cmi.location' : 'cmi.core.lesson_location',
       `case:${payload.caseIndex}:step:${payload.step}`

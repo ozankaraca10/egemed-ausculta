@@ -89,11 +89,11 @@ function fmtTimer(ms: number): string {
 export function Footer() {
   return (
     <footer className="eg-footer">
-      <img src="brand/logo-compact-web.png" alt="EGEMED Ausculta" className="footer-logo" height={34} />
-      <span className="sep">|</span>
-      <span>Kardiyopulmoner Oskültasyon Simülatörü</span>
+      <img src="brand/logo-icon-web.png" alt="" className="footer-seal" />
+      <span className="footer-inst">Ege Üniversitesi Tıp Fakültesi Dekanlığı</span>
+      <span className="footer-sub">EGEMED Ausculta — Kardiyopulmoner Oskültasyon Simülatörü · Tüm hakları saklıdır © 2026</span>
       <span className="spacer" />
-      <span className="small">Ses kayıtları: HLS-CMDS v3 · CC BY 4.0</span>
+      <span className="footer-attr small">Ses kayıtları: HLS-CMDS v3 · CC BY 4.0</span>
     </footer>
   )
 }
@@ -107,17 +107,3 @@ export function EcgDeco() {
   )
 }
 
-export function HeadphoneBanner({ compact, onCheck }: { compact?: boolean; onCheck?: () => void }) {
-  return (
-    <div className="headphone-banner" style={compact ? { padding: '10px 16px' } : undefined}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2" /><rect x="3" y="14" width="4" height="7" rx="2" /><rect x="17" y="14" width="4" height="7" rx="2" /></svg>
-      <span className="vsep" />
-      <span style={compact ? { fontSize: 13.5 } : undefined}>
-        Oskültasyon seslerini doğru değerlendirebilmek için <strong>kulaklık kullanmanız önerilir.</strong>
-      </span>
-      {onCheck && (
-        <button className="btn outline small" onClick={onCheck}>Ses düzeyi kontrol</button>
-      )}
-    </div>
-  )
-}

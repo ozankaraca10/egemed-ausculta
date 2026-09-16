@@ -1,16 +1,17 @@
 import { useStore } from '../core/store'
 import { engine } from '../audio/engineSingleton'
 import { bus } from '../core/events'
-import { Footer, HeadphoneBanner, EcgDeco } from '../ui/chrome'
-import { IconDatabase, IconNetwork, IconMonitor, IconShieldCheck, IconArrowRight, IconBook } from '../ui/icons'
+import { Footer } from '../ui/chrome'
+import { IconArrowRight, IconBook, IconHeadphones } from '../ui/icons'
 import { computeMetrics } from '../data/metrics'
 
 const M = computeMetrics()
 
-/** Başlangıç ekranı (§44): marka kilidi, kulaklık önerisi, ses düzeyi kontrolü, mod seçimine giriş. */
+/** Başlangıç ekranı (§44): ortalanmış marka hero'su, envanter metrikleri, kulaklık önerisi,
+ *  ses düzeyi kontrolü ve mod seçimine giriş. */
 
 export function StartScreen() {
-  const { dispatch, runtime } = useStore()
+  const { dispatch } = useStore()
 
   const playTone = async () => {
     // Nötr, tanısal olmayan ses düzeyi kontrol tonu (§32)
@@ -36,83 +37,61 @@ export function StartScreen() {
     dispatch({ type: 'goto', screen: 'modes' })
   }
 
-  return (
-    <>
-      <EcgDeco />
-      <div className="screen" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="container screen-body">
-          <div className="start-wrap">
-            <div className="start-left">
-              <img
-                className="hero-logo"
-                src="brand/logo-vertical-web.png"
-                alt="EGEMED Ausculta — Kardiyopulmoner Oskültasyon Simülatörü"
-              />
-              <p className="start-desc">
-                Gerçek klinik seslerle kalp ve akciğer oskültasyonunu öğrenin. Normal ve patolojik sesleri
-                dinleyin, karşılaştırın, yorumlayın; yetişkin kadın/erkek ve pediatrik gövde üzerinde çalışın.
-              </p>
-              <div className="start-actions">
-                <button className="btn primary large" onClick={begin}>
-                  Başla <IconArrowRight />
-                </button>
-                <span className="start-links-sep" />
-                <button className="start-link" onClick={() => dispatch({ type: 'goto', screen: 'tutorial' })}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="9" fill="none" /><path d="M10 8.5v7l5-3.5z" fill="currentColor" /></svg>
-                  Nasıl Kullanılır?
-                </button>
-                <span className="start-links-sep" />
-                <button className="start-link" onClick={() => dispatch({ type: 'goto', screen: 'sources' })}>
-                  <IconBook /> Kaynaklar
-                </button>
-              </div>
-              <div className="metric-strip" role="list" aria-label="Simülatör içerik metrikleri">
-                <Metric value={M.datasets} label="veri seti envanteri" tip={`${M.datasets} açık erişimli veri seti araştırıldı; ${M.datasetsVerified} tanesinin lisansı doğrulandı. ${M.datasetsPediatric} tanesi pediatrik odaklı.`} />
-                <Metric value={M.bundledRecordings} label="paketlenmiş klinik kayıt" tip="Pakete dahil doğrulanmış kayıt sayısı (HLS-CMDS v3)." />
-                <Metric value={M.externalRecordings} label="envanter kaydı (gerçek hasta)" tip="Gerçek hastalardan alınmış envanter kayıtları (ör. CirCor, ODC-BY 1.0)." />
-                <Metric value={M.soundClasses} label="ses sınıfı ve metafor" tip="Kalp, akciğer ve kombine ses sınıfları; her biri için klinik metafor ve dalga formu." />
-                <Metric value={M.auscultationPoints} label="oskültasyon noktası" tip="Ön/arka, yetişkin ve pediatrik gövdede konumlandırılmış noktalar." />
-                <Metric value={M.practicePoolSize} label="vaka havuzu" tip={`Her oturumda havuzdan rastgele 10 vaka sunulur. Toplam havuz: ${M.totalCases} vaka (${M.mixedCases} kombine).`} />
-                <Metric value={M.assessmentPoolSize} label="değerlendirme vakası" tip={`Doğrulanmış eşlemeli ${M.assessmentPoolSize} vaka ve toplam ${M.assessmentQuestions} soru; her oturumda rastgele 10 vaka.`} />
-                <Metric value={M.pediatricCases} label="pediatrik vaka" tip="Pediatrik gövde, yaşa uygun vitaller ve pediatrik bağlam bilgisiyle vaka seti." />
-              </div>
-            </div>
+  const stats: { label: string; tip: string }[] = [
+    { label: `${M.datasets} veri seti`, tip: `${M.datasets} açık erişimli veri seti araştırıldı; ${M.datasetsVerified} lisansı doğrulandı, ${M.datasetsPediatric} pediatrik odaklı.` },
+    { label: `${M.bundledRecordings} klinik kayıt`, tip: 'Pakete dahil doğrulanmış oskültasyon kaydı (HLS-CMDS v3) + gerçek hasta kayıtları.' },
+    { label: `${M.soundClasses} ses sınıfı`, tip: 'Kalp, akciğer ve kombine sınıflar; her biri klinik metafor ve dalga formuyla.' },
+    { label: `${M.totalCases} vaka`, tip: `Her oturumda havuzdan rastgele ${10} vaka; ${M.pediatricCases} pediatrik vaka dahil.` },
+    { label: `${M.assessmentQuestions} soru`, tip: `Doğrulanmış ${M.assessmentPoolSize} değerlendirme vakasına dağıtılmış soru havuzu.` },
+    { label: 'SCORM uyumlu', tip: 'SCORM 2004 4th Ed ve 1.2; puan ve durum LMS’e raporlanır.' },
+  ]
 
-            <div>
-              <div className="feature-cards">
-                <Feature icon={<IconDatabase />} title="Gerçek veri setleri" text="Klinik manikinden alınmış yüksek kaliteli oskültasyon sesleri (HLS-CMDS v3)." />
-                <Feature icon={<IconNetwork />} title="Etkileşimli simülasyon" text="Gerçekçi senaryolarla uygulayarak öğrenme deneyimi." />
-                <Feature icon={<IconMonitor />} title="SCORM uyumlu" text="LMS sistemleriyle tam uyumlu, standartlara uygun eğitim içeriği." />
-                <Feature icon={<IconShieldCheck />} title="Tıbbi doğruluk" text="Kayıtlı veri seti tabanlı, doğrulanmış akustik eşleme." />
-              </div>
-              <HeadphoneBanner onCheck={() => void playTone()} />
-              {runtime?.flags.dev && (
-                <p className="start-note">Geliştirme modu: SCORM API bulunamadı; bağımsız çalışma (mock) etkin.</p>
-              )}
-            </div>
-          </div>
+  return (
+    <div className="screen start-hero-screen">
+      <div className="hero-glow" aria-hidden="true" />
+      <div className="start-hero">
+        <img
+          className="hero-logo"
+          src="brand/logo-vertical-web.png"
+          alt="EGEMED Ausculta — Kardiyopulmoner Oskültasyon Simülatörü"
+        />
+        <p className="hero-eyebrow">Kardiyopulmoner Oskültasyon Simülatörü</p>
+        <h1 className="hero-title">
+          Kalbin ve akciğerlerin sesini,
+          <br />
+          gerçek kayıtlarla birlikte keşfet.
+        </h1>
+        <p className="hero-sub">
+          Yirmi ses sınıfı, yüz doksan dokuz klinik vaka, yetişkin ve pediatrik gövde üzerinde
+          sistematik oskültasyon; SCORM uyumlu ölçme ve değerlendirme.
+        </p>
+        <button className="hero-cta" onClick={begin}>
+          Simülatörü başlat <IconArrowRight />
+        </button>
+        <div className="hero-links">
+          <button className="hero-link" onClick={() => dispatch({ type: 'goto', screen: 'tutorial' })}>
+            Nasıl kullanılır?
+          </button>
+          <span className="hero-link-sep" aria-hidden="true" />
+          <button className="hero-link" onClick={() => dispatch({ type: 'goto', screen: 'sources' })}>
+            <IconBook /> Kaynaklar ve veri setleri
+          </button>
         </div>
+        <ul className="hero-stats" role="list" aria-label="İçerik metrikleri">
+          {stats.map((s, i) => (
+            <li key={s.label} title={s.tip}>
+              {i > 0 && <span className="stat-dot" aria-hidden="true" />}
+              <span>{s.label}</span>
+            </li>
+          ))}
+        </ul>
+        <button className="hero-audio-hint" onClick={() => void playTone()}>
+          <IconHeadphones />
+          Oskültasyon seslerini doğru değerlendirebilmek için kulaklık kullanmanız önerilir.
+          <span className="hero-audio-check">Ses düzeyi kontrol</span>
+        </button>
       </div>
       <Footer />
-    </>
-  )
-}
-
-function Metric({ value, label, tip }: { value: number; label: string; tip: string }) {
-  return (
-    <div className="metric" role="listitem" title={tip}>
-      <b>{value.toLocaleString('tr-TR')}</b>
-      <span>{label}</span>
-    </div>
-  )
-}
-
-function Feature({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
-  return (
-    <div className="feature-card">
-      <div className="ic">{icon}</div>
-      <h4>{title}</h4>
-      <p>{text}</p>
     </div>
   )
 }
