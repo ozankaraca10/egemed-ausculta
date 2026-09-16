@@ -77,3 +77,17 @@ export const IconEcg = (p: P) => (
     <path d="M0 45h60l8-22 10 44 12-22h40l8-22 10 44 12-22h40l8-22 10 44 12-22h40l8-22 10 44 12-22h27" opacity=".55" />
   </svg>
 )
+
+export const IconClose = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M6 6l12 12" />
+    <path d="M18 6L6 18" />
+  </svg>
+)
+
+export const IconSwap = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 8h13l-3-3" />
+    <path d="M20 16H7l3 3" />
+  </svg>
+)

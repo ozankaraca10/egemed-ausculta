@@ -17,9 +17,11 @@ interface Props {
   onHint?: () => void
   /** değerlendirme: ipucu, tekrar dinleme ve durum göstergeleri kapalı */
   strict?: boolean
+  /** öğrenme modunda gövde (erkek/kadın/çocuk) seçici göster */
+  bodySelector?: boolean
 }
 
-export function Toolbar({ caseDef, stageRef, playing, activePoint, question, onHint, strict = false }: Props) {
+export function Toolbar({ caseDef, stageRef, playing, activePoint, question, onHint, strict = false, bodySelector = false }: Props) {
   const { state, dispatch } = useStore()
   const heads = (caseDef?.allowedHeads ?? ['bell', 'diaphragm']) as StethHead[]
   const [muted, setMuted] = useState(false)
@@ -98,6 +100,24 @@ export function Toolbar({ caseDef, stageRef, playing, activePoint, question, onH
           />
           <span className="pct">%{Math.round(state.volume * 100)}</span>
         </div>
+        {bodySelector && (
+          <>
+            <div className="tool-sep" />
+            <div className="body-toggle compact" role="group" aria-label="Hasta gövdesi">
+              {([['erkek', 'Erkek'], ['kadin', 'Kadın'], ['pediatrik', 'Çocuk']] as const).map(([k, l]) => (
+                <button
+                  key={k}
+                  className={state.bodySex === k ? 'active' : ''}
+                  onClick={() => dispatch({ type: 'setBodySex', sex: k })}
+                  aria-pressed={state.bodySex === k}
+                  title={k === 'pediatrik' ? 'Pediatrik hasta (şematik çocuk gövdesi)' : k === 'kadin' ? 'Yetişkin kadın gövdesi' : 'Yetişkin erkek gövdesi'}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
         <div className="tool-sep" />
         <div className="play-state">
           <span className="eq"><i /><i /><i /><i /></span>

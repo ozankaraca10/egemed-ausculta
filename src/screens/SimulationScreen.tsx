@@ -11,7 +11,7 @@ import { PatientStage, type StageHandle } from '../ui/PatientStage'
 import { Toolbar } from '../ui/Toolbar'
 import { QuestionCard, FeedbackCard } from '../ui/Questions'
 import { Footer, EcgDeco } from '../ui/chrome'
-import { IconDoc, IconTarget, IconArrowRight, IconInfo, IconBodyFront, IconBodyBack } from '../ui/icons'
+import { IconDoc, IconTarget, IconArrowRight, IconInfo } from '../ui/icons'
 
 /** Simülasyon ekranı — Uygulama & Değerlendirme (§3B, §3C): hasta solda, olgu/görev/soru sağda. */
 
@@ -89,15 +89,7 @@ export function SimulationScreen() {
           <div className={`sim-grid ${state.mode === 'assessment' ? 'wide-left' : ''}`}>
             <div className="sim-main">
               <div className="stage-card">
-                <div className="stage-top">
-                  <div className="view-toggle">
-                    <button className={state.view === 'front' ? 'active' : ''} onClick={() => dispatch({ type: 'setView', view: 'front' })}>
-                      <IconBodyFront /> Ön Görünüm
-                    </button>
-                    <button className={state.view === 'back' ? 'active' : ''} onClick={() => dispatch({ type: 'setView', view: 'back' })}>
-                      <IconBodyBack /> Arka Görünüm
-                    </button>
-                  </div>
+                <div className="stage-top stage-top-right">
                   {state.mode !== 'assessment' ? (
                     <label className="points-toggle">
                       <input type="checkbox" checked={state.showPoints} onChange={(e) => dispatch({ type: 'togglePoints', show: e.target.checked })} />

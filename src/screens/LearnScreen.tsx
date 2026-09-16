@@ -32,7 +32,7 @@ interface LibItemFull {
 }
 
 export function LearnScreen() {
-  const { state, dispatch } = useStore()
+  const { state } = useStore()
   const [selectedKey, setSelectedKey] = useState<string>('heart.normal')
   const [tab, setTab] = useState<'desc' | 'wave' | 'clin'>('desc')
   const stageRef = useRef<StageHandle>(null)
@@ -108,20 +108,22 @@ export function LearnScreen() {
                         onClick={() => { setSelectedKey(it.key); setTab('desc') }}
                       >
                         <span className="ic"><GroupIcon group={g.id} /></span>
-                        <span>
+                        <span className="lib-main">
                           <b>{libraryTitle(it.key)}</b>
                           <span>{librarySub(it.key)}</span>
                         </span>
-                        <span className="lib-cov" title="Vaka kapsamı">
-                          {(() => {
-                            const c = coverage[it.acousticFinding]
-                            if (!c) return <span className="badge gray">vaka yok</span>
-                            return c.a > 0
-                              ? <span className="badge green">{c.p} vaka · değ.</span>
-                              : <span className="badge blue">{c.p} pratik</span>
-                          })()}
+                        <span className="lib-right">
+                          <span className="lib-cov" title="Vaka kapsamı">
+                            {(() => {
+                              const c = coverage[it.acousticFinding]
+                              if (!c) return <span className="badge gray">vaka yok</span>
+                              return c.a > 0
+                                ? <span className="badge green">{c.p} vaka · değ.</span>
+                                : <span className="badge blue">{c.p} pratik</span>
+                            })()}
+                          </span>
+                          <span className="chev">›</span>
                         </span>
-                        <span className="chev">›</span>
                       </button>
                     ))}
                   </div>
@@ -131,23 +133,6 @@ export function LearnScreen() {
 
             <div className="sim-main">
               <div className="stage-card">
-                <div className="stage-top">
-                  <div className="view-toggle">
-                    <button className={state.view === 'front' ? 'active' : ''} onClick={() => dispatch({ type: 'setView', view: 'front' })}>
-                      <IconStethoscope /> Ön Görünüm
-                    </button>
-                    <button className={state.view === 'back' ? 'active' : ''} onClick={() => dispatch({ type: 'setView', view: 'back' })}>
-                      <IconStethoscope /> Arka Görünüm
-                    </button>
-                  </div>
-                  <div className="body-toggle" role="group" aria-label="Hasta gövdesi">
-                    {([['erkek', 'Erkek'], ['kadin', 'Kadın'], ['pediatrik', 'Çocuk']] as const).map(([k, l]) => (
-                      <button key={k} className={state.bodySex === k ? 'active' : ''} onClick={() => dispatch({ type: 'setBodySex', sex: k })}>
-                        {l}
-                      </button>
-                    ))}
-                  </div>
-                </div>
                 <PatientStage
                   ref={stageRef}
                   points={points}
@@ -185,7 +170,7 @@ export function LearnScreen() {
                   </div>
                 )}
               </div>
-              <Toolbar stageRef={stageRef} playing={playing} activePoint={activePoint} />
+              <Toolbar stageRef={stageRef} playing={playing} activePoint={activePoint} bodySelector />
             </div>
 
             <div className="sim-side">

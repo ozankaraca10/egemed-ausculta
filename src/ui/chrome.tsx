@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { HelpModal } from './HelpModal'
 import { useStore } from '../core/store'
-import { IconBook, IconGlobe, IconHelpCircle, IconEcg, IconFullscreen, IconFullscreenExit } from './icons'
+import { IconBook, IconGlobe, IconHelpCircle, IconEcg, IconFullscreen, IconFullscreenExit, IconSwap } from './icons'
 import { ALL_CASES } from '../data/pool'
 
 export function BrandMark({ size = 30 }: { size?: number }) {
@@ -10,6 +11,7 @@ export function BrandMark({ size = 30 }: { size?: number }) {
 export function Header() {
   const { state, dispatch, runtime } = useStore()
   const [fs, setFs] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
   const modeLabel = state.mode === 'learn' ? 'Öğrenme Modu' : state.mode === 'practice' ? 'Uygulama Modu' : 'Değerlendirme Modu'
 
   useEffect(() => {
@@ -39,6 +41,15 @@ export function Header() {
           {state.screen === 'simulation' && (
             <span className={`eg-mode-chip ${state.mode}`}>{modeLabel}</span>
           )}
+          {(state.screen === 'simulation' || state.screen === 'learn') && (
+            <button
+              className="eg-header-chip clickable"
+              onClick={() => dispatch({ type: 'goto', screen: 'modes' })}
+              title="Mod seçim ekranına dön"
+            >
+              <IconSwap /> <span className="chip-text">Mod Değiştir</span>
+            </button>
+          )}
           {(state.mode === 'assessment' && state.screen === 'simulation') && (
             <span className="eg-progress-chip" aria-live="polite">
               Soru {Math.min(state.step + 1, currentTotal(state))}/{currentTotal(state)}
@@ -63,12 +74,13 @@ export function Header() {
         <IconGlobe /> TR
       </span>
       <span className="divider-v" />
-      <button className="eg-header-chip clickable" onClick={() => dispatch({ type: 'goto', screen: 'help' })}>
+      <button className="eg-header-chip clickable" onClick={() => setHelpOpen(true)}>
         <IconHelpCircle /> <span className="chip-text">Yardım</span>
       </button>
       <button className="eg-header-chip clickable" onClick={() => dispatch({ type: 'goto', screen: 'sources' })}>
         <IconBook /> <span className="chip-text">Kaynaklar</span>
       </button>
+      <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
     </header>
   )
 }
