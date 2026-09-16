@@ -140,7 +140,7 @@ export function LearnScreen() {
                       <IconStethoscope /> Arka Görünüm
                     </button>
                   </div>
-                  <div className="head-toggle" role="group" aria-label="Hasta gövdesi">
+                  <div className="body-toggle" role="group" aria-label="Hasta gövdesi">
                     {([['erkek', 'Erkek'], ['kadin', 'Kadın'], ['pediatrik', 'Çocuk']] as const).map(([k, l]) => (
                       <button key={k} className={state.bodySex === k ? 'active' : ''} onClick={() => dispatch({ type: 'setBodySex', sex: k })}>
                         {l}

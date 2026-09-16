@@ -1,8 +1,10 @@
 # EGEMED Ausculta — Mimari ve İçerik Rehberi
 
 > Marka: **EGEMED Ausculta** (önceki ad: StetesAI). Marka varlıkları `public/brand/` altındadır:
-> `ausculta-mark.svg` (amblem), `ausculta-horizontal.svg` (açık zemin), `ausculta-horizontal-white.svg`
-> (koyu header), `ausculta-vertical.svg` (dikey), `favicon.svg`.
+> Resmî marka seti PNG olarak `public/brand/` altındadır: `logo-icon-white-web.png` (koyu header),
+> `logo-vertical-web.png` (landing hero), `logo-horizontal-web.png` (Kaynaklar kartı),
+> `logo-compact-web.png` (footer), `favicon-32/apple-touch-icon/icon-512` (sistem ikonları).
+> Yatay/dikey/monokrom tam çözünürlük orijinalleri proje arşivinde tutulur.
 
 **Kardiyopulmoner Oskültasyon Simülatörü** · SCORM 2004 4th Edition (birincil) + SCORM 1.2 (yedek)
 

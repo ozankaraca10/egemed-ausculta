@@ -1,13 +1,13 @@
 import { useStore } from '../core/store'
 import { Footer, EcgDeco } from '../ui/chrome'
 import { aggregateResults } from '../core/scoring'
-import casesData from '../data/cases.json'
-import { IconTrophy, IconStethoscope, IconLungs, IconWave, IconDoc, IconCheckCircle, IconExit } from '../ui/icons'
-import type { CaseDef, ScoringWeights } from '../core/types'
+import { ALL_CASES } from '../data/pool'
+import { IconStethoscope, IconLungs, IconWave, IconDoc, IconCheckCircle, IconExit } from '../ui/icons'
+import type { ScoringWeights } from '../core/types'
 
 /** Sonuç ekranı (§24): skor çemberi + alan bazlı performans barları + rapor. */
 
-const cases = casesData.cases as unknown as CaseDef[]
+const cases = ALL_CASES
 
 export function ResultsScreen() {
   const { state, dispatch, runtime } = useStore()
@@ -37,13 +37,13 @@ export function ResultsScreen() {
       <EcgDeco />
       <div className="screen" style={{ position: 'relative', zIndex: 1 }}>
         <div className="results-wrap screen-body">
-          <IconTrophy className="results-trophy" />
+          <img className="results-logo" src="brand/logo-icon-transparent.png" alt="" aria-hidden="true" />
           <h1 className="results-title">
             {isAssessment ? 'Değerlendirme Tamamlandı' : 'Vaka Raporu'}
           </h1>
           <p className="results-sub">
-            Ausculta modülünü başarıyla tamamladınız. Gösterdiğiniz çaba, daha iyi bir klinik dinleme
-            becerisi için önemli bir adım. Başarılarınızın devamını dileriz.
+            EGEMED Ausculta oskültasyon modülünü tamamladınız. Gösterdiğiniz çaba, daha iyi bir klinik
+            dinleme becerisi için önemli bir adım. Başarılarınızın devamını dileriz.
           </p>
           <div className="results-grid">
             <div className="card score-card">

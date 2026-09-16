@@ -354,6 +354,61 @@ describe('oturum örnekleme (rastgele 10 vaka)', () => {
   })
 })
 
+describe('tıbbi tutarlılık (pediatrik vitaller + soru bütünlüğü)', () => {
+  // Yaşa göre beklenen istirahat aralıkları (pediatric-reference.json ile uyumlu)
+  // yaş birimi: YIL (0–1 ay hariç; bebek/çocuk vakalarında yaş yıldır)
+  const HR: [number, number, number][] = [[1, 100, 180], [3, 90, 160], [6, 80, 140], [12, 70, 120], [18, 60, 100], [999, 60, 100]]
+  const RR: [number, number, number][] = [[1, 30, 60], [3, 22, 38], [6, 20, 30], [12, 18, 25], [18, 12, 20], [999, 12, 20]]
+  const range = (tbl: [number, number, number][], age: number) => {
+    for (const [max, lo, hi] of tbl) if (age <= max) return [lo, hi] as const
+    return [60, 100] as const
+  }
+  const poolAll = [...poolForTest('practice'), ...poolForTest('assessment')]
+
+  it('pediatrik vakaların vitalleri yaşa göre fizyolojik aralıkta', () => {
+    for (const c of poolAll) {
+      const pop = (c as { population?: string }).population
+      if (pop !== 'pediatrik') continue
+      const age = c.patient.age
+      const [hrLo, hrHi] = range(HR, age)
+      const [rrLo, rrHi] = range(RR, age)
+      expect(c.vitalSigns.hr, `${c.id} HR ${c.vitalSigns.hr} (yaş ${age})`).toBeGreaterThanOrEqual(hrLo)
+      expect(c.vitalSigns.hr, `${c.id} HR üst`).toBeLessThanOrEqual(hrHi)
+      expect(c.vitalSigns.rr, `${c.id} RR ${c.vitalSigns.rr} (yaş ${age})`).toBeGreaterThanOrEqual(rrLo)
+      expect(c.vitalSigns.rr, `${c.id} RR üst`).toBeLessThanOrEqual(rrHi)
+    }
+  })
+  it('yetişkin vakaların vitalleri fizyolojik aralıkta', () => {
+    for (const c of poolAll) {
+      const pop = (c as { population?: string }).population
+      if (pop === 'pediatrik') continue
+      expect(c.vitalSigns.hr, `${c.id} HR`).toBeGreaterThanOrEqual(40)
+      expect(c.vitalSigns.hr, `${c.id} HR üst`).toBeLessThanOrEqual(140)
+      expect(c.vitalSigns.rr, `${c.id} RR`).toBeGreaterThanOrEqual(8)
+      expect(c.vitalSigns.rr, `${c.id} RR üst`).toBeLessThanOrEqual(38)
+    }
+  })
+  it('her soruda seçenek etiketleri benzersizdir', () => {
+    const errs: string[] = []
+    for (const c of poolAll) {
+      for (const q of c.questions) {
+        const labels = q.options.map((o) => o.label)
+        const dup = labels.filter((l, i) => labels.indexOf(l) !== i)
+        if (dup.length) errs.push(`${c.id}/${q.id}: ${dup.join(', ')}`)
+        const ids = q.options.map((o) => o.id)
+        expect(new Set(ids).size, `${c.id}/${q.id} id benzersizliği`).toBe(ids.length)
+      }
+    }
+    expect(errs).toEqual([])
+  })
+  it('pediatrik vakalar hasta yaşıyla uyumlu başlıklar kullanır', () => {
+    for (const c of poolAll) {
+      if ((c as { population?: string }).population !== 'pediatrik') continue
+      expect(/pediatrik|çocuk/i.test(c.title), c.id).toBe(true)
+    }
+  })
+})
+
 describe('landing metrikleri', () => {
   it('envanter zenginliği metrikleri hesaplanır ve tutarlıdır', () => {
     const m = computeMetrics()

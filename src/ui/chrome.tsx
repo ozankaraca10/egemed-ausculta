@@ -7,7 +7,7 @@ import type { CaseDef } from '../core/types'
 const cases = casesData.cases as unknown as CaseDef[]
 
 export function BrandMark({ size = 30 }: { size?: number }) {
-  return <img src="brand/ausculta-mark.svg" alt="" width={size} height={size} className="brand-mark" />
+  return <img src="brand/logo-icon-white-web.png" alt="" width={size} height={size} className="brand-mark" />
 }
 
 export function Header() {
@@ -89,8 +89,7 @@ function fmtTimer(ms: number): string {
 export function Footer() {
   return (
     <footer className="eg-footer">
-      <BrandMark size={18} />
-      <span className="brand">EGEMED Ausculta</span>
+      <img src="brand/logo-compact-web.png" alt="EGEMED Ausculta" className="footer-logo" height={34} />
       <span className="sep">|</span>
       <span>Kardiyopulmoner Oskültasyon Simülatörü</span>
       <span className="spacer" />

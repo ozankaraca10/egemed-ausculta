@@ -205,9 +205,13 @@ for (const [msg] of severityPool) fatal.push(msg)
 for (const asset of [
   'public/assets/body/front.jpg',
   'public/assets/body/back.jpg',
-  'public/brand/ausculta-mark.svg',
-  'public/brand/ausculta-horizontal.svg',
-  'public/brand/ausculta-horizontal-white.svg',
+  'public/brand/logo-icon-white-web.png',
+  'public/brand/logo-vertical-web.png',
+  'public/brand/logo-horizontal-web.png',
+  'public/brand/logo-compact-web.png',
+  'public/brand/favicon-32.png',
+  'public/brand/apple-touch-icon.png',
+  'public/brand/icon-512.png',
 ]) {
   if (!fs.existsSync(path.join(ROOT, asset))) fatal.push(`eksik varlık: ${asset}`)
 }

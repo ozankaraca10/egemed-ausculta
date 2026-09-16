@@ -36,6 +36,16 @@ function typeLabel(t: string): string {
 }
 
 export function SourcesScreen() {
+  const brandBlock = (
+    <div className="brand-card">
+      <img src="brand/logo-horizontal-web.png" alt="EGEMED Ausculta" />
+      <p>
+        EGEMED Ausculta, tıp fakültesi öğrencileri için geliştirilmiş kardiyopulmoner oskültasyon
+        eğitimidir. Ses içerikleri lisanslı açık veri setlerinden oskültasyon taksonomisine doğrulanmış
+        eşlemeyle aktarılmıştır (ayrıntı aşağıda).
+      </p>
+    </div>
+  )
   const { dispatch } = useStore()
   return (
     <>
@@ -44,6 +54,7 @@ export function SourcesScreen() {
         <div className="src-wrap screen-body">
           <h1 className="src-title">Kaynaklar ve Veri Setleri</h1>
           <p className="src-sub">Bu modülde kullanılan klinik ses kayıtları, atıf bilgileri ve araştırılan veri seti envanteri.</p>
+          {brandBlock}
 
           <h2 className="inv-title">Veri Seti Envanteri</h2>
           <p className="src-sub">
@@ -63,7 +74,7 @@ export function SourcesScreen() {
                 <div className="inv-meta">
                   <span>{typeLabel(it.type)}</span>
                   <span>{it.population}</span>
-                  <span>{it.recordings.toLocaleString('tr-TR')} kayıt</span>
+                  <span>{it.recordings != null ? `${it.recordings.toLocaleString('tr-TR')} kayıt` : 'kayıt sayısı doğrulanmadı'}</span>
                   {it.sampleRateHz ? <span>{it.sampleRateHz} Hz</span> : null}
                   <span>{it.license}</span>
                 </div>
