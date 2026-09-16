@@ -162,6 +162,8 @@ export interface CaseDef {
   /** Klinik tanı ancak doğrulanmış eşlemeyle doldurulur (§6) */
   clinicalDiagnosis: string | null
   /** diagnosis alanı için eşleme doğrulama durumu (§19) */
+  /** hekim onay durumu: 'beklemede' | 'onayli' */
+  clinicalReview?: 'beklemede' | 'onayli'
   mappingValidation: ValidationStatus
   mappingNote?: string
   technique: TechniqueRubric

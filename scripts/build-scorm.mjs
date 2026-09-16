@@ -105,6 +105,17 @@ async function pack() {
     fs.mkdirSync(path.dirname(dest), { recursive: true })
     fs.copyFileSync(path.join(DIST, f), dest)
   }
+  // CSP meta başlığı: derleme ürününe derinlemesine savunma (dev'de HMR bozulmaması için yalnız pakette)
+  const indexPath = path.join(STAGE, 'index.html')
+  if (fs.existsSync(indexPath)) {
+    let html = fs.readFileSync(indexPath, 'utf8')
+    const csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; img-src 'self' data:; media-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'\">"
+    if (!/Content-Security-Policy/.test(html)) {
+      html = html.replace(/<head([^>]*)>/i, `<head$1>\n    ${csp}`)
+      fs.writeFileSync(indexPath, html)
+      console.log('CSP meta enjekte edildi')
+    }
+  }
   fs.writeFileSync(path.join(STAGE, 'imsmanifest.xml'), manifest)
   const allFiles = listFiles(STAGE)
   const zip = new JSZip()

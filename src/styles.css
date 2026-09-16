@@ -116,7 +116,7 @@ html { -webkit-text-size-adjust: 100%; }
 .footer-seal { width: 26px; height: 26px; display: block; }
 .footer-inst { font-weight: 700; color: var(--ink-800); }
 .footer-sub { color: var(--ink-500); }
-.footer-attr { color: var(--ink-400); }
+.footer-attr { color: var(--ink-600); }
 @media (max-width: 1100px) { .footer-attr { display: none; } }
 @media (max-width: 860px) { .footer-sub { display: none; } }
 .eg-footer { justify-content: center; text-align: center; background: #f3f7fc;
@@ -241,4 +241,3 @@ html { -webkit-text-size-adjust: 100%; }
 .mode-card.assessment li .ck { background: var(--purple-100); color: var(--purple-600); }
 .mode-card .btn { margin-top: auto; width: 100%; }
 .mode-note { display: flex; justify-content: center; margin-bottom: 16px; }
-.mode-note 

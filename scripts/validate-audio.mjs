@@ -167,6 +167,8 @@ for (const [msg] of severityPool) fatal.push(msg)
     console.log(`  ${l ? '✓' : '✗'} kütüphane  ${p ? '✓' : '✗'} uygulama  ${a ? '✓' : '✗'} değerlendirme  ${f}`)
   }
   console.log(`  ✓ kombine: ${mixedLib} kütüphane kalemi, ${mixedCases} pratik vaka`)
+  const unreviewed = allCaseDefs.filter((c) => (c.modes || []).includes('assessment') && c.clinicalReview !== 'onayli')
+  if (unreviewed.length) console.log(`  ⚠ hekim onayı bekleyen değerlendirme vakası: ${unreviewed.length} (docs/klinik-degerlendirme-listesi.csv)`)
   const pedDatasets = (sources.inventory ?? []).filter((x) => /pediatrik|çocuk|pediatric/i.test(`${x.population} ${x.title} ${x.notes}`)).length
   const pedCases = allCaseDefs.filter((c) => c.population === 'pediatrik').length
   console.log(`  ✓ pediatrik: ${pedDatasets} veri seti, ${pedCases} vaka`)

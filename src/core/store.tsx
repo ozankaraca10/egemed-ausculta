@@ -6,12 +6,13 @@ import { bus } from './events'
 import { makeScorm, type ScormApi } from './scorm'
 import { deserializeSuspend, serializeSuspend, SUSPEND_LIMIT_12, SUSPEND_LIMIT_2004 } from './suspend'
 import { scoreCase, aggregateResults } from './scoring'
-import { resolveCaseSounds } from './resolver'
-import casesData from '../data/cases.json'
+import { ALL_CASES } from '../data/pool'
 
 /* ---------------- state ---------------- */
 export interface AppState {
   screen: Screen
+  /** aktif vaka — oturum havuzuyla tutarlı tek doğruluk kaynağı (§24) */
+  currentCaseId: string
   /** hasta gövde cinsiyeti (vakadan gelir; öğrenme modunda değiştirilebilir) */
   bodySex: 'kadin' | 'erkek' | 'pediatrik'
   mode: Mode
@@ -47,6 +48,7 @@ export const initialTelemetry: Telemetry = {
 
 const initialState: AppState = {
   screen: 'start',
+  currentCaseId: '',
   bodySex: 'erkek',
   mode: 'practice',
   caseIndex: 0,
@@ -73,6 +75,7 @@ const initialState: AppState = {
 export type Action =
   | { type: 'goto'; screen: Screen }
   | { type: 'startMode'; mode: Mode }
+  | { type: 'caseMount'; caseDef: CaseDef }
   | { type: 'setBodySex'; sex: 'kadin' | 'erkek' | 'pediatrik' }
   | { type: 'startSession'; practiceIds: string[]; assessmentIds: string[]; seed: number }
   | { type: 'setView'; view: PatientView }
@@ -100,6 +103,13 @@ function reducer(s: AppState, a: Action): AppState {
   switch (a.type) {
     case 'goto':
       return { ...s, screen: a.screen }
+    case 'caseMount': {
+      const def = a.caseDef
+      if (def.id === s.currentCaseId) return s
+      const pop = (def as CaseDef & { population?: string }).population
+      const sex: 'kadin' | 'erkek' | 'pediatrik' = pop === 'pediatrik' ? 'pediatrik' : def.patient.sex === 'kadın' ? 'kadin' : 'erkek'
+      return { ...s, currentCaseId: def.id, bodySex: sex }
+    }
     case 'startMode':
       return {
         ...s, mode: a.mode, screen: 'simulation', caseIndex: 0, step: 0, answers: {}, revealed: {}, hintsUsed: 0,
@@ -159,12 +169,12 @@ function reducer(s: AppState, a: Action): AppState {
       bus.emit({ type: 'answer_submitted', qid: a.qid, correct: a.correct, at: Date.now() })
       return { ...s, revealed: { ...s.revealed, [a.qid]: true }, lastFeedback: { correct: a.correct, qid: a.qid } }
     case 'useHint':
-      bus.emit({ type: 'hint_used', caseId: state_caseId, at: Date.now() })
+      bus.emit({ type: 'hint_used', caseId: s.currentCaseId, at: Date.now() })
       return { ...s, hintsUsed: s.hintsUsed + 1 }
     case 'timer':
       return { ...s, assessmentTimer: s.assessmentTimer + a.deltaMs }
     case 'advance': {
-      const def = (casesData.cases as CaseDef[]).find((c) => c.id === state_caseId)
+      const def = ALL_CASES.find((c) => c.id === s.currentCaseId)
       if (!def) return s
       const isLast = def.questions[s.step + 1] == null
       if (!isLast) return { ...s, step: s.step + 1, lastFeedback: null }
@@ -207,11 +217,6 @@ function reducer(s: AppState, a: Action): AppState {
   }
 }
 
-let state_caseId = ''
-export function setCurrentCaseId(id: string) {
-  state_caseId = id
-}
-
 /* ---------------- SCORM runtime ---------------- */
 export class ScormRuntime {
   api: ScormApi
@@ -237,7 +242,7 @@ export class ScormRuntime {
     return restored
   }
 
-  saveInteractions(questions: Question[], answers: Record<string, string[]>) {
+  saveInteractions(questions: Question[], answers: Record<string, string[]>, latencyMs?: Record<string, number>) {
     let idx = 0
     const is12 = this.api.version === '1.2'
     for (const q of questions) {
@@ -250,7 +255,9 @@ export class ScormRuntime {
       const response = given.join(' [,] ')
       if (is12) this.api.set(`${base}.student_response`, response)
       else this.api.set(`${base}.learner_response`, response)
-      this.api.set(`${base}.result`, correct ? 'correct' : 'wrong')
+      this.api.set(`${base}.result`, correct ? 'correct' : is12 ? 'wrong' : 'incorrect')
+      const lat = latencyMs?.[q.id]
+      if (!is12 && lat != null) this.api.set(`${base}.latency`, `PT${Math.max(0, Math.round(lat / 1000))}S`)
       idx++
     }
   }
@@ -282,11 +289,60 @@ export class ScormRuntime {
     this.api.commit()
   }
 
+  /** Sekme kapanır/gizlenirse son durumu LMS'e yaz (§27 devam güvencesi). */
+  /** Son durumu LMS'e yazar (kapanış/gizlenme ve testler tarafından kullanılır). */
+  flushNow() {
+    try {
+      this.saveProgress(buildSuspend(this.getState()))
+    } catch {
+      /* LMS erişilemezse sessizce yut */
+    }
+  }
+  attachAutoFlush() {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return
+    const flush = () => this.flushNow()
+    this.flushHandlers = {
+      unload: flush,
+      vis: () => {
+        if (document.visibilityState === 'hidden') flush()
+      },
+    }
+    window.addEventListener('beforeunload', this.flushHandlers.unload)
+    document.addEventListener('visibilitychange', this.flushHandlers.vis)
+  }
+  detachAutoFlush() {
+    if (!this.flushHandlers) return
+    window.removeEventListener('beforeunload', this.flushHandlers.unload)
+    document.removeEventListener('visibilitychange', this.flushHandlers.vis)
+    this.flushHandlers = undefined
+  }
+  private flushHandlers?: { unload: () => void; vis: () => void }
+
   terminate() {
+    this.detachAutoFlush()
     const elapsed = Math.round((performance.now() - this.startedAt) / 1000)
     const time = `${String(Math.floor(elapsed / 3600)).padStart(2, '0')}:${String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
     this.api.set('cmi.session_time', time)
     this.api.terminate()
+  }
+}
+
+/** Suspend yükünü state'ten üret (§27). */
+export function buildSuspend(state: AppState): SuspendPayload {
+  return {
+    v: 1,
+    mode: state.mode,
+    caseIndex: state.caseIndex,
+    step: state.step,
+    answers: state.answers,
+    hintsUsed: state.hintsUsed,
+    caseResults: state.caseResults,
+    tutorialDone: state.tutorialDone,
+    visits: state.telemetry.visits,
+    order: state.telemetry.order,
+    attempts: state.attempts,
+    sessionIds: state.session.practiceIds.concat(state.session.assessmentIds),
+    sessionSeed: state.session.seed,
   }
 }
 
@@ -321,6 +377,7 @@ export function StoreProvider({ children, cases }: { children: ReactNode; cases:
     const fresh = typeof window !== 'undefined' && window.location.search.includes('fresh=1')
     const restored = fresh ? null : rt.init()
     if (restored) dispatch({ type: 'restore', payload: restored })
+    rt.attachAutoFlush()
     const onPageHide = () => rt.terminate()
     window.addEventListener('pagehide', onPageHide)
     window.addEventListener('unload', onPageHide)
@@ -335,21 +392,7 @@ export function StoreProvider({ children, cases }: { children: ReactNode; cases:
   useEffect(() => {
     const rt = runtimeRef.current
     if (!rt || state.screen === 'start' || state.screen === 'modes') return
-    rt.saveProgress({
-      v: 1,
-      mode: state.mode,
-      caseIndex: state.caseIndex,
-      step: state.step,
-      answers: state.answers,
-      hintsUsed: state.hintsUsed,
-      caseResults: state.caseResults,
-      tutorialDone: state.tutorialDone,
-      visits: state.telemetry.visits,
-      order: state.telemetry.order,
-      attempts: state.attempts,
-      sessionIds: state.session.practiceIds.concat(state.session.assessmentIds),
-      sessionSeed: state.session.seed,
-    })
+    rt.saveProgress(buildSuspend(state))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.mode, state.caseIndex, state.step, state.attempts, state.tutorialDone])
 
@@ -363,25 +406,6 @@ export function StoreProvider({ children, cases }: { children: ReactNode; cases:
 
   // vaka olayı + akım vaka id
   // vaka başlangıcında hasta gövdesini vakaya göre ayarla (pediatrik öncelikli)
-  useEffect(() => {
-    const def = (casesData.cases as CaseDef[]).find((c) => c.id === state_caseId)
-    if (!def) return
-    const pop = (def as CaseDef & { population?: string }).population
-    const sex: 'kadin' | 'erkek' | 'pediatrik' = pop === 'pediatrik' ? 'pediatrik' : def.patient.sex === 'kadın' ? 'kadin' : 'erkek'
-    if (state.bodySex !== sex) dispatch({ type: 'setBodySex', sex })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state_caseId])
-
-  useEffect(() => {
-    const current = cases[state.caseIndex]
-    if (state.screen === 'simulation' && current) {
-      state_caseId = current.id
-      bus.emit({ type: 'case_started', caseId: current.id, mode: state.mode, at: Date.now() })
-      void resolveCaseSounds(current.soundAssignments)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.screen, state.caseIndex, state.mode])
-
   return <Ctx.Provider value={{ state, dispatch, runtime: runtimeRef.current }}>{children}</Ctx.Provider>
 }
 

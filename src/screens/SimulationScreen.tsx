@@ -4,7 +4,7 @@ import pointsData from '../data/auscultation-points.json'
 import { ALL_CASES, poolFor } from '../data/pool'
 import type { BodyType } from '../ui/PatientStage'
 import { engine } from '../audio/engineSingleton'
-import { resolveCaseSoundsEx } from '../core/resolver'
+import { resolveCaseSoundsEx, resolveCaseSounds } from '../core/resolver'
 import { useStore, computeAggregate } from '../core/store'
 import { bus } from '../core/events'
 import { PatientStage, type StageHandle } from '../ui/PatientStage'
@@ -44,10 +44,20 @@ export function SimulationScreen() {
       runtime?.reportScore(agg.total, agg.mastery, true)
       bus.emit({ type: 'assessment_completed', total: agg.total, at: Date.now() })
     }
-    runtime?.saveInteractions([], {})
     dispatch({ type: 'setResults', results: state.caseResults })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.caseIndex])
+
+  const shownAtRef = useRef<Record<string, number>>({})
+
+  // görüntülenen vakayı store'a bildir (havuz/ders fark edilmez; tek doğruluk kaynağı)
+  useEffect(() => {
+    if (!caseDef) return
+    dispatch({ type: 'caseMount', caseDef })
+    bus.emit({ type: 'case_started', caseId: caseDef.id, mode: state.mode, at: Date.now() })
+    void resolveCaseSounds(caseDef.soundAssignments)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caseDef.id])
 
   const primaryAction = () => {
     if (!q) return
@@ -59,7 +69,15 @@ export function SimulationScreen() {
     const given = state.answers[q.id] ?? []
     const correct = isCorrect(q, given)
     dispatch({ type: 'submitAnswer', qid: q.id, correct })
-    if (isLastQuestion(caseDef, q)) runtime?.saveInteractions(caseDef.questions, state.answers)
+    if (isLastQuestion(caseDef, q)) {
+      const now = Date.now()
+      const latency: Record<string, number> = {}
+      for (const qq of caseDef.questions) {
+        const t0 = shownAtRef.current[qq.id]
+        if (t0) latency[qq.id] = now - t0
+      }
+      runtime?.saveInteractions(caseDef.questions, state.answers, latency)
+    }
     dispatch({ type: 'advance' })
   }
 

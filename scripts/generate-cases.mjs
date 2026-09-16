@@ -321,6 +321,7 @@ for (const [key, def] of Object.entries(LUNG)) {
       scoringWeights: { technique: 20, localization: 20, recognition: 50, interpretation: 0, diagnosis: 0, systematic: 10 },
       masteryThreshold: 80,
       auto: true,
+      clinicalReview: 'beklemede',
     })
   }
   console.log('kombine vaka:', n)
@@ -397,6 +398,7 @@ for (const [key, def] of Object.entries(LUNG)) {
         scoringWeights: caseWeights(false),
         masteryThreshold: 80,
         auto: true,
+        clinicalReview: 'beklemede',
       })
     }
   }
@@ -411,6 +413,23 @@ const manifest = {
   cases: out,
 }
 fs.writeFileSync(path.join(ROOT, 'src', 'data', 'cases-auto.json'), JSON.stringify(manifest, null, 2))
+
+// Hekim gözden geçirme listesi (tüm havuz) — klinik metinlerin insan onayından geçmesi için
+{
+  const core = JSON.parse(fs.readFileSync(path.join(ROOT, 'src', 'data', 'cases.json'), 'utf8')).cases
+  const esc = (v) => `"${String(v ?? '').replace(/"/g, '""').replace(/\s+/g, ' ')}"`
+  const rows = ['id,populasyon,baslik,ana_bulgu,esleme,hekim_onayi,soru_sayisi,soru_metinleri,geri_bildirim']
+  for (const c of [...core, ...out]) {
+    rows.push([
+      c.id, c.population ?? 'yetiskin', c.title, c.primaryAcousticFinding, c.mappingValidation,
+      c.clinicalReview ?? 'beklemede', c.questions.length,
+      c.questions.map((q) => q.prompt).join(' | '),
+      (c.feedback?.summary ?? '').slice(0, 300),
+    ].map(esc).join(','))
+  }
+  fs.writeFileSync(path.join(ROOT, 'docs', 'klinik-degerlendirme-listesi.csv'), '\ufeff' + rows.join('\n'))
+  console.log('hekim gözden geçirme listesi:', rows.length - 1, 'vaka')
+}
 const byKind = out.reduce((acc, c) => {
   const k = c.id.split('_')[1]
   acc[k] = (acc[k] ?? 0) + 1

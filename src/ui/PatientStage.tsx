@@ -67,6 +67,8 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
   /** strict (değerlendirme): her nokta yalnızca bir kez dinlenebilir */
   const listenedRef = useRef<Set<string>>(new Set())
   const [spentNotice, setSpentNotice] = useState(false)
+  /** ses hazırlama / yükleme hatası geri bildirimi (§ UX) */
+  const [audioStatus, setAudioStatus] = useState<{ pointId: string; status: 'loading' | 'error' } | null>(null)
   const lastHeadRef = useRef(head)
 
   const [snapped, setSnapped] = useState<string | null>(null)
@@ -165,6 +167,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
         return
       }
       t.playDelay = window.setTimeout(async () => {
+        setAudioStatus({ pointId, status: 'loading' })
         const snd = soundFor(pointId)
         if (!snd) {
           onPlayingChange(false, pointId)
@@ -174,12 +177,14 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
           await engine.play(pointId, snd, head)
           listenedRef.current.add(pointId)
           setSpentNotice(false)
+          setAudioStatus(null)
           playingRef.current = true
           setPlaying(true)
           onPlayingChange(true, pointId)
         } catch {
           playingRef.current = false
           setPlaying(false)
+          setAudioStatus({ pointId, status: 'error' })
           onPlayingChange(false, pointId)
         }
       }, AUDIO_CONFIG.dwellToPlayMs)
@@ -350,6 +355,12 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
         )}
         {strict && snapped && spentNotice && (
           <div className="dwell-hint">Bu bölge için dinleme hakkı kullanıldı — manuel muayenede tek dinleme kuralı.</div>
+        )}
+        {audioStatus?.status === 'loading' && <div className="dwell-hint">Ses hazırlanıyor…</div>}
+        {audioStatus?.status === 'error' && (
+          <div className="dwell-hint dwell-error" role="alert">
+            Ses yüklenemedi. Bağlantınızı/LMS oturumunu kontrol edip bölgeyi yeniden dinleyin.
+          </div>
         )}
       </div>
       </div>

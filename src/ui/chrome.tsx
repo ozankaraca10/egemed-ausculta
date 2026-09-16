@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useStore } from '../core/store'
 import { IconBook, IconGlobe, IconHelpCircle, IconEcg, IconFullscreen, IconFullscreenExit } from './icons'
-import casesData from '../data/cases.json'
-import type { CaseDef } from '../core/types'
-
-const cases = casesData.cases as unknown as CaseDef[]
+import { ALL_CASES } from '../data/pool'
 
 export function BrandMark({ size = 30 }: { size?: number }) {
   return <img src="brand/logo-icon-white-web.png" alt="" width={size} height={size} className="brand-mark" />
@@ -77,8 +74,7 @@ export function Header() {
 }
 
 function currentTotal(state: ReturnType<typeof useStore>['state']): number {
-  const list = state.mode === 'assessment' ? cases.filter((c) => c.modes.includes('assessment')) : cases
-  const c = list[state.caseIndex]
+  const c = ALL_CASES.find((x) => x.id === state.currentCaseId)
   return c?.questions.length ?? 1
 }
 function fmtTimer(ms: number): string {

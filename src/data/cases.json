@@ -210,7 +210,8 @@
         "interpretation": 25,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_s3",
@@ -409,7 +410,8 @@
         "interpretation": 25,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_s4",
@@ -592,7 +594,8 @@
         "interpretation": 25,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_systolic_murmur",
@@ -796,7 +799,8 @@
         "interpretation": 25,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_atrial_fibrillation",
@@ -965,7 +969,8 @@
       "references": [
         "HLS-CMDS v3 — Atrial Fibrillation kayıtları (Apex, LUSB, RUSB)"
       ],
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_normal_lung",
@@ -1198,7 +1203,8 @@
         "interpretation": 25,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_wheezing",
@@ -1430,7 +1436,8 @@
         "interpretation": 25,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_fine_crackles",
@@ -1627,7 +1634,8 @@
         "interpretation": 25,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_coarse_crackles",
@@ -1791,7 +1799,8 @@
         "interpretation": 20,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_rhonchi",
@@ -1955,7 +1964,8 @@
         "interpretation": 20,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_pleural_rub",
@@ -2119,7 +2129,8 @@
         "interpretation": 20,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_tachycardia",
@@ -2259,7 +2270,8 @@
         "interpretation": 20,
         "diagnosis": 0,
         "systematic": 5
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_av_block",
@@ -2399,7 +2411,8 @@
         "interpretation": 20,
         "diagnosis": 5,
         "systematic": 0
-      }
+      },
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_early_systolic_murmur",
@@ -2606,7 +2619,8 @@
         "diagnosis": 0,
         "systematic": 5
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_late_systolic_murmur",
@@ -2812,7 +2826,8 @@
         "diagnosis": 0,
         "systematic": 5
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_late_diastolic_murmur",
@@ -3010,7 +3025,8 @@
         "diagnosis": 0,
         "systematic": 5
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_mixed_msm_wheezing",
@@ -3176,7 +3192,8 @@
         "diagnosis": 0,
         "systematic": 10
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_mixed_esm_coarse",
@@ -3342,7 +3359,8 @@
         "diagnosis": 0,
         "systematic": 10
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_mixed_s3_normal",
@@ -3508,7 +3526,8 @@
         "diagnosis": 0,
         "systematic": 10
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_mixed_af_rhonchi",
@@ -3674,7 +3693,8 @@
         "diagnosis": 0,
         "systematic": 10
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_pediatric_normal_heart",
@@ -3864,7 +3884,8 @@
         "diagnosis": 0,
         "systematic": 0
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_pediatric_wheezing",
@@ -4043,7 +4064,8 @@
         "diagnosis": 0,
         "systematic": 0
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     },
     {
       "id": "case_pediatric_innocent_murmur",
@@ -4251,7 +4273,8 @@
         "diagnosis": 0,
         "systematic": 0
       },
-      "masteryThreshold": 80
+      "masteryThreshold": 80,
+      "clinicalReview": "beklemede"
     }
   ]
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { MockAdapter, detectScorm, makeScorm, Scorm2004Adapter, Scorm12Adapter } from '../src/core/scorm'
-import { serializeSuspend, deserializeSuspend } from '../src/core/suspend'
+
 import { scoreCase, aggregateResults, practiceAdjusted, MASTERY_THRESHOLD } from '../src/core/scoring'
 import { validateCase, filterAssessmentPool } from '../src/core/validation'
 import { resolveAssignment, resolveAssignmentEx, resolveCaseSounds, resolveCaseSoundsEx, resolveLibrarySound, RECORDS } from '../src/core/resolver'
@@ -14,6 +14,7 @@ import { poolFor as poolForTest } from '../src/data/pool'
 import { EXTERNAL_RECORDS } from '../src/core/resolver'
 import { computeMetrics } from '../src/data/metrics'
 import { serializeSuspend, deserializeSuspend, SUSPEND_LIMIT_12, SUSPEND_LIMIT_2004 } from '../src/core/suspend'
+import { ScormRuntime } from '../src/core/store'
 import type { CaseDef, SuspendPayload, Telemetry } from '../src/core/types'
 
 const cases = casesData.cases as unknown as CaseDef[]
@@ -410,6 +411,60 @@ describe('tıbbi tutarlılık (pediatrik vitaller + soru bütünlüğü)', () =>
   })
 })
 
+describe('SCORM interactions ve auto-flush (§25-27)', () => {
+  const fakeApi = (version: '2004' | '1.2') => {
+    const store: Record<string, string> = {}
+    return {
+      store,
+      version,
+      init: () => true,
+      get: (k: string) => store[k] ?? '',
+      set: (k: string, v: string) => {
+        store[k] = v
+        return true
+      },
+      commit: () => true,
+      terminate: () => true,
+    }
+  }
+  const qs = [
+    { id: 'q1', type: 'single_choice', domain: 'recognition', prompt: 'P', options: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }], correct: ['a'], feedbackCorrect: '', feedbackIncorrect: '' },
+  ] as never
+
+  it('2004: yanlış yanıt "incorrect", latency PT#S biçiminde', () => {
+    const api = fakeApi('2004')
+    const rt = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rt.api = api as never
+    rt.saveInteractions(qs as never, { q1: ['b'] }, { q1: 4200 })
+    expect(api.store['cmi.interactions.0.result']).toBe('incorrect')
+    expect(api.store['cmi.interactions.0.latency']).toBe('PT4S')
+    expect(api.store['cmi.interactions.0.learner_response']).toBe('b')
+  })
+  it('1.2: yanlış yanıt "wrong", latency yazılmaz', () => {
+    const api = fakeApi('1.2')
+    const rt = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rt.api = api as never
+    rt.saveInteractions(qs as never, { q1: ['a'] }, { q1: 4200 })
+    expect(api.store['cmi.interactions.0.result']).toBe('correct')
+    expect(api.store['cmi.interactions.0.student_response']).toBe('a')
+    expect(api.store['cmi.interactions.0.latency']).toBeUndefined()
+  })
+  it('auto-flush: beforeunload suspend_data yazar', () => {
+    const api = fakeApi('2004')
+    const state = {
+      mode: 'practice', caseIndex: 2, step: 1, answers: {}, hintsUsed: 0, caseResults: [],
+      tutorialDone: true, telemetry: { visits: {}, order: [] }, attempts: 1,
+      session: { practiceIds: ['a'], assessmentIds: [], seed: 5 },
+    } as never
+    const rt = new ScormRuntime(() => state, () => 3)
+    rt.api = api as never
+    rt.flushNow()
+    expect(api.store['cmi.suspend_data']).toContain('"c":2')
+    rt.attachAutoFlush()
+    rt.detachAutoFlush()
+  })
+})
+
 describe('SCORM suspend boyut koruması (§27)', () => {
   const bigPayload = () => {
     const visits: Record<string, { dwellMs: number; listenMs: number; visits: number; firstOrder: number }> = {}
@@ -477,6 +532,10 @@ describe('veri seti envanteri', () => {
 
   it('envanterde en az 15 veri seti araştırılmıştır', () => {
     expect(sources.inventory.length).toBeGreaterThanOrEqual(15)
+  })
+  it('lisansı doğrulanmış en az 9 veri seti vardır', () => {
+    const v = sources.inventory.filter((x) => (x as { licenseVerified?: boolean }).licenseVerified)
+    expect(v.length).toBeGreaterThanOrEqual(9)
   })
   it('her envanter kaydında etiket kalitesi bilgisi vardır', () => {
     for (const it of sources.inventory as unknown as { id: string; labelTypes?: string[] }[]) {
