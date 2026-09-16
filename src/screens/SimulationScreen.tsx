@@ -11,7 +11,7 @@ import { PatientStage, type StageHandle } from '../ui/PatientStage'
 import { Toolbar } from '../ui/Toolbar'
 import { QuestionCard, FeedbackCard } from '../ui/Questions'
 import { Footer, EcgDeco } from '../ui/chrome'
-import { IconDoc, IconTarget, IconArrowRight, IconInfo } from '../ui/icons'
+import { IconDoc, IconArrowRight, IconInfo } from '../ui/icons'
 
 /** Simülasyon ekranı — Uygulama & Değerlendirme (§3B, §3C): hasta solda, olgu/görev/soru sağda. */
 
@@ -27,7 +27,6 @@ export function SimulationScreen() {
   const caseList = sessionCases.length ? sessionCases : poolFor(state.mode)
   const caseDef = caseList[state.caseIndex] ?? caseList[0]
   const stageRef = useRef<StageHandle>(null)
-  const [playing, setPlaying] = useState(false)
   const [activePoint, setActivePoint] = useState<string | null>(null)
 
   const isAssessment = state.mode === 'assessment'
@@ -88,6 +87,11 @@ export function SimulationScreen() {
         <div className="container tall screen-body no-scroll">
           <div className={`sim-grid ${state.mode === 'assessment' ? 'wide-left' : ''}`}>
             <div className="sim-main">
+              {isAssessment && (
+                <div className="strict-banner" role="alert">
+                  <strong>Manuel muayene modu.</strong> Her bölge yalnızca <b>bir kez</b> dinlenebilir; işaretleme, ipucu ve tekrar dinleme yoktur.
+                </div>
+              )}
               <div className="stage-card">
                 <div className="stage-top stage-top-right">
                   {state.mode !== 'assessment' ? (
@@ -95,18 +99,14 @@ export function SimulationScreen() {
                       <input type="checkbox" checked={state.showPoints} onChange={(e) => dispatch({ type: 'togglePoints', show: e.target.checked })} />
                       Dinleme noktalarını göster
                     </label>
-                  ) : (
-                    <span className="strict-note" title="Değerlendirmede işaret, ipucu ve tekrar dinleme yoktur; muayene tamamen manueldir.">
-                      Manuel muayene modu — işaret/ipucu yok
-                    </span>
-                  )}
+                  ) : null}
                 </div>
                 <PatientStage
                   key={state.caseIndex}
                   ref={stageRef}
                   points={points}
                   filterIds={caseDef.soundAssignments.map((a) => a.pointId)}
-                  bodyType={((caseDef as CaseDef & { population?: string }).population === 'pediatrik' ? 'pediatrik' : caseDef.patient.sex === 'kadın' ? 'kadin' : 'erkek') as BodyType}
+                  bodyType={((caseDef as CaseDef & { population?: string }).population === 'pediatrik' ? 'pediatrik' : 'erkek') as BodyType}
                   strict={isAssessment}
                   view={state.view}
                   head={state.head}
@@ -119,7 +119,7 @@ export function SimulationScreen() {
                   onVisit={(pointId) => { dispatch({ type: 'visit', pointId }); bus.emit({ type: 'auscultation_started', pointId, at: Date.now() }) }}
                   onDwell={(pointId, dwellMs) => dispatch({ type: 'dwell', pointId, dwellMs })}
                   onListen={(pointId, listenMs) => dispatch({ type: 'listen', pointId, listenMs })}
-                  onPlayingChange={(pl, pt) => { setPlaying(pl); setActivePoint(pt) }}
+                  onPlayingChange={(_pl, pt) => setActivePoint(pt)}
                 />
                 <div className="region-list-title sr-only-until-focus">Bölge listesi (klavye ile erişim)</div>
                 <div className="region-list sr-only-until-focus">
@@ -137,7 +137,7 @@ export function SimulationScreen() {
                     <span className="small">
                       Bu bölge için doğrulanmış posterior kayıt yok; aynı bulgunun{' '}
                       <strong>{points.find((x) => x.id === resolved.fallbacks[activePoint])?.fullLabel}</strong> kaydı
-                      çalınmaktadır (kaynak bölge dürüstçe belirtilir).
+                      çalınmaktadır.
                     </span>
                   </div>
                 )}
@@ -145,7 +145,6 @@ export function SimulationScreen() {
               <Toolbar
                 caseDef={caseDef}
                 stageRef={stageRef}
-                playing={playing}
                 activePoint={activePoint}
                 question={state.mode === 'practice' ? q : undefined}
                 onHint={() => dispatch({ type: 'useHint' })}
@@ -172,20 +171,9 @@ export function SimulationScreen() {
                 </div>
               </div>
 
-              <div className="card">
-                <div className="card-title-row">
-                  <div className="ic"><IconTarget /></div>
-                  <h3>Görev</h3>
-                </div>
-                <ul className="task-list">
-                  {caseDef.tasks.map((t, i) => (
-                    <li key={t}><span className="n">{i + 1}</span> {t}</li>
-                  ))}
-                </ul>
-              </div>
-
+              
               {q && (
-                <div className="card">
+                <div className="card q-card-dark">
                   <QuestionCard
                     q={q}
                     value={state.answers[q.id] ?? []}

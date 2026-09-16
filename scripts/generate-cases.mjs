@@ -33,9 +33,9 @@ const HEART = {
   mid_systolic_murmur: { label: 'Orta Sistolik Üfürüm', timing: 'orta sistol', head: 'diaphragm', diag: null },
   late_systolic_murmur: { label: 'Geç Sistolik Üfürüm', timing: 'geç sistol', head: 'diaphragm', diag: null },
   late_diastolic_murmur: { label: 'Geç Diyastolik Üfürüm', timing: 'geç diyastol (presistolik)', head: 'bell', diag: null },
-  atrial_fibrillation: { label: 'Atriyal Fibrilasyon', timing: 'düzensiz düzensiz', head: 'diaphragm', diag: 'Atriyal fibrilasyon' },
+  atrial_fibrillation: { label: 'Atriyal Fibrilasyon', timing: 'tamamen düzensiz', head: 'diaphragm', diag: 'Atriyal fibrilasyon' },
   tachycardia: { label: 'Taşikardi', timing: 'düzenli hızlı', head: 'diaphragm', diag: 'Taşikardi' },
-  av_block: { label: 'Atriyoveventriküler Blok', timing: 'değişken aralıklı', head: 'diaphragm', diag: 'Atriyoveventriküler blok' },
+  av_block: { label: 'Atriyoventriküler Blok', timing: 'değişken aralıklı', head: 'diaphragm', diag: 'Atriyoventriküler blok' },
 }
 const LUNG = {
   normal: { label: 'Normal Solunum Sesleri', phase: 'inspirasyon ekspiryumdan uzun', head: 'diaphragm' },
@@ -91,7 +91,7 @@ for (const [key, def] of Object.entries(HEART)) {
     const id = `auto_heart_${key}_${primary.replace('cardiac_', '')}`
     counters[id] = (counters[id] ?? 0) + 1
     const lib = libByKey[key]
-    const sex = ['normal', 's3', 's4'].includes(key) ? 'kadın' : 'erkek'
+    const sex = 'erkek' // gövde her zaman erkek (cinsiyet seçici kaldırıldı)
     const age = key === 's3' ? 26 : key === 's4' ? 64 : key === 'tachycardia' ? 38 : key === 'av_block' ? 73 : 55
     const q = []
     q.push({
@@ -116,7 +116,7 @@ for (const [key, def] of Object.entries(HEART)) {
     }
     q.push({
       id: 'q3', type: 'single_choice', domain: 'interpretation',
-      prompt: 'Bu bulgunun siklus içindeki zamanlaması hangisidir?',
+      prompt: 'Bu bulgu kalp siklusunun hangi döneminde duyulur?',
       options: [
         { id: 'a', label: def.timing },
         ...Object.entries(HEART).filter(([k]) => k !== key).slice(0, 3).map(([, v], i) => ({ id: String.fromCharCode(98 + i), label: v.timing })),
@@ -360,7 +360,7 @@ for (const [key, def] of Object.entries(LUNG)) {
         id, title: `Pediatrik ${HEART[finding]?.label ?? finding} — ${pointLabels[primary]}`,
         modes: ['practice', 'assessment'],
         population: 'pediatrik',
-        patient: { age: ctx.age, sex: n % 2 ? 'erkek' : 'kadın' },
+        patient: { age: ctx.age, sex: 'erkek' },
         chiefComplaint: 'Kalp seslerinin pediatrik değerlendirmesi',
         history: 'Çocuk hastada kardiyak oskültasyon; gerçek pediatrik hasta kaydı (CirCor, ODC-BY 1.0).',
         vitalSigns: { hr: ctx.hr, rr: ctx.rr, bp: '100/64', spo2: 98, temp: '37.2 °C' },

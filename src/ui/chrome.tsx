@@ -97,11 +97,17 @@ function fmtTimer(ms: number): string {
 export function Footer() {
   return (
     <footer className="eg-footer">
-      <img src="brand/logo-icon-web.png" alt="" className="footer-seal" />
-      <span className="footer-inst">Ege Üniversitesi Tıp Fakültesi Dekanlığı</span>
-      <span className="footer-sub">EGEMED Ausculta — Kardiyopulmoner Oskültasyon Simülatörü · Tüm hakları saklıdır © 2026</span>
-      <span className="spacer" />
-      <span className="footer-attr small">Ses kayıtları: HLS-CMDS v3 · CC BY 4.0</span>
+      <div className="footer-left">
+        <img src="brand/logo-icon-web.png" alt="" className="footer-seal" />
+        <span className="footer-inst">Ege Üniversitesi Tıp Fakültesi Dekanlığı</span>
+      </div>
+      <div className="footer-mid">
+        <span className="footer-sub">EGEMED Ausculta — Kardiyopulmoner Oskültasyon Simülatörü</span>
+        <span className="footer-copy">Tüm hakları saklıdır © 2026</span>
+      </div>
+      <div className="footer-right">
+        <span className="footer-attr2">Ses kayıtları: HLS-CMDS v3 · CC BY 4.0</span>
+      </div>
     </footer>
   )
 }

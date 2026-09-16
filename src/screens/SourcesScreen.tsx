@@ -106,7 +106,7 @@ export function SourcesScreen() {
                   <span className="license-chip">CC BY 4.0</span> — Creative Commons Attribution 4.0 International
                 </span>
                 <span className="k">Kullanım</span>
-                <span className="v">{d.usage ?? d.status ?? 'Kaynak kayıtlar eğitim amaçlı kullanılmıştır.'}</span>
+                <span className="v">{d.usage ?? 'Kaynak kayıtlar eğitim amaçlı kullanılmıştır.'}</span>
               </div>
               <p className="muted small mt-12">{d.attributionText}</p>
             </div>

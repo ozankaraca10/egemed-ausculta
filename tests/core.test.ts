@@ -507,8 +507,8 @@ describe('SCORM suspend boyut koruması (§27)', () => {
 describe('landing metrikleri', () => {
   it('envanter zenginliği metrikleri hesaplanır ve tutarlıdır', () => {
     const m = computeMetrics()
-    expect(m.datasets).toBeGreaterThanOrEqual(15)
-    expect(m.datasetsPediatric).toBeGreaterThanOrEqual(3)
+    expect(m.datasets).toBeGreaterThanOrEqual(2)
+    expect(m.datasetsPediatric).toBeGreaterThanOrEqual(1)
     expect(m.soundClasses).toBeGreaterThanOrEqual(16)
     expect(m.auscultationPoints).toBeGreaterThanOrEqual(17)
     expect(m.practicePoolSize).toBeGreaterThanOrEqual(100)
@@ -530,21 +530,22 @@ describe('veri seti envanteri', () => {
     }[]
   }
 
-  it('envanterde en az 15 veri seti araştırılmıştır', () => {
-    expect(sources.inventory.length).toBeGreaterThanOrEqual(15)
+  it('envanter yalnızca kullanılan veri setlerini içerir (HLS-CMDS + CirCor)', () => {
+    const ids = sources.inventory.map((x) => x.id).sort()
+    expect(ids).toEqual(['hls-cmds-v3', 'physionet-circor'])
   })
-  it('lisansı doğrulanmış en az 9 veri seti vardır', () => {
-    const v = sources.inventory.filter((x) => (x as { licenseVerified?: boolean }).licenseVerified)
-    expect(v.length).toBeGreaterThanOrEqual(9)
+  it('kullanılan tüm veri setlerinin lisansı doğrulanmıştır', () => {
+    const unverified = sources.inventory.filter((x) => !(x as { licenseVerified?: boolean }).licenseVerified)
+    expect(unverified).toEqual([])
   })
   it('her envanter kaydında etiket kalitesi bilgisi vardır', () => {
     for (const it of sources.inventory as unknown as { id: string; labelTypes?: string[] }[]) {
       expect(Array.isArray(it.labelTypes) && it.labelTypes!.length > 0, `etiket: ${it.id}`).toBe(true)
     }
   })
-  it('en az 3 pediatrik odaklı veri seti envanterdedir', () => {
+  it('pediatrik veri seti (CirCor) envanterdedir', () => {
     const ped = sources.inventory.filter((x) => /pediatrik|pediatric|çocuk|fetal/i.test(`${x.population} ${x.title} ${x.notes}`))
-    expect(ped.length).toBeGreaterThanOrEqual(3)
+    expect(ped.length).toBeGreaterThanOrEqual(1)
   })
   it('her envanter kaydı lisans, atıf ve erişim bağlantısı içerir', () => {
     for (const it of sources.inventory) {
@@ -560,11 +561,9 @@ describe('veri seti envanteri', () => {
       expect(it.licenseVerified, `${it.id} lisansı doğrulanmış olmalı`).toBe(true)
     }
   })
-  it('ICBHI 2017 pakete alınmaz (§34)', () => {
-    const icbhi = sources.inventory.find((x) => x.id === 'icbhi-2017')
-    expect(icbhi).toBeDefined()
-    expect(['license_review', 'inventory_only']).toContain(icbhi!.status)
-    expect(icbhi!.importScript).toBeNull()
+  it('ICBHI 2017 paket içeriğinde bulunmaz (§34)', () => {
+    // envanterde tutulmaz; hiçbir kayıt ICBHI kaynaklı olmamalı
+    expect(RECORDS.some((r) => r.sourceDataset === 'icbhi-2017')).toBe(false)
   })
   it('paketlenen seslerin kaynak atıfları tanımlıdır (datasets ↔ inventory)', () => {
     const bundled = RECORDS.find((r) => r.sourceDataset === 'hls-cmds-v3')

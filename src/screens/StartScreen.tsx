@@ -38,7 +38,7 @@ export function StartScreen() {
   }
 
   const stats: { label: string; tip: string }[] = [
-    { label: `${M.datasets} veri seti`, tip: `${M.datasets} açık erişimli veri seti araştırıldı; ${M.datasetsVerified} lisansı doğrulandı, ${M.datasetsPediatric} pediatrik odaklı.` },
+    { label: `${M.datasets} veri seti`, tip: `Uygulamada kullanılan veri setleri: HLS-CMDS v3 (klinik manikin) ve CirCor (gerçek pediatrik hasta kayıtları). Her ikisinin lisansı doğrulanmıştır.` },
     { label: `${M.bundledRecordings} klinik kayıt`, tip: 'Pakete dahil doğrulanmış oskültasyon kaydı (HLS-CMDS v3) + gerçek hasta kayıtları.' },
     { label: `${M.soundClasses} ses sınıfı`, tip: 'Kalp, akciğer ve kombine sınıflar; her biri klinik metafor ve dalga formuyla.' },
     { label: `${M.totalCases} vaka`, tip: `Her oturumda havuzdan rastgele ${10} vaka; ${M.pediatricCases} pediatrik vaka dahil.` },

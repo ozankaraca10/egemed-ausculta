@@ -294,3 +294,14 @@ npm run dev        # http://localhost:5173
 - **SCORM 1.2:** `npm run build:scorm` → `dist/EGEMED-Ausculta-SCORM12.zip`.
 - **SCORM 2004:** kullanımdan kaldırıldı (kullanıcı kararı). 2004 paketi üretilmez;
   2004 manifest dalı ve `build:scorm2004` script'i kaldırılmıştır. Çalışma zamanı yalnız 1.2 API'sini arar.
+
+
+---
+
+## Kaynakların sadeleştirilmesi
+
+- Kaynaklar ekranı artık yalnızca **fiilen kullanılan** veri setlerini listeler:
+  - HLS-CMDS v3 — pakete dahil 245 klinik manikin kaydı (CC BY 4.0)
+  - CirCor DigiScope — pediatrik gerçek hasta kayıtları (ODC-BY 1.0, 4 örnek)
+- Araştırma amaçlı tutulan diğer veri setleri (ICBHI 2017 dahil; pakete alınmaz §34) envanterden kaldırıldı; kullanılmayan importör script'i (`import-lung-dataset.mjs`) silindi.
+- Doğrulama ve testler bu sadeleştirmeye göre güncellendi (envanter: 2 set, hepsi lisansı doğrulanmış).

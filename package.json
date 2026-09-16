@@ -11,7 +11,6 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "import:hls-cmds": "node scripts/import-hls-cmds.mjs ${SOUNDS_DIR:-/tmp/egemed-ausculta/hls-cmds}",
-    "import:lung": "node scripts/import-lung-dataset.mjs",
     "validate": "node scripts/validate-audio.mjs",
     "build:scorm12": "vite build && node scripts/build-scorm.mjs 12",
     "build:scorm": "vite build && node scripts/build-scorm.mjs 12",

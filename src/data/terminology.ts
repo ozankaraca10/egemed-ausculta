@@ -32,7 +32,7 @@ export const TERMINOLOGY = {
       finding: 'Taşikardik hızlı ritim',
     },
     av_block: {
-      title: 'Atriyoveventriküler Blok',
+      title: 'Atriyoventriküler Blok',
       short: 'AV Blok',
       librarySub: 'İletim bozukluğu bulguları',
       finding: 'İletim bozukluğu ile uyumlu kalp sesleri (AV blok)',
@@ -47,7 +47,7 @@ export const TERMINOLOGY = {
       mid_systolic: {
         title: 'Sistolik Üfürüm (Orta Sistolik)',
         short: 'Orta sistolik üfürüm',
-        librarySub: 'Orta sistolik ejecte tipi üfürüm',
+        librarySub: 'Orta sistolik ejeksiyon tipi üfürüm',
         finding: 'Orta sistolik üfürüm',
       },
       late_systolic: {

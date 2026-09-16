@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-16T07:43:39.096Z",
+  "generatedAt": "2026-09-16T11:31:30.681Z",
   "source": "sounds.json + sounds-external.json",
   "count": 176,
   "cases": [
@@ -14,7 +14,7 @@
       "population": "yetişkin",
       "patient": {
         "age": 55,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin değerlendirilmesi istendi",
       "history": "Fizik muayenede kardiyak oskültasyon planlandı; tüm odaklar sistematik dinlenmelidir.",
@@ -146,7 +146,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -221,7 +221,7 @@
       "population": "yetişkin",
       "patient": {
         "age": 55,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin değerlendirilmesi istendi",
       "history": "Fizik muayenede kardiyak oskültasyon planlandı; tüm odaklar sistematik dinlenmelidir.",
@@ -353,7 +353,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -428,7 +428,7 @@
       "population": "yetişkin",
       "patient": {
         "age": 55,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin değerlendirilmesi istendi",
       "history": "Fizik muayenede kardiyak oskültasyon planlandı; tüm odaklar sistematik dinlenmelidir.",
@@ -560,7 +560,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -635,7 +635,7 @@
       "population": "yetişkin",
       "patient": {
         "age": 55,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin değerlendirilmesi istendi",
       "history": "Fizik muayenede kardiyak oskültasyon planlandı; tüm odaklar sistematik dinlenmelidir.",
@@ -767,7 +767,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -842,7 +842,7 @@
       "population": "yetişkin",
       "patient": {
         "age": 26,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin değerlendirilmesi istendi",
       "history": "Fizik muayenede kardiyak oskültasyon planlandı; tüm odaklar sistematik dinlenmelidir.",
@@ -964,7 +964,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -1039,7 +1039,7 @@
       "population": "yetişkin",
       "patient": {
         "age": 26,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin değerlendirilmesi istendi",
       "history": "Fizik muayenede kardiyak oskültasyon planlandı; tüm odaklar sistematik dinlenmelidir.",
@@ -1161,7 +1161,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -1236,7 +1236,7 @@
       "population": "yetişkin",
       "patient": {
         "age": 26,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin değerlendirilmesi istendi",
       "history": "Fizik muayenede kardiyak oskültasyon planlandı; tüm odaklar sistematik dinlenmelidir.",
@@ -1358,7 +1358,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -1433,7 +1433,7 @@
       "population": "yetişkin",
       "patient": {
         "age": 64,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin değerlendirilmesi istendi",
       "history": "Fizik muayenede kardiyak oskültasyon planlandı; tüm odaklar sistematik dinlenmelidir.",
@@ -1516,7 +1516,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -1723,7 +1723,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -1930,7 +1930,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -2137,7 +2137,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -2344,7 +2344,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -2514,7 +2514,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejecte tipi üfürümdür; sistolün ortasında yoğunlaşır.",
+          "feedbackCorrect": "Doğru. Kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejeksiyon tipi üfürümdür; sistolün ortasında yoğunlaşır.",
           "feedbackIncorrect": "Bu kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Sistol ortasında kabaran ve sönen bir rüzgâr esintisi (üfleme sesi).",
           "hint": "Sistol ortasında kabaran ve sönen bir rüzgâr esintisi (üfleme sesi)."
         },
@@ -2551,7 +2551,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -2599,7 +2599,7 @@
         }
       ],
       "feedback": {
-        "summary": "Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejecte tipi üfürümdür; sistolün ortasında yoğunlaşır.",
+        "summary": "Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejeksiyon tipi üfürümdür; sistolün ortasında yoğunlaşır.",
         "techniqueNotes": "Sistematik odak taraması ve karşılaştırma önerilir."
       },
       "references": [
@@ -2721,7 +2721,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejecte tipi üfürümdür; sistolün ortasında yoğunlaşır.",
+          "feedbackCorrect": "Doğru. Kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejeksiyon tipi üfürümdür; sistolün ortasında yoğunlaşır.",
           "feedbackIncorrect": "Bu kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Sistol ortasında kabaran ve sönen bir rüzgâr esintisi (üfleme sesi).",
           "hint": "Sistol ortasında kabaran ve sönen bir rüzgâr esintisi (üfleme sesi)."
         },
@@ -2758,7 +2758,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -2806,7 +2806,7 @@
         }
       ],
       "feedback": {
-        "summary": "Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejecte tipi üfürümdür; sistolün ortasında yoğunlaşır.",
+        "summary": "Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejeksiyon tipi üfürümdür; sistolün ortasında yoğunlaşır.",
         "techniqueNotes": "Sistematik odak taraması ve karşılaştırma önerilir."
       },
       "references": [
@@ -2928,7 +2928,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejecte tipi üfürümdür; sistolün ortasında yoğunlaşır.",
+          "feedbackCorrect": "Doğru. Kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejeksiyon tipi üfürümdür; sistolün ortasında yoğunlaşır.",
           "feedbackIncorrect": "Bu kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Sistol ortasında kabaran ve sönen bir rüzgâr esintisi (üfleme sesi).",
           "hint": "Sistol ortasında kabaran ve sönen bir rüzgâr esintisi (üfleme sesi)."
         },
@@ -2965,7 +2965,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -3013,7 +3013,7 @@
         }
       ],
       "feedback": {
-        "summary": "Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejecte tipi üfürümdür; sistolün ortasında yoğunlaşır.",
+        "summary": "Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejeksiyon tipi üfürümdür; sistolün ortasında yoğunlaşır.",
         "techniqueNotes": "Sistematik odak taraması ve karşılaştırma önerilir."
       },
       "references": [
@@ -3135,7 +3135,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejecte tipi üfürümdür; sistolün ortasında yoğunlaşır.",
+          "feedbackCorrect": "Doğru. Kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejeksiyon tipi üfürümdür; sistolün ortasında yoğunlaşır.",
           "feedbackIncorrect": "Bu kayıt \"Orta Sistolik Üfürüm\" sınıfındandır. Sistol ortasında kabaran ve sönen bir rüzgâr esintisi (üfleme sesi).",
           "hint": "Sistol ortasında kabaran ve sönen bir rüzgâr esintisi (üfleme sesi)."
         },
@@ -3172,7 +3172,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -3220,7 +3220,7 @@
         }
       ],
       "feedback": {
-        "summary": "Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejecte tipi üfürümdür; sistolün ortasında yoğunlaşır.",
+        "summary": "Orta sistolik üfürüm, S1 ile S2 arasında duyulan ejeksiyon tipi üfürümdür; sistolün ortasında yoğunlaşır.",
         "techniqueNotes": "Sistematik odak taraması ve karşılaştırma önerilir."
       },
       "references": [
@@ -3379,7 +3379,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -3586,7 +3586,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -3793,7 +3793,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -4000,7 +4000,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -4197,7 +4197,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -4394,7 +4394,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -4591,7 +4591,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -4755,7 +4755,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kayıt \"Atriyal Fibrilasyon\" sınıfındandır. Atriyal fibrilasyonda ritim düzensiz düzensizdir; S1 şiddeti atıştan atışa değişir.",
+          "feedbackCorrect": "Doğru. Kayıt \"Atriyal Fibrilasyon\" sınıfındandır. Atriyal fibrilasyonda ritim tamamen düzensizdir (düzensiz düzensiz); S1 şiddeti atıştan atışa değişir.",
           "feedbackIncorrect": "Bu kayıt \"Atriyal Fibrilasyon\" sınıfındandır. Düzensiz davul vuruşları — aralıklar her atışta değişir (yağmur damlaları gibi).",
           "hint": "Düzensiz davul vuruşları — aralıklar her atışta değişir (yağmur damlaları gibi)."
         },
@@ -4788,11 +4788,11 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
-              "label": "düzensiz düzensiz"
+              "label": "tamamen düzensiz"
             },
             {
               "id": "b",
@@ -4810,8 +4810,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Atriyal Fibrilasyon için tipik zamanlama: düzensiz düzensiz.",
-          "feedbackIncorrect": "Bu bulgunun zamanlaması: düzensiz düzensiz."
+          "feedbackCorrect": "Doğru. Atriyal Fibrilasyon için tipik zamanlama: tamamen düzensiz.",
+          "feedbackIncorrect": "Bu bulgunun zamanlaması: tamamen düzensiz."
         },
         {
           "id": "q4",
@@ -4861,7 +4861,7 @@
         }
       ],
       "feedback": {
-        "summary": "Atriyal fibrilasyonda ritim düzensiz düzensizdir; S1 şiddeti atıştan atışa değişir.",
+        "summary": "Atriyal fibrilasyonda ritim tamamen düzensizdir (düzensiz düzensiz); S1 şiddeti atıştan atışa değişir.",
         "techniqueNotes": "Sistematik odak taraması ve karşılaştırma önerilir."
       },
       "references": [
@@ -4977,7 +4977,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kayıt \"Atriyal Fibrilasyon\" sınıfındandır. Atriyal fibrilasyonda ritim düzensiz düzensizdir; S1 şiddeti atıştan atışa değişir.",
+          "feedbackCorrect": "Doğru. Kayıt \"Atriyal Fibrilasyon\" sınıfındandır. Atriyal fibrilasyonda ritim tamamen düzensizdir (düzensiz düzensiz); S1 şiddeti atıştan atışa değişir.",
           "feedbackIncorrect": "Bu kayıt \"Atriyal Fibrilasyon\" sınıfındandır. Düzensiz davul vuruşları — aralıklar her atışta değişir (yağmur damlaları gibi).",
           "hint": "Düzensiz davul vuruşları — aralıklar her atışta değişir (yağmur damlaları gibi)."
         },
@@ -5010,11 +5010,11 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
-              "label": "düzensiz düzensiz"
+              "label": "tamamen düzensiz"
             },
             {
               "id": "b",
@@ -5032,8 +5032,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Atriyal Fibrilasyon için tipik zamanlama: düzensiz düzensiz.",
-          "feedbackIncorrect": "Bu bulgunun zamanlaması: düzensiz düzensiz."
+          "feedbackCorrect": "Doğru. Atriyal Fibrilasyon için tipik zamanlama: tamamen düzensiz.",
+          "feedbackIncorrect": "Bu bulgunun zamanlaması: tamamen düzensiz."
         },
         {
           "id": "q4",
@@ -5083,7 +5083,7 @@
         }
       ],
       "feedback": {
-        "summary": "Atriyal fibrilasyonda ritim düzensiz düzensizdir; S1 şiddeti atıştan atışa değişir.",
+        "summary": "Atriyal fibrilasyonda ritim tamamen düzensizdir (düzensiz düzensiz); S1 şiddeti atıştan atışa değişir.",
         "techniqueNotes": "Sistematik odak taraması ve karşılaştırma önerilir."
       },
       "references": [
@@ -5199,7 +5199,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kayıt \"Atriyal Fibrilasyon\" sınıfındandır. Atriyal fibrilasyonda ritim düzensiz düzensizdir; S1 şiddeti atıştan atışa değişir.",
+          "feedbackCorrect": "Doğru. Kayıt \"Atriyal Fibrilasyon\" sınıfındandır. Atriyal fibrilasyonda ritim tamamen düzensizdir (düzensiz düzensiz); S1 şiddeti atıştan atışa değişir.",
           "feedbackIncorrect": "Bu kayıt \"Atriyal Fibrilasyon\" sınıfındandır. Düzensiz davul vuruşları — aralıklar her atışta değişir (yağmur damlaları gibi).",
           "hint": "Düzensiz davul vuruşları — aralıklar her atışta değişir (yağmur damlaları gibi)."
         },
@@ -5232,11 +5232,11 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
-              "label": "düzensiz düzensiz"
+              "label": "tamamen düzensiz"
             },
             {
               "id": "b",
@@ -5254,8 +5254,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Atriyal Fibrilasyon için tipik zamanlama: düzensiz düzensiz.",
-          "feedbackIncorrect": "Bu bulgunun zamanlaması: düzensiz düzensiz."
+          "feedbackCorrect": "Doğru. Atriyal Fibrilasyon için tipik zamanlama: tamamen düzensiz.",
+          "feedbackIncorrect": "Bu bulgunun zamanlaması: tamamen düzensiz."
         },
         {
           "id": "q4",
@@ -5305,7 +5305,7 @@
         }
       ],
       "feedback": {
-        "summary": "Atriyal fibrilasyonda ritim düzensiz düzensizdir; S1 şiddeti atıştan atışa değişir.",
+        "summary": "Atriyal fibrilasyonda ritim tamamen düzensizdir (düzensiz düzensiz); S1 şiddeti atıştan atışa değişir.",
         "techniqueNotes": "Sistematik odak taraması ve karşılaştırma önerilir."
       },
       "references": [
@@ -5443,7 +5443,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -5658,7 +5658,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -5754,7 +5754,7 @@
     },
     {
       "id": "auto_heart_av_block_tricuspid",
-      "title": "Atriyoveventriküler Blok — Triküspit odak",
+      "title": "Atriyoventriküler Blok — Triküspit odak",
       "modes": [
         "practice",
         "assessment"
@@ -5774,7 +5774,7 @@
         "temp": "36.6 °C"
       },
       "objectives": [
-        "Atriyoveventriküler Blok bulgusunu tanımak",
+        "Atriyoventriküler Blok bulgusunu tanımak",
         "Zamanlamayı ve en iyi duyulan odağı belirlemek"
       ],
       "tasks": [
@@ -5804,7 +5804,7 @@
         }
       ],
       "primaryAcousticFinding": "av_block",
-      "clinicalDiagnosis": "Atriyoveventriküler blok",
+      "clinicalDiagnosis": "Atriyoventriküler blok",
       "mappingValidation": "validated",
       "mappingNote": "Akustik sınıf veri seti etiketiyle doğrulanmıştır; kapak lezyonu eşlemesi yapılmaz.",
       "technique": {
@@ -5826,7 +5826,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -5844,8 +5844,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kayıt \"Atriyoveventriküler Blok\" sınıfındandır. Atriyoveventriküler iletim bozukluklarında S1 şiddeti ve atış aralıkları değişebilir.",
-          "feedbackIncorrect": "Bu kayıt \"Atriyoveventriküler Blok\" sınıfındandır. Arada kaçırılan davul vuruşları — beklenen vuruş gecikir.",
+          "feedbackCorrect": "Doğru. Kayıt \"Atriyoventriküler Blok\" sınıfındandır. Atriyoventriküler iletim bozukluklarında S1 şiddeti ve atış aralıkları değişebilir.",
+          "feedbackIncorrect": "Bu kayıt \"Atriyoventriküler Blok\" sınıfındandır. Arada kaçırılan davul vuruşları — beklenen vuruş gecikir.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -5873,7 +5873,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -5895,7 +5895,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Atriyoveventriküler Blok için tipik zamanlama: değişken aralıklı.",
+          "feedbackCorrect": "Doğru. Atriyoventriküler Blok için tipik zamanlama: değişken aralıklı.",
           "feedbackIncorrect": "Bu bulgunun zamanlaması: değişken aralıklı."
         },
         {
@@ -5927,7 +5927,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler blok"
+              "label": "Atriyoventriküler blok"
             },
             {
               "id": "b",
@@ -5945,16 +5945,16 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Atriyoveventriküler blok ile uyumludur (veri seti sınıfı doğrulanmıştır).",
-          "feedbackIncorrect": "Bu kayıt Atriyoveventriküler blok sınıfıyla uyumludur; kesin tanı klinik bağlam ve EKG ile desteklenir."
+          "feedbackCorrect": "Doğru. Atriyoventriküler blok ile uyumludur (veri seti sınıfı doğrulanmıştır).",
+          "feedbackIncorrect": "Bu kayıt Atriyoventriküler blok sınıfıyla uyumludur; kesin tanı klinik bağlam ve EKG ile desteklenir."
         }
       ],
       "feedback": {
-        "summary": "Atriyoveventriküler iletim bozukluklarında S1 şiddeti ve atış aralıkları değişebilir.",
+        "summary": "Atriyoventriküler iletim bozukluklarında S1 şiddeti ve atış aralıkları değişebilir.",
         "techniqueNotes": "Sistematik odak taraması ve karşılaştırma önerilir."
       },
       "references": [
-        "HLS-CMDS v3 — Atriyoveventriküler Blok kayıtları"
+        "HLS-CMDS v3 — Atriyoventriküler Blok kayıtları"
       ],
       "scoringWeights": {
         "technique": 20,
@@ -5969,7 +5969,7 @@
     },
     {
       "id": "auto_heart_av_block_mitral",
-      "title": "Atriyoveventriküler Blok — Mitral odak / Apeks",
+      "title": "Atriyoventriküler Blok — Mitral odak / Apeks",
       "modes": [
         "practice",
         "assessment"
@@ -5989,7 +5989,7 @@
         "temp": "36.6 °C"
       },
       "objectives": [
-        "Atriyoveventriküler Blok bulgusunu tanımak",
+        "Atriyoventriküler Blok bulgusunu tanımak",
         "Zamanlamayı ve en iyi duyulan odağı belirlemek"
       ],
       "tasks": [
@@ -6019,7 +6019,7 @@
         }
       ],
       "primaryAcousticFinding": "av_block",
-      "clinicalDiagnosis": "Atriyoveventriküler blok",
+      "clinicalDiagnosis": "Atriyoventriküler blok",
       "mappingValidation": "validated",
       "mappingNote": "Akustik sınıf veri seti etiketiyle doğrulanmıştır; kapak lezyonu eşlemesi yapılmaz.",
       "technique": {
@@ -6041,7 +6041,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -6059,8 +6059,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kayıt \"Atriyoveventriküler Blok\" sınıfındandır. Atriyoveventriküler iletim bozukluklarında S1 şiddeti ve atış aralıkları değişebilir.",
-          "feedbackIncorrect": "Bu kayıt \"Atriyoveventriküler Blok\" sınıfındandır. Arada kaçırılan davul vuruşları — beklenen vuruş gecikir.",
+          "feedbackCorrect": "Doğru. Kayıt \"Atriyoventriküler Blok\" sınıfındandır. Atriyoventriküler iletim bozukluklarında S1 şiddeti ve atış aralıkları değişebilir.",
+          "feedbackIncorrect": "Bu kayıt \"Atriyoventriküler Blok\" sınıfındandır. Arada kaçırılan davul vuruşları — beklenen vuruş gecikir.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -6088,7 +6088,7 @@
           "id": "q3",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Bu bulgunun siklus içindeki zamanlaması hangisidir?",
+          "prompt": "Bu bulgu kalp siklusunun hangi döneminde duyulur?",
           "options": [
             {
               "id": "a",
@@ -6110,7 +6110,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Atriyoveventriküler Blok için tipik zamanlama: değişken aralıklı.",
+          "feedbackCorrect": "Doğru. Atriyoventriküler Blok için tipik zamanlama: değişken aralıklı.",
           "feedbackIncorrect": "Bu bulgunun zamanlaması: değişken aralıklı."
         },
         {
@@ -6142,7 +6142,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler blok"
+              "label": "Atriyoventriküler blok"
             },
             {
               "id": "b",
@@ -6160,16 +6160,16 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Atriyoveventriküler blok ile uyumludur (veri seti sınıfı doğrulanmıştır).",
-          "feedbackIncorrect": "Bu kayıt Atriyoveventriküler blok sınıfıyla uyumludur; kesin tanı klinik bağlam ve EKG ile desteklenir."
+          "feedbackCorrect": "Doğru. Atriyoventriküler blok ile uyumludur (veri seti sınıfı doğrulanmıştır).",
+          "feedbackIncorrect": "Bu kayıt Atriyoventriküler blok sınıfıyla uyumludur; kesin tanı klinik bağlam ve EKG ile desteklenir."
         }
       ],
       "feedback": {
-        "summary": "Atriyoveventriküler iletim bozukluklarında S1 şiddeti ve atış aralıkları değişebilir.",
+        "summary": "Atriyoventriküler iletim bozukluklarında S1 şiddeti ve atış aralıkları değişebilir.",
         "techniqueNotes": "Sistematik odak taraması ve karşılaştırma önerilir."
       },
       "references": [
-        "HLS-CMDS v3 — Atriyoveventriküler Blok kayıtları"
+        "HLS-CMDS v3 — Atriyoventriküler Blok kayıtları"
       ],
       "scoringWeights": {
         "technique": 20,
@@ -12839,7 +12839,7 @@
     },
     {
       "id": "auto_mixed_av_block_fine_crackles_cardiac_aortic_005",
-      "title": "Kombine: Atriyoveventriküler Blok + İnce Raller (Fine Crackles)",
+      "title": "Kombine: Atriyoventriküler Blok + İnce Raller (Fine Crackles)",
       "modes": [
         "practice"
       ],
@@ -12902,7 +12902,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -12920,8 +12920,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -13664,7 +13664,7 @@
     },
     {
       "id": "auto_mixed_av_block_rhonchi_right_middle_anterior_011",
-      "title": "Kombine: Atriyoveventriküler Blok + Ronküs",
+      "title": "Kombine: Atriyoventriküler Blok + Ronküs",
       "modes": [
         "practice"
       ],
@@ -13732,7 +13732,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -13750,8 +13750,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -14779,7 +14779,7 @@
     },
     {
       "id": "auto_mixed_av_block_fine_crackles_left_middle_anterior_019",
-      "title": "Kombine: Atriyoveventriküler Blok + İnce Raller (Fine Crackles)",
+      "title": "Kombine: Atriyoventriküler Blok + İnce Raller (Fine Crackles)",
       "modes": [
         "practice"
       ],
@@ -14847,7 +14847,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -14865,8 +14865,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -15884,7 +15884,7 @@
     },
     {
       "id": "auto_mixed_av_block_normal_cardiac_tricuspid_027",
-      "title": "Kombine: Atriyoveventriküler Blok + Normal Solunum Sesleri",
+      "title": "Kombine: Atriyoventriküler Blok + Normal Solunum Sesleri",
       "modes": [
         "practice"
       ],
@@ -15947,7 +15947,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -15965,8 +15965,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -17529,7 +17529,7 @@
     },
     {
       "id": "auto_mixed_av_block_rhonchi_cardiac_pulmonary_039",
-      "title": "Kombine: Atriyoveventriküler Blok + Ronküs",
+      "title": "Kombine: Atriyoventriküler Blok + Ronküs",
       "modes": [
         "practice"
       ],
@@ -17592,7 +17592,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -17610,8 +17610,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -21109,7 +21109,7 @@
     },
     {
       "id": "auto_mixed_av_block_pleural_rub_cardiac_tricuspid_065",
-      "title": "Kombine: Atriyoveventriküler Blok + Plevral Frotman",
+      "title": "Kombine: Atriyoventriküler Blok + Plevral Frotman",
       "modes": [
         "practice"
       ],
@@ -21172,7 +21172,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -21190,8 +21190,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -21939,7 +21939,7 @@
     },
     {
       "id": "auto_mixed_av_block_coarse_crackles_left_middle_anterior_071",
-      "title": "Kombine: Atriyoveventriküler Blok + Kaba Raller (Coarse Crackles)",
+      "title": "Kombine: Atriyoventriküler Blok + Kaba Raller (Coarse Crackles)",
       "modes": [
         "practice"
       ],
@@ -22007,7 +22007,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -22025,8 +22025,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -25254,7 +25254,7 @@
     },
     {
       "id": "auto_mixed_av_block_wheezing_left_lower_anterior_095",
-      "title": "Kombine: Atriyoveventriküler Blok + Wheezing",
+      "title": "Kombine: Atriyoventriküler Blok + Wheezing",
       "modes": [
         "practice"
       ],
@@ -25322,7 +25322,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -25340,8 +25340,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -25394,7 +25394,7 @@
     },
     {
       "id": "auto_mixed_av_block_wheezing_right_middle_anterior_096",
-      "title": "Kombine: Atriyoveventriküler Blok + Wheezing",
+      "title": "Kombine: Atriyoventriküler Blok + Wheezing",
       "modes": [
         "practice"
       ],
@@ -25462,7 +25462,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -25480,8 +25480,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -26349,7 +26349,7 @@
     },
     {
       "id": "auto_mixed_av_block_normal_left_middle_anterior_103",
-      "title": "Kombine: Atriyoveventriküler Blok + Normal Solunum Sesleri",
+      "title": "Kombine: Atriyoventriküler Blok + Normal Solunum Sesleri",
       "modes": [
         "practice"
       ],
@@ -26417,7 +26417,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -26435,8 +26435,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -27314,7 +27314,7 @@
     },
     {
       "id": "auto_mixed_av_block_normal_left_upper_anterior_110",
-      "title": "Kombine: Atriyoveventriküler Blok + Normal Solunum Sesleri",
+      "title": "Kombine: Atriyoventriküler Blok + Normal Solunum Sesleri",
       "modes": [
         "practice"
       ],
@@ -27382,7 +27382,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Atriyoveventriküler Blok"
+              "label": "Atriyoventriküler Blok"
             },
             {
               "id": "b",
@@ -27400,8 +27400,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoveventriküler Blok.",
-          "feedbackIncorrect": "Kalp bileşeni Atriyoveventriküler Blok ile uyumludur.",
+          "feedbackCorrect": "Doğru. Kalp bileşeni: Atriyoventriküler Blok.",
+          "feedbackIncorrect": "Kalp bileşeni Atriyoventriküler Blok ile uyumludur.",
           "hint": "Arada kaçırılan davul vuruşları — beklenen vuruş gecikir."
         },
         {
@@ -27744,7 +27744,7 @@
       "population": "pediatrik",
       "patient": {
         "age": 4,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin pediatrik değerlendirmesi",
       "history": "Çocuk hastada kardiyak oskültasyon; gerçek pediatrik hasta kaydı (CirCor, ODC-BY 1.0).",
@@ -28038,7 +28038,7 @@
       "population": "pediatrik",
       "patient": {
         "age": 6,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Kalp seslerinin pediatrik değerlendirmesi",
       "history": "Çocuk hastada kardiyak oskültasyon; gerçek pediatrik hasta kaydı (CirCor, ODC-BY 1.0).",

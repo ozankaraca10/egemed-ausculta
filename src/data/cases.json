@@ -10,7 +10,7 @@
       ],
       "patient": {
         "age": 34,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Rutin kontrol muayenesi",
       "history": "Hasta rutin sağlık kontrolü için başvuruyor. Kardiyak ve pulmoner yakınması yok. Sigara kullanmıyor, ilaç kullanmıyor.",
@@ -24,7 +24,7 @@
       "objectives": [
         "Beş klasik kardiyak odak noktasını tanımak",
         "Normal S1–S2 ritmini tanımak",
-        "Sisteminatik kardiyak oskültasyon sırasını uygulamak"
+        "Sistematik kardiyak oskültasyon sırasını uygulamak"
       ],
       "tasks": [
         "Uygun bölgeleri dinleyin.",
@@ -119,7 +119,7 @@
           "id": "q2",
           "type": "sequence",
           "domain": "interpretation",
-          "prompt": "Sisteminatik kardiyak oskültasyon için en uygun sıra hangisidir?",
+          "prompt": "Sistematik kardiyak oskültasyon için en uygun sıra hangisidir?",
           "options": [
             {
               "id": "a",
@@ -222,7 +222,7 @@
       ],
       "patient": {
         "age": 24,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Eforla hafif nefes darlığı öyküsü",
       "history": "Genç hasta eforla nefes darlığı şikâyeti ile başvuruyor. Kalp sesi değerlendirmesi isteniyor.",
@@ -811,10 +811,10 @@
       ],
       "patient": {
         "age": 71,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Çarpıntı ve efor intoleransı",
-      "history": "71 yaşında kadın hasta, birkaç gündür süren çarpıntı şikâyeti ile başvuruyor. Nabız düzensiz algılanmış.",
+      "history": "71 yaşında erkek hasta, birkaç gündür süren çarpıntı şikâyeti ile başvuruyor. Nabız düzensiz algılanmış.",
       "vitalSigns": {
         "hr": 96,
         "rr": 18,
@@ -900,8 +900,8 @@
           "correct": [
             "b"
           ],
-          "feedbackCorrect": "Doğru. S1–S2 aralıkları tamamen değişkendir; 'düzensiz düzensiz' ritim atriyal fibrilasyonun akustik karşılığıdır.",
-          "feedbackIncorrect": "Ritim düzenli değildir; sistol aralıkları belirgin biçimde değişmektedir. Bu desen düzensiz düzensiz ritimle uyumludur."
+          "feedbackCorrect": "Doğru. S1–S2 aralıkları tamamen değişkendir; 'tamamen düzensiz' ritim atriyal fibrilasyonun akustik karşılığıdır.",
+          "feedbackIncorrect": "Ritim düzenli değildir; sistol aralıkları belirgin biçimde değişmektedir. Bu desen tamamen düzensiz ritimle uyumludur."
         },
         {
           "id": "q2",
@@ -919,7 +919,7 @@
             },
             {
               "id": "c",
-              "label": "Atriyoveventriküler blok"
+              "label": "Atriyoventriküler blok"
             },
             {
               "id": "d",
@@ -963,7 +963,7 @@
         }
       ],
       "feedback": {
-        "summary": "Atriyal fibrilasyonda S1 şiddeti değişkendir ve ritim düzensiz düzensizdir. Apeks ve arter nabzı arasındaki uyumsuzluk (nabız defisiti) ek bulgudur.",
+        "summary": "Atriyal fibrilasyonda S1 şiddeti değişkendir ve ritim tamamen düzensizdir. Apeks ve arter nabzı arasındaki uyumsuzluk (nabız defisiti) ek bulgudur.",
         "differential": "Düzensiz ritimde EKG doğrulaması esastır; simülasyon tek başına tanı aracı değildir."
       },
       "references": [
@@ -993,7 +993,7 @@
         "temp": "36.4 °C"
       },
       "objectives": [
-        "Sisteminatik bilateral pulmoner oskültasyon yapmak",
+        "Sistematik bilateral pulmoner oskültasyon yapmak",
         "Normal veziküler solunum sesini tanımak"
       ],
       "tasks": [
@@ -1184,7 +1184,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Sisteminatik bilateral karşılaştırma asimetri, ral veya solunum azlığı saptamanın ana yoludur.",
+          "feedbackCorrect": "Doğru. Sistematik bilateral karşılaştırma asimetri, ral veya solunum azlığı saptamanın ana yoludur.",
           "feedbackIncorrect": "Bilateral karşılaştırmanın amacı bölgeler arası asimetrileri saptamaktır; tek noktaya odaklanmak yeterli değildir."
         }
       ],
@@ -1448,10 +1448,10 @@
       ],
       "patient": {
         "age": 63,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Nefes darlığı (ilerleyici)",
-      "history": "63 yaşında kadın hasta, son haftalarda artan nefes darlığı nedeniyle başvuruyor.",
+      "history": "63 yaşında erkek hasta, son haftalarda artan nefes darlığı nedeniyle başvuruyor.",
       "vitalSigns": {
         "hr": 88,
         "rr": 24,
@@ -2141,10 +2141,10 @@
       ],
       "patient": {
         "age": 39,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Hızlı kalp atışı hissi",
-      "history": "39 yaşında kadın hasta, yakın zamandır hızlı kalp atışı hissediyor.",
+      "history": "39 yaşında erkek hasta, yakın zamandır hızlı kalp atışı hissediyor.",
       "vitalSigns": {
         "hr": 118,
         "rr": 18,
@@ -2275,7 +2275,7 @@
     },
     {
       "id": "case_av_block",
-      "title": "Atriyoveventriküler Blok",
+      "title": "Atriyoventriküler Blok",
       "modes": [
         "practice",
         "assessment"
@@ -2324,7 +2324,7 @@
         }
       ],
       "primaryAcousticFinding": "av_block",
-      "clinicalDiagnosis": "Atriyoveventriküler blok",
+      "clinicalDiagnosis": "Atriyoventriküler blok",
       "mappingValidation": "validated",
       "mappingNote": "Manikin kaydı AV blok sınıfı olarak etiketlenmiştir; kesin blok derecesi EKG ile saptanır.",
       "technique": {
@@ -2423,7 +2423,7 @@
       ],
       "patient": {
         "age": 27,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Spor öncesi kontrol muayenesi",
       "history": "Genç hasta spor öncesi değerlendirme için başvuruyor; kalp seslerinin incelenmesi isteniyor.",
@@ -2631,7 +2631,7 @@
       ],
       "patient": {
         "age": 41,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Çarpıntı hissi",
       "history": "Hasta çarpıntı ve hafif halsizlik tarif ediyor; kalp sesleri değerlendirmesi isteniyor.",
@@ -2838,7 +2838,7 @@
       ],
       "patient": {
         "age": 52,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Eforla nefes darlığı",
       "history": "Hasta eforla nefes darlığı ve çarpıntı tarif ediyor; diyastolik seslerin değerlendirilmesi isteniyor.",
@@ -3370,7 +3370,7 @@
       ],
       "patient": {
         "age": 29,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Eforla nefes darlığı",
       "history": "Kalp ve akciğer seslerinin aynı kayıtta birlikte değerlendirilmesi isteniyor.",
@@ -3609,7 +3609,7 @@
             },
             {
               "id": "d",
-              "label": "Atriyoveventriküler blok"
+              "label": "Atriyoventriküler blok"
             }
           ],
           "correct": [
@@ -3706,7 +3706,7 @@
       "population": "pediatrik",
       "patient": {
         "age": 6,
-        "sex": "kadın"
+        "sex": "erkek"
       },
       "chiefComplaint": "Okul öncesi rutin muayene",
       "history": "6 yaşında çocuk, rutin kontrol. Efor kapasitesi yaşına uygun, kardiyak yakınma yok.",

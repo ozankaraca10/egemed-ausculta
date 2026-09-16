@@ -2,18 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AuscultationPoint, SoundRecord } from '../core/types'
 import pointsData from '../data/auscultation-points.json'
 import libraryData from '../data/library.json'
-import casesData from '../data/cases.json'
 import { engine } from '../audio/engineSingleton'
 import { resolveLibrarySound, resolveLibrarySoundEx } from '../core/resolver'
 import { useStore } from '../core/store'
 import { libraryTitle, librarySub } from '../data/terminology'
 import pediatricRef from '../data/pediatric-reference.json'
+import { ALL_CASES } from '../data/pool'
 import { PatientStage, type StageHandle } from '../ui/PatientStage'
 import { WaveformView } from '../ui/WaveformView'
 import { Toolbar } from '../ui/Toolbar'
 import { Footer, EcgDeco } from '../ui/chrome'
 import { IconHeart, IconLungs, IconWave, IconDoc, IconStethoscope, IconInfo, IconCompare } from '../ui/icons'
-import type { CaseDef } from '../core/types'
 
 /** Öğrenme modu (§3A): kütüphane + simülatör. Skor yok; rehberli, sınırsız dinleme. */
 
@@ -36,8 +35,8 @@ export function LearnScreen() {
   const [selectedKey, setSelectedKey] = useState<string>('heart.normal')
   const [tab, setTab] = useState<'desc' | 'wave' | 'clin'>('desc')
   const stageRef = useRef<StageHandle>(null)
-  const [playing, setPlaying] = useState(false)
   const [activePoint, setActivePoint] = useState<string | null>(null)
+  const [tipsOpen, setTipsOpen] = useState(true)
 
   const points = pointsData.points as AuscultationPoint[]
   const items = useMemo(() => {
@@ -50,16 +49,16 @@ export function LearnScreen() {
   const isHeart = item.group === 'heart'
   const isMixed = item.group === 'mixed'
 
-  // vaka kapsamı (senkronizasyon göstergesi §36)
+  // vaka kapsamı (sağ panel bilgi satırı §36)
   const coverage = useMemo(() => {
-    const map: Record<string, { p: number; a: number }> = {}
-    for (const c of casesData.cases as unknown as CaseDef[]) {
-      const f = c.primaryAcousticFinding
-      const e = map[f] ?? (map[f] = { p: 0, a: 0 })
-      if (c.modes.includes('practice')) e.p++
-      if (c.modes.includes('assessment')) e.a++
+    const m: Record<string, { p: number; a: number }> = {}
+    for (const c of ALL_CASES) {
+      const k = c.primaryAcousticFinding
+      if (!m[k]) m[k] = { p: 0, a: 0 }
+      if (c.modes.includes('practice')) m[k].p++
+      if (c.modes.includes('assessment')) m[k].a++
     }
-    return map
+    return m
   }, [])
   const cov = coverage[item.acousticFinding] ?? { p: 0, a: 0 }
 
@@ -112,18 +111,7 @@ export function LearnScreen() {
                           <b>{libraryTitle(it.key)}</b>
                           <span>{librarySub(it.key)}</span>
                         </span>
-                        <span className="lib-right">
-                          <span className="lib-cov" title="Vaka kapsamı">
-                            {(() => {
-                              const c = coverage[it.acousticFinding]
-                              if (!c) return <span className="badge gray">vaka yok</span>
-                              return c.a > 0
-                                ? <span className="badge green">{c.p} vaka · değ.</span>
-                                : <span className="badge blue">{c.p} pratik</span>
-                            })()}
-                          </span>
-                          <span className="chev">›</span>
-                        </span>
+                        <span className="lib-right"><span className="chev">›</span></span>
                       </button>
                     ))}
                   </div>
@@ -142,14 +130,14 @@ export function LearnScreen() {
                   volume={state.volume}
                   showPoints
                   showLabels
-                  bodyType={state.bodySex}
+                  bodyType="erkek"
                   mode="learn"
                   engine={engine}
                   soundFor={soundsForStage}
                   onVisit={() => undefined}
                   onDwell={() => undefined}
                   onListen={() => undefined}
-                  onPlayingChange={(pl, pt) => { setPlaying(pl); setActivePoint(pt) }}
+                  onPlayingChange={(_pl, pt) => setActivePoint(pt)}
                 />
                 <div className="region-list-title">Bölge listesi (klavye ile erişim)</div>
                 <div className="region-list">
@@ -164,13 +152,12 @@ export function LearnScreen() {
                     <IconInfo width={17} height={17} />
                     <span className="small">
                       Bu bölge için veri setinde doğrudan kayıt yok; aynı bulgunun{' '}
-                      <strong>{points.find((x) => x.id === activeFallback)?.fullLabel}</strong> kaydı çalınmaktadır
-                      (kayıt konumu dürüstçe belirtilir).
+                      <strong>{points.find((x) => x.id === activeFallback)?.fullLabel}</strong> kaydı çalınmaktadır.
                     </span>
                   </div>
                 )}
               </div>
-              <Toolbar stageRef={stageRef} playing={playing} activePoint={activePoint} bodySelector />
+              <Toolbar stageRef={stageRef} activePoint={activePoint} />
             </div>
 
             <div className="sim-side">
@@ -251,9 +238,14 @@ export function LearnScreen() {
                 )}
               </div>
 
-              {state.bodySex === 'pediatrik' && (
+              {
                 <div className="pediatric-card">
-                  <h4>Pediatrik İpuçları</h4>
+                  <button className="ped-head" onClick={() => setTipsOpen((v) => !v)} aria-expanded={tipsOpen}>
+                    <h4>Pediatrik İpuçları</h4>
+                    <span className="ped-chev" aria-hidden="true">{tipsOpen ? '−' : '+'}</span>
+                  </button>
+                  {tipsOpen && (
+                  <div className="ped-body">
                   <p className="ped-note">{pediatricRef.note}</p>
                   <table className="ped-table">
                     <thead><tr><th>Yaş</th><th>Kalp hızı</th><th>Solunum</th></tr></thead>
@@ -266,8 +258,10 @@ export function LearnScreen() {
                   <ul className="ped-notes">
                     {pediatricRef.auscultationNotes.map((n) => <li key={n}>{n}</li>)}
                   </ul>
+                  </div>
+                  )}
                 </div>
-              )}
+              }
             </div>
           </div>
         </div>
