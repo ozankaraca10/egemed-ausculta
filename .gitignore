@@ -26,3 +26,4 @@ dist-ssr
 build/
 reports/
 public/assets/audio/runtime/
+release

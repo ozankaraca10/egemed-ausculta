@@ -283,3 +283,14 @@ npm run dev        # http://localhost:5173
 ### Envanter
 - `sources.json` envanteri 19 veri setine genişletildi; her kayıtta `labelTypes` (etiket türleri), `population`, `licenseVerified` alanları var.
 - Doğrulama script'i pediatrik kapsamı ve harici kayıt bütünlüğünü zorunlu tutar (`validate-audio.mjs`).
+
+
+---
+
+## Dağıtım kapsamı (güncel)
+
+- **HTML çıktı (birincil):** `npm run build:html` → `release/EGEMED-Ausculta-HTML/` klasörü ve zip'i.
+  Herhangi bir web sunucusunda veya intranette yayınlanabilir; SCORM/LMS gerekmez, çevrimdışı çalışır.
+- **SCORM 1.2:** `npm run build:scorm` → `dist/EGEMED-Ausculta-SCORM12.zip`.
+- **SCORM 2004:** kullanımdan kaldırıldı (kullanıcı kararı). 2004 paketi üretilmez;
+  2004 manifest dalı ve `build:scorm2004` script'i kaldırılmıştır. Çalışma zamanı yalnız 1.2 API'sini arar.
