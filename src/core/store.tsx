@@ -5,7 +5,7 @@ import type {
 import { bus } from './events'
 import { makeScorm, type ScormApi } from './scorm'
 import { deserializeSuspend, serializeSuspend, SUSPEND_LIMIT_12, SUSPEND_LIMIT_2004 } from './suspend'
-import { scoreCase, aggregateResults } from './scoring'
+import { scoreCase, aggregateResults, practiceAdjusted, MASTERY_THRESHOLD } from './scoring'
 import { ALL_CASES } from '../data/pool'
 
 /* ---------------- state ---------------- */
@@ -46,7 +46,7 @@ export const initialTelemetry: Telemetry = {
   replayCount: 0,
 }
 
-const initialState: AppState = {
+export const initialState: AppState = {
   screen: 'start',
   currentCaseId: '',
   bodySex: 'erkek',
@@ -99,7 +99,8 @@ export type Action =
   | { type: 'resetCase' }
   | { type: 'setResults'; results: CaseResult[] }
 
-function reducer(s: AppState, a: Action): AppState {
+/** dışa açık: test amaçlı (K3, K4 reducer testleri) — üretim kodu StoreProvider üzerinden kullanır. */
+export function reducer(s: AppState, a: Action): AppState {
   switch (a.type) {
     case 'goto':
       return { ...s, screen: a.screen }
@@ -111,9 +112,11 @@ function reducer(s: AppState, a: Action): AppState {
       return { ...s, currentCaseId: def.id, bodySex: sex }
     }
     case 'startMode':
+      // K4: yeni oturum eski sonuçları taşımaz — vaka sonuçları ve zamanlayıcı sıfırlanır.
       return {
         ...s, mode: a.mode, screen: 'simulation', caseIndex: 0, step: 0, answers: {}, revealed: {}, hintsUsed: 0,
         telemetry: { ...initialTelemetry }, lastFeedback: null,
+        caseResults: [], assessmentTimer: 0, attempts: s.attempts + 1,
       }
     case 'setView':
       return { ...s, view: a.view }
@@ -179,7 +182,13 @@ function reducer(s: AppState, a: Action): AppState {
       const isLast = def.questions[s.step + 1] == null
       if (!isLast) return { ...s, step: s.step + 1, lastFeedback: null }
       // vaka bitti: sonucu bir kez kaydet, sıradaki vakaya geç (§24 deterministik)
-      const result = scoreCase(def, s.answers, s.telemetry, s.hintsUsed)
+      let result = scoreCase(def, s.answers, s.telemetry, s.hintsUsed)
+      // O9: uygulama modunda ipucu cezası görünür puana uygulanır (değerlendirmede ipucu yok, etkilenmez)
+      if (s.mode === 'practice' && s.hintsUsed > 0) {
+        const adjustedTotal = practiceAdjusted(result.total, s.hintsUsed)
+        const threshold = def.masteryThreshold ?? MASTERY_THRESHOLD
+        result = { ...result, total: adjustedTotal, mastery: adjustedTotal >= threshold }
+      }
       return {
         ...s,
         caseResults: [...s.caseResults, result],
@@ -198,11 +207,20 @@ function reducer(s: AppState, a: Action): AppState {
       return { ...s, tutorialStep: a.step }
     case 'restore': {
       const p = a.payload
+      // K3: suspend'e yazılan oturum örneklemi (sessionIds/sessionSeed) yalnız AKTİF modun
+      // listesine (practiceIds/assessmentIds) yüklenir; diğer mod dokunulmaz.
+      const session =
+        p.mode === 'assessment'
+          ? { ...s.session, assessmentIds: p.sessionIds, seed: p.sessionSeed }
+          : p.mode === 'practice'
+            ? { ...s.session, practiceIds: p.sessionIds, seed: p.sessionSeed }
+            : s.session
       return {
         ...s, mode: p.mode, caseIndex: p.caseIndex, step: p.step, answers: p.answers, hintsUsed: p.hintsUsed,
         tutorialDone: p.tutorialDone,
         telemetry: { ...initialTelemetry, visits: p.visits, order: p.order },
         caseResults: p.caseResults, attempts: p.attempts,
+        session,
         screen: p.mode === 'learn' ? 'learn' : 'simulation',
       }
     }
@@ -222,6 +240,8 @@ export class ScormRuntime {
   api: ScormApi
   flags: ReturnType<typeof makeScorm>['flags']
   startedAt = performance.now()
+  /** D12: terminate() sonrası true — bu andan sonra set/commit çağrıları no-op'tur. */
+  terminated = false
   private getState: () => AppState
   private totalCases: () => number
 
@@ -237,22 +257,33 @@ export class ScormRuntime {
     this.api.init()
     const raw = this.api.get('cmi.suspend_data')
     const restored = deserializeSuspend(raw)
-    this.api.set('cmi.completion_status', 'incomplete')
-    this.api.commit()
+    // O1: LMS'te zaten passed/completed/failed varsa ezilmez — yalnız boş/not attempted/unknown ise incomplete yazılır.
+    const current = this.api.get('cmi.completion_status')
+    if (!current || current === 'not attempted' || current === 'unknown') {
+      this.api.set('cmi.completion_status', 'incomplete')
+      this.api.commit()
+    }
     return restored
   }
 
-  saveInteractions(questions: Question[], answers: Record<string, string[]>, latencyMs?: Record<string, number>) {
-    let idx = 0
+  saveInteractions(caseId: string, questions: Question[], answers: Record<string, string[]>, latencyMs?: Record<string, number>) {
+    if (this.terminated) return
     const is12 = this.api.version === '1.2'
+    // O2(d): dizin cmi.interactions._count'tan başlar (sayı değilse 0 kabul edilir)
+    const countRaw = this.api.get('cmi.interactions._count')
+    let idx = Number.parseInt(countRaw, 10)
+    if (!Number.isFinite(idx) || idx < 0) idx = 0
     for (const q of questions) {
       const given = answers[q.id] ?? []
       if (given.length === 0) continue
       const correct = given.length > 0 && q.correct.length === given.length && given.every((g) => q.correct.includes(g))
       const base = `cmi.interactions.${idx}`
-      this.api.set(`${base}.id`, q.id)
-      this.api.set(`${base}.type`, q.type === 'multi_choice' ? 'multiple-choice' : 'choice')
-      const response = given.join(' [,] ')
+      // O2(c): id vaka bağlamıyla benzersizleştirilir (aynı q.id birden çok vakada tekrar edebilir)
+      this.api.set(`${base}.id`, `${caseId}.${q.id}`)
+      // O2(a): SCORM 1.2/2004 interaction type sözlüğünde 'multiple-choice' geçersizdir; hep 'choice'.
+      this.api.set(`${base}.type`, 'choice')
+      // O2(b): 1.2'de ayırıcı ',' , 2004'te '[,]'dır.
+      const response = given.join(is12 ? ',' : '[,]')
       if (is12) this.api.set(`${base}.student_response`, response)
       else this.api.set(`${base}.learner_response`, response)
       this.api.set(`${base}.result`, correct ? 'correct' : is12 ? 'wrong' : 'incorrect')
@@ -263,6 +294,7 @@ export class ScormRuntime {
   }
 
   saveProgress(payload: SuspendPayload) {
+    if (this.terminated) return
     const limit = this.api.version === '1.2' ? SUSPEND_LIMIT_12 : SUSPEND_LIMIT_2004
     const data = serializeSuspend(payload, limit)
     const okSet = this.api.set('cmi.suspend_data', data)
@@ -274,7 +306,12 @@ export class ScormRuntime {
     this.api.commit()
   }
 
+  /** O3: terminate() sırasında cmi.exit/cmi.core.exit için "tamamlandı" bilgisini tutar. */
+  private finished = false
+
   reportScore(score: number, passed: boolean, finished: boolean) {
+    if (this.terminated) return
+    this.finished = finished
     this.api.set('cmi.score.min', '0')
     this.api.set('cmi.score.max', '100')
     this.api.set('cmi.score.raw', String(score))
@@ -292,6 +329,7 @@ export class ScormRuntime {
   /** Sekme kapanır/gizlenirse son durumu LMS'e yaz (§27 devam güvencesi). */
   /** Son durumu LMS'e yazar (kapanış/gizlenme ve testler tarafından kullanılır). */
   flushNow() {
+    if (this.terminated) return
     try {
       this.saveProgress(buildSuspend(this.getState()))
     } catch {
@@ -319,16 +357,24 @@ export class ScormRuntime {
   private flushHandlers?: { unload: () => void; vis: () => void }
 
   terminate() {
+    if (this.terminated) return
     this.detachAutoFlush()
     const elapsed = Math.round((performance.now() - this.startedAt) / 1000)
     const time = `${String(Math.floor(elapsed / 3600)).padStart(2, '0')}:${String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
     this.api.set('cmi.session_time', time)
+    // O3: tamamlanmadıysa 'suspend' (devam ettirilebilir), tamamlandıysa '' yazılır (KEY12'de cmi.exit → cmi.core.exit).
+    this.api.set('cmi.exit', this.finished ? '' : 'suspend')
+    this.api.commit()
     this.api.terminate()
+    // D12: bundan sonra set/commit tetikleyen çağrılar no-op'tur (bazı LMS'ler Terminate sonrası yazımı reddeder).
+    this.terminated = true
   }
 }
 
-/** Suspend yükünü state'ten üret (§27). */
+/** Suspend yükünü state'ten üret (§27). K3: yalnız AKTİF modun oturum listesi yazılır —
+ *  practice/assessment örneklemleri birbirine karışmaz, devam ettirmede doğru havuz geri gelir. */
 export function buildSuspend(state: AppState): SuspendPayload {
+  const activeIds = state.mode === 'assessment' ? state.session.assessmentIds : state.session.practiceIds
   return {
     v: 1,
     mode: state.mode,
@@ -341,7 +387,7 @@ export function buildSuspend(state: AppState): SuspendPayload {
     visits: state.telemetry.visits,
     order: state.telemetry.order,
     attempts: state.attempts,
-    sessionIds: state.session.practiceIds.concat(state.session.assessmentIds),
+    sessionIds: activeIds,
     sessionSeed: state.session.seed,
   }
 }
@@ -373,8 +419,9 @@ export function StoreProvider({ children, cases }: { children: ReactNode; cases:
       () => cases.filter((c) => c.modes.includes('assessment')).length
     )
     runtimeRef.current = rt
-    // ?fresh=1 ile yüklemede devam durumu yoksayılır (geliştirme/e2e yardımcısı)
-    const fresh = typeof window !== 'undefined' && window.location.search.includes('fresh=1')
+    // ?fresh=1 ile yüklemede devam durumu yoksayılır (geliştirme/e2e yardımcısı) — O6(a):
+    // yalnız DEV build'de etkilidir; üretimde bir öğrenci bu parametreyle devam kaydını atlayamaz.
+    const fresh = import.meta.env.DEV && typeof window !== 'undefined' && window.location.search.includes('fresh=1')
     const restored = fresh ? null : rt.init()
     if (restored) dispatch({ type: 'restore', payload: restored })
     rt.attachAutoFlush()

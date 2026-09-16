@@ -28,6 +28,23 @@ function shuffle<T>(arr: T[], rnd: () => number): T[] {
   return out
 }
 
+/** String → 32-bit tohum (K1: soru seçeneklerinin deterministik karıştırılması). */
+export function stringSeed(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) {
+    h = (h << 5) - h + s.charCodeAt(i)
+    h |= 0
+  }
+  return h >>> 0
+}
+
+/** Soru seçeneklerini vaka+soru id'sinden türeyen tohumla deterministik karıştırır (K1).
+ *  Doğru yanıtın hep 'a' olma önyargısını kaldırır; aynı vaka+soru her zaman aynı sırayı üretir. */
+export function shuffledOptions<T extends { id: string }>(caseId: string, questionId: string, options: T[]): T[] {
+  const rnd = mulberry32(stringSeed(`${caseId}:${questionId}`))
+  return shuffle(options, rnd)
+}
+
 /** Katmanlı örnekleme: önce her bulgu sınıfından bir vaka, sonra kalan havuzdan doldur. */
 export function sampleSession(pool: CaseDef[], seed: number, count = SESSION_SIZE): string[] {
   if (pool.length <= count) return shuffle(pool, mulberry32(seed)).map((c) => c.id)

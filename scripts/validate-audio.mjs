@@ -17,7 +17,6 @@ const manifestPath = path.join(ROOT, 'src', 'data', 'sounds.json')
 const casesFile = path.join(ROOT, 'src', 'data', 'cases.json')
 const pointsFile = path.join(ROOT, 'src', 'data', 'auscultation-points.json')
 const sourcesFile = path.join(ROOT, 'src', 'data', 'sources.json')
-const report = []
 
 const fatal = []
 const warn = []

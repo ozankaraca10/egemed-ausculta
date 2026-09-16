@@ -107,6 +107,17 @@ html { -webkit-text-size-adjust: 100%; }
 .eg-mode-chip.assessment { background: rgba(236,72,153,.22); color: #fbdcf1; }
 .eg-dev-badge { background: #f59e0b; color: #1f2937; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 6px; letter-spacing: .5px; }
 
+/* O10: 1366×768 değerlendirmede header taşması — önce alt başlığı, sonra çip metinlerini
+   (ikonlar kalır) daraltarak "Yardım"/"Kaynaklar" görünür kalır. */
+@media (max-width: 1500px) {
+  .app-subtitle { display: none; }
+}
+@media (max-width: 1440px) {
+  .eg-header .chip-text { display: none; }
+  .eg-progress-chip { gap: 6px; }
+  .eg-progress-chip .bar { width: 60px; }
+}
+
 /* ---------------- Footer ---------------- */
 .results-logo { width: 54px; opacity: .9; margin-bottom: 4px; }
 .brand-card { display: flex; gap: 18px; align-items: center; background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin: 10px 0 14px; }
@@ -664,13 +675,15 @@ html { -webkit-text-size-adjust: 100%; }
 /* ---------------- Yardım penceresi (popup) ---------------- */
 .modal-overlay { position: fixed; inset: 0; z-index: 60; background: rgba(9,26,52,.42); backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center; padding: 20px; animation: modal-fade .16s ease-out; }
 @keyframes modal-fade { from { opacity: 0 } to { opacity: 1 } }
-.modal-card { background: #fff; border-radius: 16px; box-shadow: 0 24px 60px rgba(9,26,52,.28); width: min(680px, 100%); max-height: min(78vh, 640px); display: flex; flex-direction: column; overflow: hidden; }
+.modal-card { background: #fff; color: var(--ink-900); border-radius: 16px; box-shadow: 0 24px 60px rgba(9,26,52,.28); width: min(680px, 100%); max-height: min(78vh, 640px); display: flex; flex-direction: column; overflow: hidden; }
 .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
 .modal-head h3 { margin: 0; font-size: 16.5px; color: var(--navy-800); }
 .modal-close { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border-strong); background: #fff; color: var(--ink-600); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
 .modal-close:hover { background: var(--card-soft); color: var(--ink-900); }
 .modal-close svg { width: 18px; height: 18px; }
 .modal-body { padding: 14px 16px 18px; overflow-y: auto; }
+.confirm-modal { width: min(440px, 100%); }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
 .help-steps { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .help-steps li { display: flex; gap: 11px; align-items: flex-start; }
 .help-steps li > svg { width: 20px; height: 20px; color: var(--blue-600); flex-shrink: 0; margin-top: 2px; }

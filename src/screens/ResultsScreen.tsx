@@ -27,8 +27,13 @@ export function ResultsScreen() {
     { key: 'systematic', label: 'Sistematik muayene', icon: <IconStethoscope /> },
   ]
 
+  // D12: gerçek bir LMS içindeyse oturumu sonlandır ve sekmeyi/penceresini kapatmayı dene;
+  // bağımsız/mock modda (LMS yok) yalnız başlangıç ekranına dönülür (terminate edilmez).
   const exit = () => {
-    runtime?.terminate()
+    if (runtime?.flags.scormAvailable) {
+      runtime.terminate()
+      window.close()
+    }
     dispatch({ type: 'goto', screen: 'start' })
   }
 

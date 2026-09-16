@@ -97,7 +97,7 @@
           "key": "heart.tachycardia",
           "category": "heart",
           "acousticFinding": "tachycardia",
-          "description": "Taşikardide kalp hızı artar; diastolik dolum süresi kısalır.",
+          "description": "Taşikardide kalp hızı artar; diyastolik dolum süresi kısalır.",
           "metaphor": "Hızlı metronom / koşan ayak sesleri — düzenli ama sık vuruşlar.",
           "s1": "Belirgin biçimde sıklaşır.",
           "s2": "Diyastolik aralık kısalır.",
@@ -125,9 +125,9 @@
           "key": "lung.normal",
           "category": "lung",
           "acousticFinding": "normal",
-          "description": "Normal (veziküler) solunum sesi yumuşak, düşük frekanslı ve süreklidir; inspirasyon ekspiryumdan uzundur.",
+          "description": "Normal (veziküler) solunum sesi yumuşak, düşük frekanslı ve süreklidir; inspirasyon ekspirasyondan uzundur.",
           "metaphor": "Hafif deniz dalgası hışırtısı — yumuşak ve sürekli.",
-          "phase": "Inspirasyon ekspiryumdan uzun; ekspiryum sesi kısa sürede söner.",
+          "phase": "İnspirasyon ekspirasyondan uzun; ekspirasyon sesi kısa sürede söner.",
           "clinical": "Bilateral simetri esastır; asimetri patolojiye işaret edebilir.",
           "bestPoints": ["lung_right_upper_anterior", "lung_left_upper_anterior", "lung_right_middle_anterior", "lung_left_middle_anterior", "lung_right_lower_anterior", "lung_left_lower_anterior", "lung_right_upper_posterior", "lung_left_upper_posterior", "lung_right_middle_posterior", "lung_left_middle_posterior", "lung_right_lower_posterior", "lung_left_lower_posterior"]
         },
@@ -135,9 +135,9 @@
           "key": "lung.wheezing",
           "category": "lung",
           "acousticFinding": "wheezing",
-          "description": "Wheezing, ekspiryumda duyulan yüksek frekanslı, süreklilik arz eden müzikal hışıltı sesidir.",
-          "metaphor": "Çaydanlık düdüğü / ıslık — müzikal, ekspiryumda belirgin.",
-          "phase": "Ekspiryumda belirgin; geniş yaygın daralmada iki faza yayılır.",
+          "description": "Wheezing, ekspirasyonda duyulan yüksek frekanslı, süreklilik arz eden müzikal hışıltı sesidir.",
+          "metaphor": "Çaydanlık düdüğü / ıslık — müzikal, ekspirasyonda belirgin.",
+          "phase": "Ekspirasyonda belirgin; geniş yaygın daralmada iki faza yayılır.",
           "clinical": "Küçük hava yollarında daralma, obstrüksiyon veya bronkospazm ile ilişkilidir.",
           "bestPoints": ["lung_right_upper_anterior", "lung_left_upper_anterior", "lung_right_middle_anterior", "lung_left_middle_anterior", "lung_right_lower_anterior", "lung_left_lower_anterior", "lung_right_upper_posterior", "lung_left_upper_posterior", "lung_right_middle_posterior", "lung_left_middle_posterior", "lung_right_lower_posterior", "lung_left_lower_posterior"]
         },
@@ -156,8 +156,8 @@
           "category": "lung",
           "acousticFinding": "fine_crackles",
           "description": "İnce raller, inspirasyon sonunda duyulan kısa, yüksek frekanslı, kesintili patlama sesleridir.",
-          "metaphor": "Karda yürüme sesi / saç oğuşturma — ince ve kuru; inspirasyon sonunda.",
-          "phase": "Inspirasyon sonunda yoğunlaşır.",
+          "metaphor": "Karda yürüme sesi / saç ovuşturma — ince ve kuru; inspirasyon sonunda.",
+          "phase": "İnspirasyon sonunda yoğunlaşır.",
           "clinical": "Alveollerin açılmasına bağlıdır; öksürükle genellikle değişmez.",
           "bestPoints": ["lung_left_upper_anterior", "lung_right_lower_anterior", "lung_right_upper_anterior", "lung_left_upper_posterior", "lung_right_lower_posterior", "lung_right_upper_posterior"]
         },
@@ -167,7 +167,7 @@
           "acousticFinding": "coarse_crackles",
           "description": "Kaba raller, daha kaba, düşük frekanslı ve 'nemli' nitelikte kesintili seslerdir.",
           "metaphor": "Suyun içinde balon patlaması / kaynama fokurtusu — daha kaba ve nemli.",
-          "phase": "Inspirasyon boyunca (bazen ekspiryum başında) duyulur.",
+          "phase": "İnspirasyon boyunca (bazen ekspirasyon başında) duyulur.",
           "clinical": "Büyük hava yollarındaki sekresyonla ilişkilidir; öksürükle değişebilir.",
           "bestPoints": ["lung_right_lower_anterior", "lung_left_lower_anterior", "lung_left_middle_anterior", "lung_right_lower_posterior", "lung_left_lower_posterior", "lung_left_middle_posterior"]
         },
@@ -177,7 +177,7 @@
           "acousticFinding": "pleural_rub",
           "description": "Plevral frotman, plevral yüzeylerin sürtünmesiyle oluşan kaba, gıcırtılı sürtünme sesidir.",
           "metaphor": "Kar gıcırtısı / deri sürtünmesi — iki fazlı gıcırtı.",
-          "phase": "Inspirasyon ve ekspiryumun her ikisinde duyulur (iki fazlı).",
+          "phase": "İnspirasyon ve ekspirasyonun her ikisinde duyulur (iki fazlı).",
           "clinical": "Plevral enflamasyonla ilişkilidir; lokalizedir ve hastanın tuttuğu yerde belirgindir.",
           "bestPoints": ["lung_left_middle_anterior", "lung_right_middle_anterior", "lung_left_upper_anterior", "lung_left_middle_posterior", "lung_right_middle_posterior", "lung_left_upper_posterior"]
         }
@@ -193,7 +193,7 @@
           "acousticFinding": "mid_systolic_murmur+wheezing",
           "description": "Aynı kayıtta orta sistolik üfürüm (kalp) ile wheezing (akciğer) birlikte duyulur; iki kaynağın ayrıştırılması gerekir.",
           "metaphor": "Rüzgâr esintisi (üfürüm) ile çaydanlık düdüğünün (wheezing) aynı anda duyulması.",
-          "phase": "Kalp bileşeni sistolde, akciğer bileşeni ekspiryumda belirgindir.",
+          "phase": "Kalp bileşeni sistolde, akciğer bileşeni ekspirasyonda belirgindir.",
           "clinical": "Gerçek hastada kalp ve akciğer sesleri aynı bölgede üst üste gelir; odak değiştirerek ayrıştırma öğretilir.",
           "bestPoints": ["lung_left_upper_anterior", "lung_left_upper_posterior"]
         },
@@ -213,7 +213,7 @@
           "acousticFinding": "s3+normal",
           "description": "S3 ek sesi ile normal solunum seslerinin birlikte duyulduğu kombine kayıt.",
           "metaphor": "Ken-ta-ta dörtnal ritmi üzerine hafif dalga hışırtısı.",
-          "phase": "S3 erken diyastolde; solunum sesi ekspiryumda söner.",
+          "phase": "S3 erken diyastolde; solunum sesi ekspirasyonda söner.",
           "clinical": "Beklenen kombinasyon; solunum sesi kalp sesini maskeleyebilir.",
           "bestPoints": ["lung_right_lower_anterior", "lung_right_lower_posterior"]
         },

@@ -72,6 +72,14 @@ export function validateCase(c: CaseDef, pointIds: string[], soundKeys: Set<stri
   const total = Object.values(w).reduce((s, v) => s + v, 0)
   if (total !== 100) issues.push({ caseId: id, severity: 'warning', message: `Skor ağırlıkları toplamı ${total} ≠ 100` })
 
+  // ulaşılamayan ağırlık (K2): domain ağırlığı > 0 ama o alanda soru yoksa uyarı
+  const presentDomains = new Set((c.questions ?? []).map((q) => q.domain))
+  for (const domain of DOMAINS) {
+    const weight = w[domain as keyof ScoringWeights]
+    if (weight > 0 && !presentDomains.has(domain as never))
+      issues.push({ caseId: id, severity: 'warning', message: `${domain} ağırlığı ${weight} ama bu alanda soru yok (ulaşılamaz puan)` })
+  }
+
   // deneysel içerik değerlendirmeye giremez
   if (c.mappingValidation === 'experimental' && c.modes.includes('assessment'))
     issues.push({ caseId: id, severity: 'error', message: 'Deneysel vaka değerlendirmeye giremez' })

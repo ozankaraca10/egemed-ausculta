@@ -43,7 +43,7 @@ export function StartScreen() {
     { label: `${M.soundClasses} ses sınıfı`, tip: 'Kalp, akciğer ve kombine sınıflar; her biri klinik metafor ve dalga formuyla.' },
     { label: `${M.totalCases} vaka`, tip: `Her oturumda havuzdan rastgele ${10} vaka; ${M.pediatricCases} pediatrik vaka dahil.` },
     { label: `${M.assessmentQuestions} soru`, tip: `Doğrulanmış ${M.assessmentPoolSize} değerlendirme vakasına dağıtılmış soru havuzu.` },
-    { label: 'SCORM uyumlu', tip: 'SCORM 2004 4th Ed ve 1.2; puan ve durum LMS’e raporlanır.' },
+    { label: 'SCORM uyumlu', tip: 'SCORM 1.2; puan ve durum LMS’e raporlanır.' },
   ]
 
   return (
@@ -62,7 +62,7 @@ export function StartScreen() {
           gerçek kayıtlarla birlikte keşfet.
         </h1>
         <p className="hero-sub">
-          Yirmi ses sınıfı, yüz doksan dokuz klinik vaka, yetişkin ve pediatrik gövde üzerinde
+          {M.soundClasses} ses sınıfı, {M.totalCases} klinik vaka, yetişkin ve pediatrik gövde üzerinde
           sistematik oskültasyon; SCORM uyumlu ölçme ve değerlendirme.
         </p>
         <button className="hero-cta" onClick={begin}>

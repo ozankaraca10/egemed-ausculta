@@ -130,6 +130,14 @@ export function availableCount(category: string, finding: string): number {
   ).length
 }
 
+/** O7: değerlendirmede bildirimsiz posterior/fallback sunumu önlenir — kaydı gerçekten o
+ *  bölgeden alınmamış (fallbackFrom ile bildirilen) noktalar değerlendirmede sunulmaz.
+ *  Öğrenme/uygulamada not-şeridiyle açıkça bildirilen aynı noktalar buradan etkilenmez. */
+export function assessmentPointFilter(assignments: SoundAssignment[]): string[] {
+  const { fallbacks } = resolveCaseSoundsEx(assignments)
+  return assignments.map((a) => a.pointId).filter((id) => !fallbacks[id])
+}
+
 /** Değerlendirme havuzu: yalnızca validated eşlemeli ve 'assessment' modlu vakalar (§19). */
 export function assessmentPool(cases: { modes: string[]; mappingValidation: string; clinicalDiagnosis: unknown }[]) {
   return cases.filter(

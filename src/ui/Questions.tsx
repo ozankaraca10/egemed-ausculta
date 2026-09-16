@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useRef } from 'react'
 import type { Question } from '../core/types'
+import { shuffledOptions } from '../core/session'
 import { IconCheck } from './icons'
 
 /** Yeniden kullanılabilir soru bileşenleri (§23): tek/çok seçim, ses tanıma,
@@ -7,6 +8,8 @@ import { IconCheck } from './icons'
 
 interface Props {
   q: Question
+  /** Seçenek karıştırma tohumu için vaka id'si (K1) */
+  caseId: string
   value: string[]
   onChange: (values: string[]) => void
   revealed: boolean
@@ -14,7 +17,7 @@ interface Props {
   showEyebrow?: boolean
 }
 
-export function QuestionCard({ q, value, onChange, revealed, disabled, showEyebrow = true }: Props) {
+export function QuestionCard({ q, caseId, value, onChange, revealed, disabled, showEyebrow = true }: Props) {
   const toggle = (id: string) => {
     if (disabled || revealed) return
     if (q.type === 'multi_choice') {
@@ -39,6 +42,22 @@ export function QuestionCard({ q, value, onChange, revealed, disabled, showEyebr
     single_choice: 'Soru',
     multi_choice: 'Çok seçmeli',
   }
+  // K1: doğru yanıtın hep ilk seçenek ("a") olma önyargısını önlemek için
+  // vaka+soru id'sinden türeyen tohumla deterministik karıştırma.
+  const options = shuffledOptions(caseId, q.id, q.options)
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([])
+
+  /** D3: tek seçimli sorularda ok tuşlarıyla gezinme (ARIA radiogroup deseni) */
+  const onOptKeyDown = (e: React.KeyboardEvent, index: number) => {
+    if (isMulti || disabled || revealed) return
+    const dirs: Record<string, number> = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }
+    const dir = dirs[e.key]
+    if (!dir) return
+    e.preventDefault()
+    const next = (index + dir + options.length) % options.length
+    btnRefs.current[next]?.focus()
+    toggle(options[next].id)
+  }
 
   return (
     <div className="q-block">
@@ -46,15 +65,18 @@ export function QuestionCard({ q, value, onChange, revealed, disabled, showEyebr
       <p className="q-text">{q.prompt}</p>
       {q.help && <p className="q-help">{q.help}</p>}
       <div className="opt-list" role={isMulti ? 'group' : 'radiogroup'} aria-label={q.prompt}>
-        {q.options.map((o) => {
+        {options.map((o, i) => {
           const selected = value.includes(o.id)
           return (
             <button
               key={o.id}
+              ref={(el) => { btnRefs.current[i] = el }}
               type="button"
               className={`opt ${selected ? 'selected' : ''}`}
               onClick={() => toggle(o.id)}
-              aria-pressed={selected}
+              onKeyDown={(e) => onOptKeyDown(e, i)}
+              role={isMulti ? 'checkbox' : 'radio'}
+              aria-checked={selected}
               disabled={disabled}
             >
               <span className={isMulti ? 'check' : 'radio'}>
@@ -107,12 +129,3 @@ export function QuestionProgress({ total, done }: { total: number; done: number 
   )
 }
 
-/** Soru sayısı istatistiği (vaka içinde) */
-export function useShuffled<T>(arr: T[], seed = 1): T[] {
-  const [out] = useState(() => {
-    let s = seed
-    const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280 }
-    return [...arr].sort(() => rand() - 0.5)
-  })
-  return out
-}

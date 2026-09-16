@@ -2,16 +2,14 @@ import { useMemo } from 'react'
 import { useStore } from '../core/store'
 import { bus } from '../core/events'
 import { resolveCaseSounds } from '../core/resolver'
-import casesData from '../data/cases.json'
-import type { CaseDef } from '../core/types'
+import { ALL_CASES } from '../data/pool'
 
 /** Geliştirici teşhis paneli (§38). Üretim öğrenci arayüzünde GÖRÜNMEZ; yalnız dev build + ?dev=1. */
 
-const cases = casesData.cases as unknown as CaseDef[]
-
 export function DevPanel() {
   const { state, runtime } = useStore()
-  const current = cases[state.caseIndex]
+  // D8: caseIndex havuz sıralamasına değil, tek doğruluk kaynağı currentCaseId'ye göre çözülür.
+  const current = ALL_CASES.find((c) => c.id === state.currentCaseId)
   const resolved = useMemo(
     () => (current ? resolveCaseSounds(current.soundAssignments) : {}),
     [current]

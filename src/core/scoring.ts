@@ -32,7 +32,9 @@ export function scoreCase(
 
   const fraction = (domain: string, weight: number) => {
     const qs = domainQuestions[domain] ?? []
-    if (!qs.length || weight === 0) return { earned: 0, max: weight }
+    // vakada bu alana ait soru yoksa ağırlık erişilemez hale gelmez (K2): max de 0 olur,
+    // toplam maxTotal üzerinden normalize edildiği için puan diğer alanlara kayar.
+    if (!qs.length || weight === 0) return { earned: 0, max: 0 }
     const correctCount = qs.filter((q) => q.correct).length
     return { earned: (correctCount / qs.length) * weight, max: weight }
   }

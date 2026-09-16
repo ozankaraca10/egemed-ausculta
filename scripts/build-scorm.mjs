@@ -10,6 +10,10 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import JSZip from 'jszip'
+import { injectCsp } from './lib/inject-csp.mjs'
+
+// D11: manifest içine gömülen dosya adları XML-escape edilir (&, <, ", ' güvenliği)
+const escXml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = path.join(ROOT, 'dist')
@@ -57,7 +61,7 @@ let manifest
   <resources>
     <resource identifier="RES-AUSCULTA" type="webcontent" adlcp:scormtype="sco" href="index.html">
       <file href="index.html"/>
-${files.filter((f) => f !== 'index.html').map((f) => `      <file href="${f.replace(/\\/g, '/')}"/>`).join('\n')}
+${files.filter((f) => f !== 'index.html').map((f) => `      <file href="${escXml(f.replace(/\\/g, '/'))}"/>`).join('\n')}
     </resource>
   </resources>
 </manifest>
@@ -74,10 +78,8 @@ async function pack() {
   // CSP meta başlığı: derleme ürününe derinlemesine savunma (dev'de HMR bozulmaması için yalnız pakette)
   const indexPath = path.join(STAGE, 'index.html')
   if (fs.existsSync(indexPath)) {
-    let html = fs.readFileSync(indexPath, 'utf8')
-    const csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; img-src 'self' data:; media-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'\">"
-    if (!/Content-Security-Policy/.test(html)) {
-      html = html.replace(/<head([^>]*)>/i, `<head$1>\n    ${csp}`)
+    const { html, injected } = injectCsp(fs.readFileSync(indexPath, 'utf8'))
+    if (injected) {
       fs.writeFileSync(indexPath, html)
       console.log('CSP meta enjekte edildi')
     }

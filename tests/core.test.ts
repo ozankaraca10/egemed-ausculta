@@ -3,18 +3,18 @@ import { MockAdapter, detectScorm, makeScorm, Scorm2004Adapter, Scorm12Adapter }
 
 import { scoreCase, aggregateResults, practiceAdjusted, MASTERY_THRESHOLD } from '../src/core/scoring'
 import { validateCase, filterAssessmentPool } from '../src/core/validation'
-import { resolveAssignment, resolveAssignmentEx, resolveCaseSounds, resolveCaseSoundsEx, resolveLibrarySound, RECORDS } from '../src/core/resolver'
+import { resolveAssignment, resolveAssignmentEx, resolveCaseSounds, resolveCaseSoundsEx, resolveLibrarySound, RECORDS, assessmentPointFilter } from '../src/core/resolver'
 import casesData from '../src/data/cases.json'
 import pointsData from '../src/data/auscultation-points.json'
 import libraryJson from '../src/data/library.json'
 import sourcesJson from '../src/data/sources.json'
 import { mapCircorMurmur, mapCircorLocations } from '../scripts/lib/external-mapping.mjs'
-import { sampleSession, SESSION_SIZE } from '../src/core/session'
-import { poolFor as poolForTest } from '../src/data/pool'
+import { sampleSession, SESSION_SIZE, shuffledOptions } from '../src/core/session'
+import { poolFor as poolForTest, AUTO_CASES, ALL_CASES } from '../src/data/pool'
 import { EXTERNAL_RECORDS } from '../src/core/resolver'
 import { computeMetrics } from '../src/data/metrics'
 import { serializeSuspend, deserializeSuspend, SUSPEND_LIMIT_12, SUSPEND_LIMIT_2004 } from '../src/core/suspend'
-import { ScormRuntime } from '../src/core/store'
+import { ScormRuntime, reducer, initialState, buildSuspend } from '../src/core/store'
 import type { CaseDef, SuspendPayload, Telemetry } from '../src/core/types'
 
 const cases = casesData.cases as unknown as CaseDef[]
@@ -139,6 +139,64 @@ describe('suspend data', () => {
   })
 })
 
+/* ---------------- reducer: oturum/mod geçişleri (K3, K4) ---------------- */
+describe('reducer: yeni oturum ve devam ettirme', () => {
+  it('K4: startMode eski vaka sonuçlarını ve zamanlayıcıyı sıfırlar', () => {
+    const dirty = { ...initialState, caseResults: [{ caseId: 'x', total: 90, max: 100, mastery: true, domains: {} as never, answers: [], hintsUsed: 0 }], assessmentTimer: 45000, attempts: 2 }
+    const next = reducer(dirty, { type: 'startMode', mode: 'assessment' })
+    expect(next.caseResults).toEqual([])
+    expect(next.assessmentTimer).toBe(0)
+    expect(next.attempts).toBe(3)
+  })
+
+  it('K3: buildSuspend yalnız aktif modun oturum listesini yazar', () => {
+    const state = { ...initialState, mode: 'assessment' as const, session: { practiceIds: ['p1', 'p2'], assessmentIds: ['a1', 'a2'], seed: 9 } }
+    const payload = buildSuspend(state)
+    expect(payload.sessionIds).toEqual(['a1', 'a2'])
+    expect(payload.sessionSeed).toBe(9)
+  })
+
+  it('O9: uygulama modunda ipucu cezası vaka sonucuna uygulanır (değerlendirmede uygulanmaz)', () => {
+    const def = ALL_CASES.find((c) => c.id === 'case_normal_heart')!
+    const allCorrect = Object.fromEntries(def.questions.map((q) => [q.id, q.correct]))
+    const telemetry = {
+      visits: Object.fromEntries(def.technique.requiredPoints.map((p, i) => [p, { dwellMs: 99999, listenMs: 99999, visits: 1, firstOrder: i }])),
+      order: [...def.technique.requiredPoints],
+      headChanges: 0,
+      headUse: { bell: 0, diaphragm: 0 } as const,
+      replayCount: 0,
+    }
+    const baseState = {
+      ...initialState,
+      currentCaseId: def.id,
+      step: def.questions.length - 1,
+      answers: allCorrect,
+      telemetry,
+      hintsUsed: 2,
+    }
+    const practiceNext = reducer({ ...baseState, mode: 'practice' as const }, { type: 'advance' })
+    expect(practiceNext.caseResults[0].total).toBe(90) // 100 - 2*5
+    expect(practiceNext.caseResults[0].mastery).toBe(true)
+
+    const assessmentNext = reducer({ ...baseState, mode: 'assessment' as const }, { type: 'advance' })
+    expect(assessmentNext.caseResults[0].total).toBe(100) // değerlendirmede ipucu cezası yok
+  })
+
+  it('K3: serialize → deserialize → restore sonrası aynı oturum vaka listesi korunur', () => {
+    const pool = poolForTest('assessment')
+    const seed = 555
+    const ids = sampleSession(pool, seed)
+    const state = { ...initialState, mode: 'assessment' as const, session: { practiceIds: [], assessmentIds: ids, seed } }
+    const payload = buildSuspend(state)
+    const raw = serializeSuspend(payload)
+    const restored = deserializeSuspend(raw)!
+    const next = reducer(state, { type: 'restore', payload: restored })
+    expect(next.session.assessmentIds).toEqual(ids)
+    expect(next.session.seed).toBe(seed)
+    expect(next.session.practiceIds).toEqual([]) // diğer mod dokunulmaz
+  })
+})
+
 /* ---------------- skor (§24) ---------------- */
 describe('skor hesaplama', () => {
   const c = cases.find((x) => x.id === 'case_normal_heart')!
@@ -199,6 +257,24 @@ describe('skor hesaplama', () => {
     const agg = aggregateResults([r, r])
     expect(agg.total).toBe(100)
     expect(agg.domains.technique.max).toBe(40)
+  })
+
+  it('ulaşılamayan ağırlık yok (K2): değerlendirme havuzundaki her vakada kusursuz performans 100 puan verir', () => {
+    for (const cc of poolForTest('assessment')) {
+      const answers = Object.fromEntries(cc.questions.map((q) => [q.id, q.correct]))
+      const telemetry: Telemetry = {
+        visits: Object.fromEntries(
+          cc.technique.requiredPoints.map((p, i) => [p, { dwellMs: 99999, listenMs: 99999, visits: 1, firstOrder: i }])
+        ),
+        order: [...cc.technique.requiredPoints],
+        headChanges: 0,
+        headUse: { bell: 0, diaphragm: 0 },
+        replayCount: 0,
+      }
+      const r = scoreCase(cc, answers, telemetry, 0)
+      expect(r.total, `${cc.id} kusursuz performansta 100 vermeli`).toBe(100)
+      expect(r.mastery, cc.id).toBe(true)
+    }
   })
 })
 
@@ -292,6 +368,14 @@ describe('veri seti ↔ kütüphane ↔ vaka senkronizasyonu', () => {
       expect(c.mappingValidation, c.id).toBe('validated')
     }
   })
+  it('K5: kalp kategorili otomatik vakaların metinlerinde akciğer terimleri ("solunum sesi", "veziküler") geçmez', () => {
+    const heartAuto = AUTO_CASES.filter((c) => c.id.startsWith('auto_heart_'))
+    expect(heartAuto.length).toBeGreaterThan(0)
+    for (const c of heartAuto) {
+      const text = `${c.feedback?.summary ?? ''} ${c.questions.map((q) => `${q.feedbackCorrect} ${q.feedbackIncorrect}`).join(' ')}`
+      expect(text, c.id).not.toMatch(/solunum sesi|veziküler/i)
+    }
+  })
 })
 
 /* ---------------- oturum örnekleme ve havuz bütünlüğü ---------------- */
@@ -356,6 +440,35 @@ describe('oturum örnekleme (rastgele 10 vaka)', () => {
   })
 })
 
+describe('soru seçenek karıştırma (K1)', () => {
+  const poolAll = [...poolForTest('practice'), ...poolForTest('assessment')]
+
+  it('aynı vaka+soru tohumu aynı sırayı üretir (deterministik)', () => {
+    const c = poolAll.find((x) => x.questions.length > 0)!
+    const q = c.questions[0]
+    const a = shuffledOptions(c.id, q.id, q.options).map((o) => o.id)
+    const b = shuffledOptions(c.id, q.id, q.options).map((o) => o.id)
+    expect(a).toEqual(b)
+  })
+
+  it('doğru yanıt konumu havuz genelinde tek bir seçeneğe (ör. "a") yığılmaz', () => {
+    const positions: Record<number, number> = {}
+    let total = 0
+    for (const c of poolAll) {
+      for (const q of c.questions) {
+        if (q.correct.length !== 1) continue // yalnız tek doğru yanıtlı sorular konum analizine girer
+        const shuffled = shuffledOptions(c.id, q.id, q.options)
+        const pos = shuffled.findIndex((o) => o.id === q.correct[0])
+        positions[pos] = (positions[pos] ?? 0) + 1
+        total++
+      }
+    }
+    for (const [pos, count] of Object.entries(positions)) {
+      expect(count / total, `konum ${pos} oranı`).toBeLessThanOrEqual(0.45)
+    }
+  })
+})
+
 describe('tıbbi tutarlılık (pediatrik vitaller + soru bütünlüğü)', () => {
   // Yaşa göre beklenen istirahat aralıkları (pediatric-reference.json ile uyumlu)
   // yaş birimi: YIL (0–1 ay hariç; bebek/çocuk vakalarında yaş yıldır)
@@ -403,6 +516,25 @@ describe('tıbbi tutarlılık (pediatrik vitaller + soru bütünlüğü)', () =>
     }
     expect(errs).toEqual([])
   })
+  it('O8: bir soruda iki seçenek parantez içi kaldırılınca aynı metne indirgenmez', () => {
+    // (ör. s4 "geç diyastol (presistol)" ile late_diastolic_murmur "geç diyastol (presistolik)"
+    // gibi parantez öncesi eşdeğer etiketler aynı soruda birlikte distraktör olamaz)
+    const norm = (s: string) => s.toLowerCase().replace(/\(.*?\)/g, '').replace(/\s+/g, ' ').trim()
+    const errs: string[] = []
+    for (const c of poolAll) {
+      for (const q of c.questions) {
+        const labels = q.options.map((o) => o.label)
+        for (let i = 0; i < labels.length; i++) {
+          for (let j = i + 1; j < labels.length; j++) {
+            const a = norm(labels[i])
+            const b = norm(labels[j])
+            if (a === b) errs.push(`${c.id}/${q.id}: "${labels[i]}" ~ "${labels[j]}"`)
+          }
+        }
+      }
+    }
+    expect(errs).toEqual([])
+  })
   it('pediatrik vakalar hasta yaşıyla uyumlu başlıklar kullanır', () => {
     for (const c of poolAll) {
       if ((c as { population?: string }).population !== 'pediatrik') continue
@@ -435,7 +567,7 @@ describe('SCORM interactions ve auto-flush (§25-27)', () => {
     const api = fakeApi('2004')
     const rt = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
     rt.api = api as never
-    rt.saveInteractions(qs as never, { q1: ['b'] }, { q1: 4200 })
+    rt.saveInteractions('case_x', qs as never, { q1: ['b'] }, { q1: 4200 })
     expect(api.store['cmi.interactions.0.result']).toBe('incorrect')
     expect(api.store['cmi.interactions.0.latency']).toBe('PT4S')
     expect(api.store['cmi.interactions.0.learner_response']).toBe('b')
@@ -444,10 +576,96 @@ describe('SCORM interactions ve auto-flush (§25-27)', () => {
     const api = fakeApi('1.2')
     const rt = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
     rt.api = api as never
-    rt.saveInteractions(qs as never, { q1: ['a'] }, { q1: 4200 })
+    rt.saveInteractions('case_x', qs as never, { q1: ['a'] }, { q1: 4200 })
     expect(api.store['cmi.interactions.0.result']).toBe('correct')
     expect(api.store['cmi.interactions.0.student_response']).toBe('a')
     expect(api.store['cmi.interactions.0.latency']).toBeUndefined()
+  })
+  it('O2(a,b,c): type her zaman "choice", id vaka bağlamlı, 1.2 ayırıcı virgüldür', () => {
+    const multi = [
+      { id: 'q1', type: 'multi_choice', domain: 'recognition', prompt: 'P', options: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }], correct: ['a', 'b'], feedbackCorrect: '', feedbackIncorrect: '' },
+    ] as never
+    const api12 = fakeApi('1.2')
+    const rt12 = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rt12.api = api12 as never
+    rt12.saveInteractions('case_af', multi, { q1: ['a', 'b'] })
+    expect(api12.store['cmi.interactions.0.type']).toBe('choice')
+    expect(api12.store['cmi.interactions.0.id']).toBe('case_af.q1')
+    expect(api12.store['cmi.interactions.0.student_response']).toBe('a,b')
+
+    const api2004 = fakeApi('2004')
+    const rt2004 = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rt2004.api = api2004 as never
+    rt2004.saveInteractions('case_af', multi, { q1: ['a', 'b'] })
+    expect(api2004.store['cmi.interactions.0.type']).toBe('choice')
+    expect(api2004.store['cmi.interactions.0.learner_response']).toBe('a[,]b')
+  })
+  it('O2(d): indeks cmi.interactions._count\'tan başlar', () => {
+    const api = fakeApi('2004')
+    api.store['cmi.interactions._count'] = '3'
+    const rt = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rt.api = api as never
+    rt.saveInteractions('case_x', qs as never, { q1: ['a'] })
+    expect(api.store['cmi.interactions.3.id']).toBe('case_x.q1')
+    expect(api.store['cmi.interactions.0.id']).toBeUndefined()
+  })
+  it('O1: init() zaten passed/completed/failed ise ezmez, boş/not attempted/unknown ise incomplete yazar', () => {
+    // ScormRuntime, jenerik 'cmi.completion_status' anahtarı üzerinden çalışır; 1.2 ↔ lesson_status
+    // eşlemesi Scorm12Adapter içinde yapılır (bkz. "1.2 adapter success_status → lesson_status eşlemesi" testi).
+    const apiDone = fakeApi('1.2')
+    apiDone.store['cmi.completion_status'] = 'passed'
+    const rtDone = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rtDone.api = apiDone as never
+    rtDone.init()
+    expect(apiDone.store['cmi.completion_status']).toBe('passed')
+
+    const apiFresh = fakeApi('1.2')
+    apiFresh.store['cmi.completion_status'] = 'not attempted'
+    const rtFresh = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rtFresh.api = apiFresh as never
+    rtFresh.init()
+    expect(apiFresh.store['cmi.completion_status']).toBe('incomplete')
+  })
+  it('O1: gerçek Scorm12Adapter ile — lesson_status "passed" iken init() ezmez', () => {
+    const store = new Map<string, string>([['cmi.core.lesson_status', 'passed']])
+    const rawApi = {
+      LMSInitialize: () => 'true',
+      LMSGetValue: (k: string) => store.get(k) ?? '',
+      LMSSetValue: (k: string, v: string) => { store.set(k, v); return 'true' },
+      LMSCommit: () => 'true',
+      LMSFinish: () => 'true',
+    }
+    const rt = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rt.api = new Scorm12Adapter(rawApi)
+    rt.init()
+    expect(store.get('cmi.core.lesson_status')).toBe('passed')
+  })
+  it('O3: terminate() tamamlanmadıysa cmi.exit="suspend", tamamlandıysa "" yazar', () => {
+    const apiOngoing = fakeApi('2004')
+    const rtOngoing = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rtOngoing.api = apiOngoing as never
+    rtOngoing.terminate()
+    expect(apiOngoing.store['cmi.exit']).toBe('suspend')
+
+    const apiDone = fakeApi('2004')
+    const rtDone = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rtDone.api = apiDone as never
+    rtDone.reportScore(90, true, true)
+    rtDone.terminate()
+    expect(apiDone.store['cmi.exit']).toBe('')
+  })
+  it('D12: terminate() sonrası set/commit tetikleyen çağrılar no-op olur', () => {
+    const api = fakeApi('2004')
+    const rt = new ScormRuntime(() => ({ caseResults: [], session: { practiceIds: [], assessmentIds: [], seed: 0 } } as never), () => 1)
+    rt.api = api as never
+    rt.terminate()
+    expect(rt.terminated).toBe(true)
+    const snapshot = { ...api.store }
+    rt.reportScore(100, true, true)
+    rt.saveProgress({ v: 1, mode: 'practice', caseIndex: 0, step: 0, answers: {}, hintsUsed: 0, caseResults: [], tutorialDone: true, visits: {}, order: [], attempts: 1, sessionIds: [], sessionSeed: 0 })
+    rt.saveInteractions('case_x', qs as never, { q1: ['a'] })
+    rt.flushNow()
+    expect(api.store).toEqual(snapshot)
   })
   it('auto-flush: beforeunload suspend_data yazar', () => {
     const api = fakeApi('2004')
@@ -654,5 +872,13 @@ describe('ses eşleme', () => {
       const resolvedCount = Object.values(map).filter(Boolean).length
       expect(resolvedCount).toBeGreaterThan(0)
     }
+  })
+
+  it('O7: assessmentPointFilter fallback (kaynak bölgeden alınmamış) noktaları dışlar', () => {
+    const lungCase = cases.find((c) => c.id === 'case_normal_lung')!
+    const filtered = assessmentPointFilter(lungCase.soundAssignments)
+    for (const pid of filtered) expect(pid.includes('posterior')).toBe(false)
+    expect(filtered.length).toBeGreaterThan(0)
+    expect(filtered.length).toBeLessThan(lungCase.soundAssignments.length)
   })
 })

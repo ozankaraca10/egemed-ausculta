@@ -2,7 +2,8 @@
  *  devşirme değildir; klinik olarak makul frekans vurgulaması uygular. */
 
 export interface HeadDsp {
-  /** Uygulanacak biquad zinciri; native kayıt eşleşiyorsa bypass edilir. */
+  /** Uygulanacak biquad zinciri; gerçek davranış: DSP her iki kafa (bell/diyafram) için de
+   *  her zaman uygulanır — kayıt hiçbir zaman bypass edilmez (engine.ts play()). */
   highshelfDb: number
   lowshelfDb: number
 }

@@ -2,9 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AuscultationPoint, CaseDef, Question } from '../core/types'
 import pointsData from '../data/auscultation-points.json'
 import { ALL_CASES, poolFor } from '../data/pool'
+import { sampleSession, SESSION_SIZE } from '../core/session'
 import type { BodyType } from '../ui/PatientStage'
 import { engine } from '../audio/engineSingleton'
-import { resolveCaseSoundsEx, resolveCaseSounds } from '../core/resolver'
+import { resolveCaseSoundsEx, resolveCaseSounds, assessmentPointFilter } from '../core/resolver'
 import { useStore, computeAggregate } from '../core/store'
 import { bus } from '../core/events'
 import { PatientStage, type StageHandle } from '../ui/PatientStage'
@@ -26,11 +27,31 @@ export function SimulationScreen() {
   const sessionCases = sessionIds.map((id) => byId.get(id)).filter((c): c is CaseDef => !!c)
   const caseList = sessionCases.length ? sessionCases : poolFor(state.mode)
   const caseDef = caseList[state.caseIndex] ?? caseList[0]
+
+  // K3: SCORM devam ettirmede oturum örneklemi boş kalırsa (eski/bozuk suspend verisi),
+  // aynı tohumla yeniden üretip kalıcı hale getir — tohum korunuyorsa aynı 10 vaka çıkar.
+  useEffect(() => {
+    if (sessionCases.length > 0 || state.mode === 'learn') return
+    const seed = state.session.seed || Date.now()
+    const ids = sampleSession(poolFor(state.mode), seed, SESSION_SIZE)
+    dispatch({
+      type: 'startSession',
+      practiceIds: state.mode === 'practice' ? ids : state.session.practiceIds,
+      assessmentIds: state.mode === 'assessment' ? ids : state.session.assessmentIds,
+      seed,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionCases.length, state.mode])
   const stageRef = useRef<StageHandle>(null)
   const [activePoint, setActivePoint] = useState<string | null>(null)
 
   const isAssessment = state.mode === 'assessment'
   const resolved = useMemoSounds(caseDef)
+  // O7: değerlendirmede kaydı gerçekten o bölgeden alınmamış (posterior fallback) noktalar sunulmaz
+  const pointIds = useMemo(
+    () => (isAssessment ? assessmentPointFilter(caseDef.soundAssignments) : caseDef.soundAssignments.map((a) => a.pointId)),
+    [caseDef, isAssessment]
+  )
   const q: Question | undefined = caseDef.questions[state.step]
   const canSubmit = !!q && (state.answers[q.id]?.length ?? 0) > 0
   const revealed = q ? !!state.revealed[q.id] : false
@@ -75,7 +96,7 @@ export function SimulationScreen() {
         const t0 = shownAtRef.current[qq.id]
         if (t0) latency[qq.id] = now - t0
       }
-      runtime?.saveInteractions(caseDef.questions, state.answers, latency)
+      runtime?.saveInteractions(caseDef.id, caseDef.questions, state.answers, latency)
     }
     dispatch({ type: 'advance' })
   }
@@ -105,7 +126,7 @@ export function SimulationScreen() {
                   key={state.caseIndex}
                   ref={stageRef}
                   points={points}
-                  filterIds={caseDef.soundAssignments.map((a) => a.pointId)}
+                  filterIds={pointIds}
                   bodyType={((caseDef as CaseDef & { population?: string }).population === 'pediatrik' ? 'pediatrik' : 'erkek') as BodyType}
                   strict={isAssessment}
                   view={state.view}
@@ -124,7 +145,7 @@ export function SimulationScreen() {
                 <div className="region-list-title sr-only-until-focus">Bölge listesi (klavye ile erişim)</div>
                 <div className="region-list sr-only-until-focus">
                   {points
-                    .filter((pt) => pt.view === state.view && caseDef.soundAssignments.some((a) => a.pointId === pt.id))
+                    .filter((pt) => pt.view === state.view && pointIds.includes(pt.id))
                     .map((pt) => (
                       <button key={pt.id} onClick={() => stageRef.current?.placeAt(pt.id)}>
                         {pt.fullLabel}
@@ -160,8 +181,14 @@ export function SimulationScreen() {
                   <span className="badge blue">Vaka {state.caseIndex + 1}/{caseList.length}</span>
                 </div>
                 <p style={{ marginTop: 0 }}>
-                  <strong>{caseDef.patient.age} yaşında {caseDef.patient.sex} hasta.</strong> {caseDef.chiefComplaint.toLowerCase()} ile başvuruyor. {caseDef.history}
+                  <strong>{caseDef.patient.age} yaşında {caseDef.patient.sex} hasta.</strong> <b>Başvuru:</b> {caseDef.chiefComplaint}. {caseDef.history}
                 </p>
+                {!isAssessment && caseDef.mappingNote && (
+                  <div className="note-strip" style={{ marginTop: 10 }}>
+                    <IconInfo width={16} height={16} />
+                    <span className="small">{caseDef.mappingNote}</span>
+                  </div>
+                )}
                 <div className="kv-grid">
                   {caseDef.vitalSigns.hr && <KV k="Kalp hızı" v={`${caseDef.vitalSigns.hr}/dk`} />}
                   {caseDef.vitalSigns.rr && <KV k="Solunum" v={`${caseDef.vitalSigns.rr}/dk`} />}
@@ -176,6 +203,7 @@ export function SimulationScreen() {
                 <div className="card q-card-dark">
                   <QuestionCard
                     q={q}
+                    caseId={caseDef.id}
                     value={state.answers[q.id] ?? []}
                     onChange={(values) => dispatch({ type: 'answer', qid: q.id, values })}
                     revealed={revealed}

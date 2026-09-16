@@ -78,7 +78,7 @@ const run = async () => {
   // akciğer kütüphanesi + arka görünüm
   await p2.getByRole('button', { name: /Wheezing/ }).first().click()
   await p2.waitForTimeout(400)
-  await p2.getByRole('button', { name: /Arka Görünüm/ }).first().click()
+  await p2.getByRole('button', { name: /^Arka$/ }).first().click()
   await p2.waitForTimeout(700)
   await p2.screenshot({ path: `${OUT}/desktop-07-learn-back.png` })
 

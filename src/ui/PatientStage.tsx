@@ -66,6 +66,8 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
   const timersRef = useRef<{ dwell?: number; playDelay?: number; dwellAcc: number; listenAcc: number }>({ dwellAcc: 0, listenAcc: 0 })
   /** strict (değerlendirme): her nokta yalnızca bir kez dinlenebilir */
   const listenedRef = useRef<Set<string>>(new Set())
+  /** O12: her place()/unplace() çağrısında artar — ses yükleme sırası yarışını yakalar */
+  const placeSeqRef = useRef(0)
   const [spentNotice, setSpentNotice] = useState(false)
   /** ses hazırlama / yükleme hatası geri bildirimi (§ UX) */
   const [audioStatus, setAudioStatus] = useState<{ pointId: string; status: 'loading' | 'error' } | null>(null)
@@ -78,10 +80,13 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
 
   const cfg = IMAGES[view][IMAGE_KEY[bodyType]] ?? IMAGES[view].male
   const [ckx, cky] = COORD_KEYS[bodyType]
-  const coordOf = (p: AuscultationPoint & Record<string, unknown>) => ({
-    x: Number(p[ckx] ?? p.x),
-    y: Number(p[cky] ?? p.y),
-  })
+  const coordOf = useCallback(
+    (p: AuscultationPoint & Record<string, unknown>) => ({
+      x: Number(p[ckx] ?? p.x),
+      y: Number(p[cky] ?? p.y),
+    }),
+    [ckx, cky]
+  )
 
   // görseli, kapsayıcıya sığan en büyük dikdörtgen olarak ölçekle (letterbox yok → hotspot hizası tam)
   useEffect(() => {
@@ -126,6 +131,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
   }, [])
 
   const unplace = useCallback(() => {
+    placeSeqRef.current++
     const t = timersRef.current
     const prev = snappedRef.current
     if (prev) {
@@ -147,6 +153,8 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
     (pointId: string) => {
       const p = points.find((x) => x.id === pointId)
       if (!p || p.view !== view) return
+      // O12: bu yerleştirmenin sırası — await sonrası hâlâ geçerli mi diye kontrol edilir
+      const seq = ++placeSeqRef.current
       posRef.current = coordOf(p as AuscultationPoint & Record<string, unknown>)
       applyPos()
       setPulseKey((k) => k + 1)
@@ -175,6 +183,12 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
         }
         try {
           await engine.play(pointId, snd, head)
+          // O12: await sırasında stetoskop kaldırılmış/başka noktaya taşınmışsa (sıra değişti)
+          // sesi durdur ve state'e dokunma — yerleştirme olmadan ses çalınmaz.
+          if (seq !== placeSeqRef.current) {
+            engine.stop()
+            return
+          }
           listenedRef.current.add(pointId)
           setSpentNotice(false)
           setAudioStatus(null)
@@ -182,6 +196,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
           setPlaying(true)
           onPlayingChange(true, pointId)
         } catch {
+          if (seq !== placeSeqRef.current) return
           playingRef.current = false
           setPlaying(false)
           setAudioStatus({ pointId, status: 'error' })
@@ -189,7 +204,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
         }
       }, AUDIO_CONFIG.dwellToPlayMs)
     },
-    [points, view, onVisit, onDwell, engine, head, soundFor, onPlayingChange, applyPos, strict]
+    [points, view, onVisit, onDwell, engine, head, soundFor, onPlayingChange, applyPos, strict, coordOf]
   )
   const placeRef = useRef(place)
   placeRef.current = place
@@ -198,6 +213,13 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
   useEffect(() => {
     if (lastHeadRef.current !== head && snappedRef.current) {
       const pointId = snappedRef.current
+      // O4: tek dinleme kuralı — hak zaten kullanılmış ve o an ses çalmıyorsa (dinleme
+      // bitmiş) head değişimi yeni bir dinleme başlatmaz. Ses hâlâ çalıyorsa o dinleme
+      // hakkı zaten kullanılıyor sayılır; head değişimiyle devam eder.
+      if (strict && listenedRef.current.has(pointId) && !playingRef.current) {
+        lastHeadRef.current = head
+        return
+      }
       const snd = soundFor(pointId)
       if (snd) engine.replay(pointId, snd, head).catch(() => undefined)
     }
@@ -251,12 +273,10 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
     posRef.current = { x: Math.min(0.99, Math.max(0.01, x)), y: Math.min(0.98, Math.max(0.02, y)) }
     applyPos()
   }
-  const onPointerUp = () => {
-    if (!dragRef.current) return
-    dragRef.current = false
-    setDragging(false)
+  /** D1: geçerli konuma en yakın, tolerans içindeki noktayı bulur (pointer ve klavye ile paylaşılır) */
+  const findNearestPoint = useCallback((): string | null => {
     const rect = wrapRef.current?.getBoundingClientRect()
-    if (!rect) return
+    if (!rect) return null
     const px = posRef.current.x * rect.width
     const py = posRef.current.y * rect.height
     let best: { id: string; d: number } | null = null
@@ -268,7 +288,36 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
       if (!best || d < best.d) best = { id: p.id, d }
     }
     const tol = Math.min(60, rect.width * 0.07)
-    if (best && best.d <= tol) placeRef.current(best.id)
+    return best && best.d <= tol ? best.id : null
+  }, [points, view, filterIds, coordOf])
+  const onPointerUp = () => {
+    if (!dragRef.current) return
+    dragRef.current = false
+    setDragging(false)
+    const id = findNearestPoint()
+    if (id) placeRef.current(id)
+  }
+  /** D1: klavye erişilebilirliği — ok tuşları %2 adımla taşır, Enter/Space en yakın noktaya yerleştirir */
+  const onStethKeyDown = (e: React.KeyboardEvent) => {
+    const step = 0.02
+    const arrows: Record<string, () => void> = {
+      ArrowUp: () => { posRef.current = { ...posRef.current, y: Math.max(0.02, posRef.current.y - step) } },
+      ArrowDown: () => { posRef.current = { ...posRef.current, y: Math.min(0.98, posRef.current.y + step) } },
+      ArrowLeft: () => { posRef.current = { ...posRef.current, x: Math.max(0.01, posRef.current.x - step) } },
+      ArrowRight: () => { posRef.current = { ...posRef.current, x: Math.min(0.99, posRef.current.x + step) } },
+    }
+    if (arrows[e.key]) {
+      e.preventDefault()
+      unplace()
+      arrows[e.key]()
+      applyPos()
+      return
+    }
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      const id = findNearestPoint()
+      if (id) placeRef.current(id)
+    }
   }
 
   useEffect(() => {
@@ -332,8 +381,9 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
+          onKeyDown={onStethKeyDown}
           role="button"
-          aria-label="Stetoskop göğüs parçası — sürükleyerek oskültasyon bölgesine yerleştirin"
+          aria-label="Stetoskop göğüs parçası — sürükleyerek veya ok tuşlarıyla oskültasyon bölgesine taşıyın, Enter/Space ile yerleştirin"
           tabIndex={0}
         >
           <span className="contact-pulse" key={pulseKey} />

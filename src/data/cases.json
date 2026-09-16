@@ -85,7 +85,7 @@
           "type": "sound_identify",
           "domain": "recognition",
           "prompt": "Duyduğunuz ses hangisidir?",
-          "help": "Steteskopla dinlediğiniz kalp sesini dikkatle analiz edin.",
+          "help": "Stetoskopla dinlediğiniz kalp sesini dikkatle analiz edin.",
           "options": [
             {
               "id": "a",
@@ -145,35 +145,6 @@
           "feedbackIncorrect": "Önerilen sıra: aort → pulmoner → triküspit → mitral. Bu sıra odak noktalarını karıştırmadan, üstten alta ve sağdan sola ilerlemenizi sağlar."
         },
         {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu bulgunun en belirgin duyulduğu alan hangisidir?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Aort odağı (sağ üst sternal kenar)"
-            },
-            {
-              "id": "b",
-              "label": "Pulmoner odak (sol üst sternal kenar)"
-            },
-            {
-              "id": "c",
-              "label": "Triküspit odak (sol alt sternal kenar)"
-            },
-            {
-              "id": "d",
-              "label": "Mitral odak (apeks)"
-            }
-          ],
-          "correct": [
-            "d"
-          ],
-          "feedbackCorrect": "Doğru. Apeks (mitral odak) S1'in en net duyulduğu alandır ve kalp apeksinin tipik yerleşimidir.",
-          "feedbackIncorrect": "S1 en net apekste duyulur; S2 ise üst sternal kenarlarda (aort/pulmoner odak) daha belirgindir. Noktaları karşılaştırarak tekrar dinleyin."
-        },
-        {
           "id": "q4",
           "type": "bell_diaphragm",
           "domain": "interpretation",
@@ -205,9 +176,9 @@
       "masteryThreshold": 80,
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 30,
-        "interpretation": 25,
+        "localization": 0,
+        "recognition": 40,
+        "interpretation": 35,
         "diagnosis": 0,
         "systematic": 5
       },
@@ -465,7 +436,7 @@
         "requiredPoints": [
           "cardiac_pulmonary"
         ],
-        "minPointsVisited": 2,
+        "minPointsVisited": 1,
         "minDwellMs": 1800,
         "minListenMsPerPoint": 3000
       },
@@ -525,37 +496,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. S3 erken diyastolik, S4 presistoliktir; palpe edilabilen bir atriyal 'kick' S4'ü destekler.",
+          "feedbackCorrect": "Doğru. S3 erken diyastolik, S4 presistoliktir; palpe edilebilen bir atriyal 'kick' S4'ü destekler.",
           "feedbackIncorrect": "Zamanlama anahtarıdır: S3 erken diyastolde (S2 sonrası), S4 presistoldedir (S1 öncesi)."
-        },
-        {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu vakanın kaydında S4 hangi odakta alınmıştır?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Mitral odak (apeks)"
-            },
-            {
-              "id": "b",
-              "label": "Pulmoner odak (sol üst sternal kenar)"
-            },
-            {
-              "id": "c",
-              "label": "Aort odağı (sağ üst sternal kenar)"
-            },
-            {
-              "id": "d",
-              "label": "Triküspit odak (sol alt sternal kenar)"
-            }
-          ],
-          "correct": [
-            "b"
-          ],
-          "feedbackCorrect": "Doğru. Bu veri setinde S4 kaydı sol üst sternal kenarda alınmıştır; klinikte S4 sıkça apekste de duyulur.",
-          "feedbackIncorrect": "Bu kaydın kaynağı sol üst sternal kenar (LUSB) bölgesidir. Karşılaştırma yaparken tüm odakları dinleyin."
         },
         {
           "id": "q4",
@@ -581,7 +523,7 @@
       ],
       "feedback": {
         "summary": "S4: presistolik, düşük frekanslı ek ses. S1'den hemen önce duyulur; sert ventrikül ve kuvvetli atriyal kontraksiyonla ilişkilidir. Atriyal fibrilasyonda duyulmaz (organize atriyal kontraksiyon yoktur).",
-        "differential": "İleri yaş, hipertansiyon, aort darlığı, hipertrofik kardiyomiyopati gibi ventrikül sertleşmesi durumlarıyla ilişkilendirilir; bu sesin duymak tek başına tanı koydurmaz."
+        "differential": "İleri yaş, hipertansiyon, aort darlığı, hipertrofik kardiyomiyopati gibi ventrikül sertleşmesi durumlarıyla ilişkilendirilir; bu sesi duymak tek başına tanı koydurmaz."
       },
       "references": [
         "HLS-CMDS v3 — S4 kayıtları (RC, LUSB)"
@@ -589,9 +531,9 @@
       "masteryThreshold": 80,
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 30,
-        "interpretation": 25,
+        "localization": 0,
+        "recognition": 40,
+        "interpretation": 35,
         "diagnosis": 0,
         "systematic": 5
       },
@@ -703,35 +645,6 @@
           "feedbackIncorrect": "Üfürüm S1–S2 aralığında, yani sistolde duyulmaktadır. S2'den sonraki diyastol bölümünü tekrar dinleyin."
         },
         {
-          "id": "q2",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu üfürüm bu vakanın kaydında hangi odakta alınmıştır?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Mitral odak (apeks)"
-            },
-            {
-              "id": "b",
-              "label": "Aort odağı (sağ üst sternal kenar)"
-            },
-            {
-              "id": "c",
-              "label": "Pulmoner odak (sol üst sternal kenar)"
-            },
-            {
-              "id": "d",
-              "label": "Triküspit odak (sol alt sternal kenar)"
-            }
-          ],
-          "correct": [
-            "a"
-          ],
-          "feedbackCorrect": "Doğru. Bu vakanın ana kaydı apeks (mitral odak) bölgesinden alınmıştır. Üfürüm birden fazla odakta duyulabilir; karşılaştırma yapın.",
-          "feedbackIncorrect": "Bu vakanın ana kaydı apeks bölgesindedir. Diğer odaklardaki yoğunluğu karşılaştırarak tekrar dinleyin."
-        },
-        {
           "id": "q3",
           "type": "multi_choice",
           "domain": "interpretation",
@@ -757,10 +670,11 @@
           "correct": [
             "a",
             "b",
+            "c",
             "d"
           ],
-          "feedbackCorrect": "Doğru. Üfürüm değerlendirmesinde zamanlama, lokasyon, şiddet/karakter temel özelliklerdir; solunumla ilişki solunum seslerinde ön plandadır.",
-          "feedbackIncorrect": "Zamanlama, odak ve şiddet/karakter temel parametrelerdir. 'Solunumla ilişki' üfürüm tanımının ana ölçütü değildir."
+          "feedbackCorrect": "Doğru. Zamanlama, lokasyon, şiddet/karakter temel özelliklerdir; solunumla ilişki de değerlidir (Carvallo bulgusu: sağ kalp kaynaklı üfürümler inspirasyonla artar, sol kalp kaynaklılar değişmez veya azalır).",
+          "feedbackIncorrect": "Zamanlama, odak ve şiddet/karakter yanında solunumla ilişki de önemlidir: sağ kalp kaynaklı üfürümler inspirasyonla artar (Carvallo bulgusu); bu özellik ayırıcı değerlendirmede kullanılır."
         },
         {
           "id": "q4",
@@ -794,9 +708,9 @@
       "masteryThreshold": 80,
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 30,
-        "interpretation": 25,
+        "localization": 0,
+        "recognition": 40,
+        "interpretation": 35,
         "diagnosis": 0,
         "systematic": 5
       },
@@ -930,7 +844,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. Düzensiz düzensiz ritim, atriyal fibrilasyon ile uyumludur (manikin kaydı bu ritmi simüle etmektedir).",
-          "feedbackIncorrect": "Düzensiz düzensiz ritim kalıbı atriyal fibrilasyonu işaret eder; AV blok ve sinüs taşikardisi düzenli ritimlerde görülür."
+          "feedbackIncorrect": "Düzensiz düzensiz ritim kalıbı atriyal fibrilasyonu işaret eder. Sinüs taşikardisi düzenli ve hızlıdır; AV blokta ritim düzenli veya (2. derecede) düzensiz olabilir, ancak 'tamamen düzensiz' desen atriyal fibrilasyona özgüdür."
         },
         {
           "id": "q3",
@@ -1126,22 +1040,22 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Veziküler solunum sesi yumuşaktır; inspirasyon ekspiryumdan uzun ve süreklidir.",
-          "feedbackIncorrect": "Dinlenen ses kesintili ya da mızıkalı değil; yumuşak ve süreklidir — normal veziküler solunum sesi."
+          "feedbackCorrect": "Doğru. Veziküler solunum sesi yumuşaktır; inspirasyon ekspirasyondan uzun ve süreklidir.",
+          "feedbackIncorrect": "Dinlenen ses kesintili ya da müzikal değil; yumuşak ve süreklidir — normal veziküler solunum sesi."
         },
         {
           "id": "q2",
           "type": "single_choice",
           "domain": "interpretation",
-          "prompt": "Normal veziküler solunum sesinde inspirasyon–ekspiryum ilişkisi nasıldır?",
+          "prompt": "Normal veziküler solunum sesinde inspirasyon–ekspirasyon ilişkisi nasıldır?",
           "options": [
             {
               "id": "a",
-              "label": "Inspirasyon ekspiryumdan uzun, ses yumuşak"
+              "label": "İnspirasyon ekspirasyondan uzun, ses yumuşak"
             },
             {
               "id": "b",
-              "label": "Ekspiryum inspirasyondan uzun ve kaba"
+              "label": "Ekspirasyon inspirasyondan uzun ve kaba"
             },
             {
               "id": "c",
@@ -1149,14 +1063,14 @@
             },
             {
               "id": "d",
-              "label": "Inspirasyonda muzıkal hışıltı duyulur"
+              "label": "İnspirasyonda müzikal hışıltı duyulur"
             }
           ],
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Veziküler seste inspirasyon > ekspiryum, ses yumuşak ve düşük frekanslıdır.",
-          "feedbackIncorrect": "Normal veziküler seste inspirasyon fazı ekspiryumdan uzundur ve ses yumuşaktır."
+          "feedbackCorrect": "Doğru. Veziküler seste inspirasyon > ekspirasyon, ses yumuşak ve düşük frekanslıdır.",
+          "feedbackIncorrect": "Normal veziküler seste inspirasyon fazı ekspirasyondan uzundur ve ses yumuşaktır."
         },
         {
           "id": "q3",
@@ -1189,7 +1103,7 @@
         }
       ],
       "feedback": {
-        "summary": "Normal veziküler solunum: yumuşak, düşük frekanslı; inspirasyon ekspiryumdan uzundur ve ekspiryumda ses hızla söner. Bilateral simetridir.",
+        "summary": "Normal veziküler solunum: yumuşak, düşük frekanslı; inspirasyon ekspirasyondan uzundur ve ekspirasyonda ses hızla söner. Bilateral simetriktir.",
         "techniqueNotes": "Anterior oskültasyonda üst-orta-alt sırayla önce sağ sonra sol (veya simetrik ardışık) karşılaştırma önerilir. Posterior oskültasyon eklenmeli; bu veri setinde posterior kayıt bulunmadığından simülasyon anterior bölgelerle sınırlıdır."
       },
       "references": [
@@ -1228,7 +1142,7 @@
       },
       "objectives": [
         "Wheezing'i tanımak",
-        "Ekspiryum ile ilişkisini kavramak"
+        "Ekspirasyon ile ilişkisini kavramak"
       ],
       "tasks": [
         "Bölgeleri dinleyin.",
@@ -1370,7 +1284,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Ekspiryumda"
+              "label": "Ekspirasyonda"
             },
             {
               "id": "b",
@@ -1378,7 +1292,7 @@
             },
             {
               "id": "c",
-              "label": "Ses tutulmasında"
+              "label": "Nefes tutma sırasında"
             },
             {
               "id": "d",
@@ -1388,8 +1302,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Wheezing tipik olarak ekspiryumda belirgindir; ileri daralmada inspirasyona da yayılır.",
-          "feedbackIncorrect": "Wheezing ekspiryumda belirgindir; geniş yaygın daralmada iki faza yayılabilir."
+          "feedbackCorrect": "Doğru. Wheezing tipik olarak ekspirasyonda belirgindir; ileri daralmada inspirasyona da yayılır.",
+          "feedbackIncorrect": "Wheezing ekspirasyonda belirgindir; geniş yaygın daralmada iki faza yayılabilir."
         },
         {
           "id": "q3",
@@ -1399,7 +1313,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Daralmış küçük hava yollarında turbulan akım"
+              "label": "Daralmış küçük hava yollarında türbülan akım"
             },
             {
               "id": "b",
@@ -1417,12 +1331,12 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Hava yolu darlığı (bronkospazm, ödem, sekresyon) turbulan akım ve müzikal ses üretir.",
-          "feedbackIncorrect": "Wheezing hava yolu daralmasına bağlı turbulan akımdan doğar; alveolar açılma sesleri ralleri, plevral sürtünme frotmanı oluşturur."
+          "feedbackCorrect": "Doğru. Hava yolu darlığı (bronkospazm, ödem, sekresyon) türbülan akım ve müzikal ses üretir.",
+          "feedbackIncorrect": "Wheezing hava yolu daralmasına bağlı türbülan akımdan doğar; alveolar açılma sesleri ralleri, plevral sürtünme frotmanı oluşturur."
         }
       ],
       "feedback": {
-        "summary": "Wheezing: yüksek frekanslı, müzikal, ekspiryumda belirgin sürekli ses; küçük hava yollarında daralma ile ilişkilidir. Yaygın bilateral wheezing obstrüktif paternle uyumludur ancak tanı için klinik bağlantı gerekir.",
+        "summary": "Wheezing: yüksek frekanslı, müzikal, ekspirasyonda belirgin sürekli ses; küçük hava yollarında daralma ile ilişkilidir. Yaygın bilateral wheezing obstrüktif paternle uyumludur ancak tanı için klinik bağlantı gerekir.",
         "differential": "Astım, KOAH, bronşiolit gibi obstrüktif durumlarda görülür; tek bulgu ile hastalık tanısı konmaz."
       },
       "references": [
@@ -1461,7 +1375,7 @@
       },
       "objectives": [
         "İnce ralleri tanımak",
-        "İnspiryum sonu zamanlamasını kavramak",
+        "İnspirasyon sonu zamanlamasını kavramak",
         "Kaba rallerden ayırt etmek"
       ],
       "tasks": [
@@ -1566,15 +1480,15 @@
           "options": [
             {
               "id": "a",
-              "label": "Inspirasyon sonu"
+              "label": "İnspirasyon sonu"
             },
             {
               "id": "b",
-              "label": "Ekspiryum başında"
+              "label": "Ekspirasyon başında"
             },
             {
               "id": "c",
-              "label": "Orta ekspiryumda"
+              "label": "Orta ekspirasyonda"
             },
             {
               "id": "d",
@@ -1585,7 +1499,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. İnce raller inspirasyon sonunda, alveollerin açılmasıyla duyulur; öksürükle genellikle değişmez.",
-          "feedbackIncorrect": "İnce raller inspirasyon sonunda belirgindir; ekspiryuma uzanmaz."
+          "feedbackIncorrect": "İnce raller inspirasyon sonunda belirgindir; ekspirasyona uzanmaz."
         },
         {
           "id": "q3",
@@ -1599,7 +1513,7 @@
             },
             {
               "id": "b",
-              "label": "İnspiryum sonunda yoğunlaşır"
+              "label": "İnspirasyon sonunda yoğunlaşır"
             },
             {
               "id": "c",
@@ -1607,7 +1521,7 @@
             },
             {
               "id": "d",
-              "label": "Yalnızca ekspiryumda duyulur"
+              "label": "Yalnızca ekspirasyonda duyulur"
             }
           ],
           "correct": [
@@ -1785,7 +1699,7 @@
         }
       ],
       "feedback": {
-        "summary": "Kaba raller: düşük frekanslı, kaba, 'çırçır/kıvırtma' benzeri sesler; büyük hava yollarındaki sekresyonla ilişkilidir ve öksürükle değişebilir.",
+        "summary": "Kaba raller: düşük frekanslı, kaba, kaynama fokurtusuna benzer nemli sesler; büyük hava yollarındaki sekresyonla ilişkilidir ve öksürükle değişebilir.",
         "differential": "Bronşektazi, ağır pnömoni, sekresyon birikimi gibi durumlarda duyulabilir; tek akustik bulgu hastalık tanısı vermez."
       },
       "references": [
@@ -2092,11 +2006,11 @@
           "options": [
             {
               "id": "a",
-              "label": "İnspiryum ve ekspiryumun her ikisinde duyulması"
+              "label": "İnspirasyon ve ekspirasyonun her ikisinde duyulması"
             },
             {
               "id": "b",
-              "label": "Yalnızca ekspiryum sonunda duyulması"
+              "label": "Yalnızca ekspirasyon sonunda duyulması"
             },
             {
               "id": "c",
@@ -2110,7 +2024,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Frotman iki fazda (inspiryum + ekspiryum) duyulur; 'deri sürtme/kar çiğneme' benzeri tarz tarif edilir.",
+          "feedbackCorrect": "Doğru. Frotman iki fazda (inspirasyon + ekspirasyon) duyulur; 'deri sürtünmesi / kar gıcırtısı' benzeri bir sestir.",
           "feedbackIncorrect": "Frotman iki fazlıdır; bu özelliği ral ve wheezing'den ayırır."
         }
       ],
@@ -2154,12 +2068,12 @@
       },
       "objectives": [
         "Hızlı kalp hızını akustik olarak tanımak",
-        "Diastolün kısalmasını değerlendirmek"
+        "Diyastolün kısalmasını değerlendirmek"
       ],
       "tasks": [
         "Ritmi dinleyin.",
         "Kalp hızını tahmin edin.",
-        "Diastol süresini değerlendirin."
+        "Diyastol süresini değerlendirin."
       ],
       "views": [
         "front"
@@ -2222,7 +2136,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Ritim düzenli fakat hızlıdır; diastolik aralıklar kısalır.",
+          "feedbackCorrect": "Doğru. Ritim düzenli fakat hızlıdır; diyastolik aralıklar kısalır.",
           "feedbackIncorrect": "Aralıklar düzenlidir fakat hız belirgin biçimde artmıştır — düzenli taşikardik ritim."
         },
         {
@@ -2245,18 +2159,18 @@
             },
             {
               "id": "d",
-              "label": "Hiçbiri kısalmez"
+              "label": "Hiçbiri kısalmaz"
             }
           ],
           "correct": [
             "a"
           ],
           "feedbackCorrect": "Doğru. Hız arttıkça diyastol kısalır; bu, dolum ve ek ses zamanlamasını değiştirebilir.",
-          "feedbackIncorrect": "Tasikardide diyastol erken kısalır; dolum süresi azalır."
+          "feedbackIncorrect": "Taşikardide diyastol erken kısalır; dolum süresi azalır."
         }
       ],
       "feedback": {
-        "summary": "Taşikardik ritim: düzenli ama hızlıdır; diastolik dolum süresi kısalır. Nedeni (ateş, anemi, ağrı, hipovolemi, aritmi) ayrıca değerlendirilmelidir.",
+        "summary": "Taşikardik ritim: düzenli ama hızlıdır; diyastolik dolum süresi kısalır. Nedeni (ateş, anemi, ağrı, hipovolemi, aritmi) ayrıca değerlendirilmelidir.",
         "differential": "Sinüs taşikardisi, supraventriküler taşikardi vb. — EKG ile ayırt edilir."
       },
       "references": [
@@ -2440,7 +2354,7 @@
         "Erken/geç sistolik ayrımını yapmak"
       ],
       "tasks": [
-        "Odyakları dinleyin.",
+        "Odakları dinleyin.",
         "Üfürümün başlangıcını belirleyin.",
         "Süresini değerlendirin."
       ],
@@ -2554,35 +2468,6 @@
           "feedbackIncorrect": "S2'den önce sönen bir üfürüm erken sistoliktir; S2 sonrası sesler diyastolik zamanlıdır."
         },
         {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu vakanın kaydında üfürüm en belirgin hangi odakta alınmıştır?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Aort odağı (sağ üst sternal kenar)"
-            },
-            {
-              "id": "b",
-              "label": "Pulmoner odak (sol üst sternal kenar)"
-            },
-            {
-              "id": "c",
-              "label": "Triküspit odak (sol alt sternal kenar)"
-            },
-            {
-              "id": "d",
-              "label": "Mitral odak (apeks)"
-            }
-          ],
-          "correct": [
-            "b"
-          ],
-          "feedbackCorrect": "Doğru. Bu vakanın ana kaydı sol üst sternal kenar (pulmoner odak) bölgesindendir; tüm odakları karşılaştırın.",
-          "feedbackIncorrect": "Bu vakanın ana kaydı pulmoner odak (LUSB) bölgesinden alınmıştır."
-        },
-        {
           "id": "q4",
           "type": "bell_diaphragm",
           "domain": "interpretation",
@@ -2613,9 +2498,9 @@
       ],
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 30,
-        "interpretation": 25,
+        "localization": 0,
+        "recognition": 40,
+        "interpretation": 35,
         "diagnosis": 0,
         "systematic": 5
       },
@@ -2647,7 +2532,7 @@
         "Erken/geç sistolik ayrımını yapmak"
       ],
       "tasks": [
-        "Odyakları dinleyin.",
+        "Odakları dinleyin.",
         "Üfürümün yoğunlaştığı zamanı belirleyin.",
         "En belirgin odağı seçin."
       ],
@@ -2761,35 +2646,6 @@
           "feedbackIncorrect": "S1 ile başlayıp erken sönen üfürüm erken sistoliktir; S2 öncesi beliren üfürüm geç sistoliktir."
         },
         {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu üfürüm bu vakanın kaydında hangi odakta alınmıştır?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Mitral odak (apeks)"
-            },
-            {
-              "id": "b",
-              "label": "Aort odağı (sağ üst sternal kenar)"
-            },
-            {
-              "id": "c",
-              "label": "Pulmoner odak (sol üst sternal kenar)"
-            },
-            {
-              "id": "d",
-              "label": "Triküspit odak (sol alt sternal kenar)"
-            }
-          ],
-          "correct": [
-            "a"
-          ],
-          "feedbackCorrect": "Doğru. Bu vakanın ana kaydı apeks (mitral odak) bölgesindendir.",
-          "feedbackIncorrect": "Bu vakanın ana kaydı apeks bölgesinden alınmıştır; diğer odaklarla karşılaştırın."
-        },
-        {
           "id": "q4",
           "type": "bell_diaphragm",
           "domain": "interpretation",
@@ -2820,9 +2676,9 @@
       ],
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 30,
-        "interpretation": 25,
+        "localization": 0,
+        "recognition": 40,
+        "interpretation": 35,
         "diagnosis": 0,
         "systematic": 5
       },
@@ -2854,7 +2710,7 @@
         "Diyastolik sesleri S1/S2 zamanlamasıyla konumlandırmak"
       ],
       "tasks": [
-        "Odyakları dinleyin.",
+        "Odakları dinleyin.",
         "Üfürümün S1 ile ilişkisini belirleyin.",
         "Uygun stetoskop kafasını seçin."
       ],
@@ -2960,35 +2816,6 @@
           "feedbackIncorrect": "S2'den hemen sonra başlayan ses erken diyastoliktir; S1 öncesi beliren ses geç diyastoliktir."
         },
         {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu vakanın kaydında en belirgin alan hangisidir?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Mitral odak (apeks)"
-            },
-            {
-              "id": "b",
-              "label": "Aort odağı (sağ üst sternal kenar)"
-            },
-            {
-              "id": "c",
-              "label": "Pulmoner odak (sol üst sternal kenar)"
-            },
-            {
-              "id": "d",
-              "label": "Triküspit odak (sol alt sternal kenar)"
-            }
-          ],
-          "correct": [
-            "a"
-          ],
-          "feedbackCorrect": "Doğru. Bu vakanın ana kaydı apeks bölgesindendir (aort odağı için bu sınıfta kayıt yoktur).",
-          "feedbackIncorrect": "Bu vakanın ana kaydı apekstir; aort odağında bu sınıf için veri seti kaydı bulunmaz."
-        },
-        {
           "id": "q4",
           "type": "bell_diaphragm",
           "domain": "interpretation",
@@ -3019,9 +2846,9 @@
       ],
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 30,
-        "interpretation": 25,
+        "localization": 0,
+        "recognition": 40,
+        "interpretation": 35,
         "diagnosis": 0,
         "systematic": 5
       },
@@ -3041,11 +2868,11 @@
       "chiefComplaint": "Nefes darlığı ve eforla çarpıntı",
       "history": "Kalp ve akciğer seslerinin aynı kayıtta birlikte değerlendirilmesi isteniyor.",
       "vitalSigns": {
-        "hr": 84,
-        "rr": 20,
-        "bp": "128/80",
-        "spo2": 96,
-        "temp": "36.7 °C"
+        "hr": 88,
+        "rr": 22,
+        "bp": "132/82",
+        "spo2": 95,
+        "temp": "36.8 °C"
       },
       "objectives": [
         "Kombine kayıtta kalp ve akciğer bileşenlerini ayrıştırmak"
@@ -3115,7 +2942,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. Kayıtta kalp bileşeni: Orta sistolik üfürüm.",
-          "feedbackIncorrect": "Kayıttaki kalp bileşeni Orta sistolik üfürüm ile uyumludur.",
+          "feedbackIncorrect": "Bu kayıtta kalp kaynaklı bileşen olarak orta sistolik üfürüm duyulur; tekrar dinleyip karşılaştırın.",
           "hint": "Rüzgâr esintisi (üfürüm) ile çaydanlık düdüğü (wheezing) aynı anda."
         },
         {
@@ -3145,36 +2972,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. Kayıtta akciğer bileşeni: Wheezing.",
-          "feedbackIncorrect": "Kayıttaki akciğer bileşeni Wheezing ile uyumludur."
-        },
-        {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu kombine kayıt hangi bölgeden alınmıştır?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Sol üst bölge (anterior)"
-            },
-            {
-              "id": "b",
-              "label": "Sağ alt bölge (anterior)"
-            },
-            {
-              "id": "c",
-              "label": "Sol alt bölge (anterior)"
-            },
-            {
-              "id": "d",
-              "label": "Sağ üst bölge (anterior)"
-            }
-          ],
-          "correct": [
-            "a"
-          ],
-          "feedbackCorrect": "Doğru. Kaydın alındığı bölge veri setinde bu şekilde etiketlenmiştir.",
-          "feedbackIncorrect": "Kaydın kaynak bölgesi veri seti etiketiyle belirlenir; bölge listesini kullanarak karşılaştırın."
+          "feedbackIncorrect": "Bu kayıtta akciğer kaynaklı bileşen olarak wheezing duyulur; tekrar dinleyip karşılaştırın."
         }
       ],
       "feedback": {
@@ -3186,8 +2984,8 @@
       ],
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 50,
+        "localization": 0,
+        "recognition": 70,
         "interpretation": 0,
         "diagnosis": 0,
         "systematic": 10
@@ -3208,11 +3006,11 @@
       "chiefComplaint": "Öksürük ve balgam",
       "history": "Kalp ve akciğer seslerinin aynı kayıtta birlikte değerlendirilmesi isteniyor.",
       "vitalSigns": {
-        "hr": 84,
-        "rr": 20,
-        "bp": "128/80",
-        "spo2": 96,
-        "temp": "36.7 °C"
+        "hr": 90,
+        "rr": 22,
+        "bp": "134/84",
+        "spo2": 93,
+        "temp": "37.8 °C"
       },
       "objectives": [
         "Kombine kayıtta kalp ve akciğer bileşenlerini ayrıştırmak"
@@ -3282,7 +3080,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. Kayıtta kalp bileşeni: Erken sistolik üfürüm.",
-          "feedbackIncorrect": "Kayıttaki kalp bileşeni Erken sistolik üfürüm ile uyumludur.",
+          "feedbackIncorrect": "Bu kayıtta kalp kaynaklı bileşen olarak erken sistolik üfürüm duyulur; tekrar dinleyip karşılaştırın.",
           "hint": "Kısa bir 'fış' sesi ile kaynama fokurtusunun birlikteliği."
         },
         {
@@ -3312,36 +3110,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. Kayıtta akciğer bileşeni: Kaba raller.",
-          "feedbackIncorrect": "Kayıttaki akciğer bileşeni Kaba raller ile uyumludur."
-        },
-        {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu kombine kayıt hangi bölgeden alınmıştır?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Sol üst bölge (anterior)"
-            },
-            {
-              "id": "b",
-              "label": "Sağ alt bölge (anterior)"
-            },
-            {
-              "id": "c",
-              "label": "Sol alt bölge (anterior)"
-            },
-            {
-              "id": "d",
-              "label": "Sağ üst bölge (anterior)"
-            }
-          ],
-          "correct": [
-            "a"
-          ],
-          "feedbackCorrect": "Doğru. Kaydın alındığı bölge veri setinde bu şekilde etiketlenmiştir.",
-          "feedbackIncorrect": "Kaydın kaynak bölgesi veri seti etiketiyle belirlenir; bölge listesini kullanarak karşılaştırın."
+          "feedbackIncorrect": "Bu kayıtta akciğer kaynaklı bileşen olarak kaba raller duyulur; tekrar dinleyip karşılaştırın."
         }
       ],
       "feedback": {
@@ -3353,8 +3122,8 @@
       ],
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 50,
+        "localization": 0,
+        "recognition": 70,
         "interpretation": 0,
         "diagnosis": 0,
         "systematic": 10
@@ -3375,11 +3144,11 @@
       "chiefComplaint": "Eforla nefes darlığı",
       "history": "Kalp ve akciğer seslerinin aynı kayıtta birlikte değerlendirilmesi isteniyor.",
       "vitalSigns": {
-        "hr": 84,
-        "rr": 20,
-        "bp": "128/80",
-        "spo2": 96,
-        "temp": "36.7 °C"
+        "hr": 76,
+        "rr": 16,
+        "bp": "118/74",
+        "spo2": 98,
+        "temp": "36.6 °C"
       },
       "objectives": [
         "Kombine kayıtta kalp ve akciğer bileşenlerini ayrıştırmak"
@@ -3449,7 +3218,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. Kayıtta kalp bileşeni: S3 (üçüncü kalp sesi).",
-          "feedbackIncorrect": "Kayıttaki kalp bileşeni S3 (üçüncü kalp sesi) ile uyumludur.",
+          "feedbackIncorrect": "Bu kayıtta kalp kaynaklı bileşen olarak S3 (üçüncü kalp sesi) duyulur; tekrar dinleyip karşılaştırın.",
           "hint": "Ken-ta-ta dörtnal ritmi üzerine hafif dalga hışırtısı."
         },
         {
@@ -3479,36 +3248,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. Kayıtta akciğer bileşeni: Normal solunum sesleri.",
-          "feedbackIncorrect": "Kayıttaki akciğer bileşeni Normal solunum sesleri ile uyumludur."
-        },
-        {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu kombine kayıt hangi bölgeden alınmıştır?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Sol üst bölge (anterior)"
-            },
-            {
-              "id": "b",
-              "label": "Sağ alt bölge (anterior)"
-            },
-            {
-              "id": "c",
-              "label": "Sol alt bölge (anterior)"
-            },
-            {
-              "id": "d",
-              "label": "Sağ üst bölge (anterior)"
-            }
-          ],
-          "correct": [
-            "b"
-          ],
-          "feedbackCorrect": "Doğru. Kaydın alındığı bölge veri setinde bu şekilde etiketlenmiştir.",
-          "feedbackIncorrect": "Kaydın kaynak bölgesi veri seti etiketiyle belirlenir; bölge listesini kullanarak karşılaştırın."
+          "feedbackIncorrect": "Bu kayıtta akciğer kaynaklı bileşen olarak normal solunum sesleri duyulur; tekrar dinleyip karşılaştırın."
         }
       ],
       "feedback": {
@@ -3520,8 +3260,8 @@
       ],
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 50,
+        "localization": 0,
+        "recognition": 70,
         "interpretation": 0,
         "diagnosis": 0,
         "systematic": 10
@@ -3542,11 +3282,11 @@
       "chiefComplaint": "Çarpıntı ve hırıltılı solunum",
       "history": "Kalp ve akciğer seslerinin aynı kayıtta birlikte değerlendirilmesi isteniyor.",
       "vitalSigns": {
-        "hr": 84,
+        "hr": 92,
         "rr": 20,
-        "bp": "128/80",
-        "spo2": 96,
-        "temp": "36.7 °C"
+        "bp": "138/84",
+        "spo2": 94,
+        "temp": "37.0 °C"
       },
       "objectives": [
         "Kombine kayıtta kalp ve akciğer bileşenlerini ayrıştırmak"
@@ -3616,7 +3356,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. Kayıtta kalp bileşeni: Düzensiz düzensiz ritim (AF ile uyumlu).",
-          "feedbackIncorrect": "Kayıttaki kalp bileşeni Düzensiz düzensiz ritim (AF ile uyumlu) ile uyumludur.",
+          "feedbackIncorrect": "Bu kayıtta kalp kaynaklı bileşen olarak düzensiz düzensiz ritim (AF ile uyumlu) duyulur; tekrar dinleyip karşılaştırın.",
           "hint": "Düzensiz davul vuruşları üzerine horlama benzeri kaba hırıltı."
         },
         {
@@ -3646,36 +3386,7 @@
             "a"
           ],
           "feedbackCorrect": "Doğru. Kayıtta akciğer bileşeni: Ronküs.",
-          "feedbackIncorrect": "Kayıttaki akciğer bileşeni Ronküs ile uyumludur."
-        },
-        {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Bu kombine kayıt hangi bölgeden alınmıştır?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Sol üst bölge (anterior)"
-            },
-            {
-              "id": "b",
-              "label": "Sağ alt bölge (anterior)"
-            },
-            {
-              "id": "c",
-              "label": "Sol alt bölge (anterior)"
-            },
-            {
-              "id": "d",
-              "label": "Sağ üst bölge (anterior)"
-            }
-          ],
-          "correct": [
-            "b"
-          ],
-          "feedbackCorrect": "Doğru. Kaydın alındığı bölge veri setinde bu şekilde etiketlenmiştir.",
-          "feedbackIncorrect": "Kaydın kaynak bölgesi veri seti etiketiyle belirlenir; bölge listesini kullanarak karşılaştırın."
+          "feedbackIncorrect": "Bu kayıtta akciğer kaynaklı bileşen olarak ronküs duyulur; tekrar dinleyip karşılaştırın."
         }
       ],
       "feedback": {
@@ -3687,8 +3398,8 @@
       ],
       "scoringWeights": {
         "technique": 20,
-        "localization": 20,
-        "recognition": 50,
+        "localization": 0,
+        "recognition": 70,
         "interpretation": 0,
         "diagnosis": 0,
         "systematic": 10
@@ -4015,7 +3726,7 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Müzikal, sürekli ve ekspiryumda belirgin ses wheezing'dir.",
+          "feedbackCorrect": "Doğru. Müzikal, sürekli ve ekspirasyonda belirgin ses wheezing'dir.",
           "feedbackIncorrect": "Ses kesintili değil; müzikal ve süreklidir — wheezing.",
           "hint": "Çaydanlık düdüğü benzetmesini düşünün."
         },
@@ -4069,7 +3780,7 @@
     },
     {
       "id": "case_pediatric_innocent_murmur",
-      "title": "Pediatrik Masum Üfürüm (Gerçek Pediatrik Kayıt)",
+      "title": "Pediatrik Erken Sistolik Üfürüm (Gerçek Pediatrik Kayıt)",
       "modes": [
         "practice",
         "assessment"
@@ -4203,37 +3914,8 @@
           "correct": [
             "a"
           ],
-          "feedbackCorrect": "Doğru. Ateşli hastalıkta üfürüm sık ve sıklıkla geçicidir; klinik bağlam ve gerektiğinde ateş sonrası yeniden değerlendirme/ileri tetkik gerekir.",
+          "feedbackCorrect": "Doğru. Ateşli dönemde bu tür üfürümler sık görülür ve genellikle geçicidir; klinik bağlam ve gerektiğinde ateş sonrası yeniden değerlendirme veya ileri tetkik gerekir.",
           "feedbackIncorrect": "Oskültasyon tek başına masum/patolojik ayrımı yapamaz; klinik bağlam ve ileri değerlendirme gerekir."
-        },
-        {
-          "id": "q3",
-          "type": "localization",
-          "domain": "localization",
-          "prompt": "Gerçek pediatrik kayıt hangi odaktan alınmıştır?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Aort odağı (sağ üst sternal kenar)"
-            },
-            {
-              "id": "b",
-              "label": "Mitral odak (apeks)"
-            },
-            {
-              "id": "c",
-              "label": "Pulmoner odak (sol üst sternal kenar)"
-            },
-            {
-              "id": "d",
-              "label": "Triküspit odak (sol alt sternal kenar)"
-            }
-          ],
-          "correct": [
-            "a"
-          ],
-          "feedbackCorrect": "Doğru. Pediatrik hasta kaydı aort odağından alınmıştır (CirCor).",
-          "feedbackIncorrect": "Pediatrik hasta kaydı aort odağından alınmıştır."
         },
         {
           "id": "q4",
@@ -4267,9 +3949,9 @@
       ],
       "scoringWeights": {
         "technique": 20,
-        "localization": 25,
-        "recognition": 40,
-        "interpretation": 15,
+        "localization": 0,
+        "recognition": 55,
+        "interpretation": 25,
         "diagnosis": 0,
         "systematic": 0
       },

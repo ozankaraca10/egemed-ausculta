@@ -7,9 +7,9 @@ import { useState } from 'react'
 /** İlk kullanım öğreticisi (§45): 6 adım, tek sefer gösterilir, tekrar oynatılabilir. */
 
 const STEPS = [
-  { n: 1, title: 'Steteskopu sürükleyin', desc: 'Ekrandaki steteskopu tıklayıp sürükleyerek hareket ettirin.', icon: 'drag' },
-  { n: 2, title: 'Oskültasyon alanını bulun', desc: 'Hastanın göğsü üzerindeki işaretli oskültasyon alanlarından birine steteskopu yerleştirin.', icon: 'target' },
-  { n: 3, title: 'Bell veya Diyaframı seçin', desc: 'Oskültasyon yapmak için steteskopun bell veya diyafram tarafını seçin.', icon: 'heads' },
+  { n: 1, title: 'Stetoskopu sürükleyin', desc: 'Ekrandaki stetoskopu tıklayıp sürükleyerek hareket ettirin.', icon: 'drag' },
+  { n: 2, title: 'Oskültasyon alanını bulun', desc: 'Hastanın göğsü üzerindeki işaretli oskültasyon alanlarından birine stetoskopu yerleştirin.', icon: 'target' },
+  { n: 3, title: 'Bell veya Diyaframı seçin', desc: 'Oskültasyon yapmak için stetoskopun bell veya diyafram tarafını seçin.', icon: 'heads' },
   { n: 4, title: 'Sesi dinleyin', desc: 'Gerçek klinik kayıtlardan elde edilmiş oskültasyon sesini dinleyin.', icon: 'vol' },
   { n: 5, title: 'Karşılaştırın', desc: 'Sesi normal ve patolojik örneklerle karşılaştırarak farklı bölgeleri inceleyin.', icon: 'compare' },
   { n: 6, title: 'Yorumlayın', desc: 'Duyduğunuz sese göre klinik bulguları değerlendirip yorumunuzu yapın.', icon: 'doc' },

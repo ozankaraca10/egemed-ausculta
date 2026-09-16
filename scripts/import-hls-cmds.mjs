@@ -164,10 +164,6 @@ function unzip(zip, dest) {
   }
 }
 
-function wavFiles(dir) {
-  return fs.readdirSync(dir).filter((f) => f.toLowerCase().endsWith('.wav'))
-}
-
 function writeRuntime(srcDir, category, filename, info, buf) {
   const dest = path.join(RUNTIME, category)
   fs.mkdirSync(dest, { recursive: true })

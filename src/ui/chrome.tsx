@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { HelpModal } from './HelpModal'
+import { ConfirmModal } from './ConfirmModal'
 import { useStore } from '../core/store'
 import { IconBook, IconGlobe, IconHelpCircle, IconEcg, IconFullscreen, IconFullscreenExit, IconSwap } from './icons'
 import { ALL_CASES } from '../data/pool'
@@ -12,7 +13,10 @@ export function Header() {
   const { state, dispatch, runtime } = useStore()
   const [fs, setFs] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
+  // O6: değerlendirme sırasında marka/"Mod Değiştir" doğrudan çıkmaz — önce onay istenir.
+  const [exitTarget, setExitTarget] = useState<'start' | 'modes' | null>(null)
   const modeLabel = state.mode === 'learn' ? 'Öğrenme Modu' : state.mode === 'practice' ? 'Uygulama Modu' : 'Değerlendirme Modu'
+  const inAssessment = state.mode === 'assessment' && state.screen === 'simulation'
 
   useEffect(() => {
     const onFs = () => setFs(!!document.fullscreenElement)
@@ -25,9 +29,16 @@ export function Header() {
     else document.exitFullscreen?.().catch(() => undefined)
   }
 
+  const goStart = () => (inAssessment ? setExitTarget('start') : dispatch({ type: 'goto', screen: 'start' }))
+  const goModes = () => (inAssessment ? setExitTarget('modes') : dispatch({ type: 'goto', screen: 'modes' }))
+  const confirmExit = () => {
+    if (exitTarget) dispatch({ type: 'goto', screen: exitTarget })
+    setExitTarget(null)
+  }
+
   return (
     <header className="eg-header">
-      <button className="eg-brand" onClick={() => dispatch({ type: 'goto', screen: 'start' })} aria-label="Ana ekran">
+      <button className="eg-brand" onClick={goStart} aria-label="Ana ekran">
         <BrandMark size={32} />
         <span className="brand-block">
           <span className="brand-top">EGEMED</span>
@@ -44,7 +55,7 @@ export function Header() {
           {(state.screen === 'simulation' || state.screen === 'learn') && (
             <button
               className="eg-header-chip clickable"
-              onClick={() => dispatch({ type: 'goto', screen: 'modes' })}
+              onClick={goModes}
               title="Mod seçim ekranına dön"
             >
               <IconSwap /> <span className="chip-text">Mod Değiştir</span>
@@ -81,6 +92,15 @@ export function Header() {
         <IconBook /> <span className="chip-text">Kaynaklar</span>
       </button>
       <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
+      <ConfirmModal
+        open={exitTarget !== null}
+        title="Değerlendirmeden çıkılsın mı?"
+        message="İlerlemeniz kaydedilir, oturum devam ettirilebilir."
+        confirmLabel="Çık"
+        cancelLabel="Vazgeç"
+        onConfirm={confirmExit}
+        onCancel={() => setExitTarget(null)}
+      />
     </header>
   )
 }

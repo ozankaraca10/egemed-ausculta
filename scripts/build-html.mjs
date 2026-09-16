@@ -7,6 +7,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import JSZip from 'jszip'
+import { injectCsp } from './lib/inject-csp.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = path.join(ROOT, 'dist')
@@ -36,6 +37,16 @@ for (const f of files) {
   const dest = path.join(OUT_DIR, f)
   fs.mkdirSync(path.dirname(dest), { recursive: true })
   fs.copyFileSync(path.join(DIST, f), dest)
+}
+
+// D11: SCORM paketiyle aynı CSP meta'sı bağımsız HTML çıktısına da enjekte edilir
+const outIndexPath = path.join(OUT_DIR, 'index.html')
+if (fs.existsSync(outIndexPath)) {
+  const { html, injected } = injectCsp(fs.readFileSync(outIndexPath, 'utf8'))
+  if (injected) {
+    fs.writeFileSync(outIndexPath, html)
+    console.log('CSP meta enjekte edildi')
+  }
 }
 
 // bağımsız kullanım notu

@@ -5,7 +5,7 @@ import type { SoundRecord } from '../core/types'
  *  - Tek AudioContext (autoplay kısıtına uygun: kullanıcı jestiyle resume)
  *  - Tek aktif oskültasyon; nokta değişiminde ~120 ms çapraz geçiş
  *  - Tam segment döngü (15 s fizyolojik kayıt)
- *  - Bell/Diyafram DSP fallback (native eşleşirse bypass)
+ *  - Bell/Diyafram DSP her iki kafa için de her zaman uygulanır (bypass yoktur)
  *  - Lazy yükleme + node temizliği */
 
 export type EngineState = 'idle' | 'loading' | 'playing'
@@ -107,8 +107,8 @@ export class AudioEngine {
     const gain = ctx.createGain()
     gain.gain.value = 0
 
-    let tail: AudioNode = src
     // DSP fallback yalnızca istenen head, kayıt doğal filtresinden farklıysa uygulanır (§10)
+    // D10: son düğüm (high) her dalda tam olarak bir kez gain'e bağlanır (çift connect() = çift kazanç riski).
     if (head === 'bell') {
       const dsp = AUDIO_CONFIG.dsp.bell
       const low = ctx.createBiquadFilter()
@@ -125,7 +125,6 @@ export class AudioEngine {
       high.frequency.value = dsp.highshelfHz
       high.gain.value = dsp.highshelfDb
       src.connect(low); low.connect(peak); peak.connect(high); high.connect(gain)
-      tail = high
     } else {
       const dsp = AUDIO_CONFIG.dsp.diaphragm
       const low = ctx.createBiquadFilter()
@@ -137,10 +136,8 @@ export class AudioEngine {
       high.frequency.value = dsp.highshelfHz
       high.gain.value = dsp.highshelfDb
       src.connect(low); low.connect(high); high.connect(gain)
-      tail = high
     }
 
-    tail.connect(gain)
     gain.connect(this.master!)
 
     const t0 = ctx.currentTime

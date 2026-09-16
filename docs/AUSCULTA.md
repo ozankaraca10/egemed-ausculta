@@ -177,9 +177,13 @@ Erken/Orta/Geç sistolik zamanlamalar doğrulanmış; holosistolik `educational_
 ## 6. Skor (§24)
 
 Varsayılan ağırlıklar: teknik 20 · lokalizasyon 20 · tanıma 25 · yorum 20 · tanı 10 · sistematik 5.
-Tanı sorusu olmayan vakalarda ağırlık tanıma/yorum'a dağıtılır (toplam daima 100).
-Hakimiyet eşiği **80**. Uygulama modunda her ipucu −5. Tek hata çifte ceza vermez
-(sistematik yarım puan; teknik ayrı ölçülür).
+**Ulaşılamayan ağırlık kalmaz (K2):** bir vakada o alana (lokalizasyon/tanıma/yorum/tanı) ait soru
+yoksa o alanın `max`'ı 0'dır; toplam puan yalnız gerçekten soru bulunan alanların ağırlık toplamı
+(`maxTotal`) üzerinden 100'e normalize edilir — böylece kusursuz performans her vakada tam 100 verir.
+Vaka bazında elle belirlenen `scoringWeights` toplamı yine 100 olmalıdır (`validateCase` uyarır).
+Hakimiyet eşiği **80**. Uygulama modunda her ipucu görünür puanı −5 düşürür (`practiceAdjusted`);
+değerlendirmede ipucu yoktur, etkilenmez. Tek hata çifte ceza vermez (sistematik yarım puan; teknik
+ayrı ölçülür).
 
 ## 7. SCORM (§25–§27, §50)
 
