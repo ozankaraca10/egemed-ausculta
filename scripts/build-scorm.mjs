@@ -92,8 +92,12 @@ async function pack() {
   }
   const buf = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE', compressionOptions: { level: 6 } })
   fs.writeFileSync(outZip, buf)
+  // release/ altına da kopyala: `vite build` dist/'i temizlediği için build:html sonrası dist zip'i kaybolur
+  const RELEASE = path.join(ROOT, 'release')
+  fs.mkdirSync(RELEASE, { recursive: true })
+  fs.copyFileSync(outZip, path.join(RELEASE, path.basename(outZip)))
   const mb = (buf.length / 1024 / 1024).toFixed(1)
-  console.log(`Paket: ${outZip} (${mb} MB, ${allFiles.length} dosya, manifest kökte)`)
+  console.log(`Paket: ${outZip} (${mb} MB, ${allFiles.length} dosya, manifest kökte) — kopya: release/${path.basename(outZip)}`)
 }
 
 pack().catch((e) => {
