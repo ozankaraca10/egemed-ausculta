@@ -9,7 +9,6 @@ export type Screen =
   | 'simulation'
   | 'results'
   | 'sources'
-  | 'help'
 export type PatientView = 'front' | 'back'
 export type StethHead = 'bell' | 'diaphragm'
 export type ValidationStatus = 'validated' | 'educational_mapping' | 'experimental'

@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { HelpModal } from './HelpModal'
 import { ConfirmModal } from './ConfirmModal'
 import { useStore } from '../core/store'
-import { IconBook, IconGlobe, IconHelpCircle, IconEcg, IconFullscreen, IconFullscreenExit, IconSwap } from './icons'
-import { ALL_CASES } from '../data/pool'
+import { IconBook, IconHelpCircle, IconFullscreen, IconFullscreenExit, IconSwap } from './icons'
 
 export function BrandMark({ size = 30 }: { size?: number }) {
   return <img src="brand/logo-icon-white-web.png" alt="" width={size} height={size} className="brand-mark" />
@@ -15,8 +14,10 @@ export function Header() {
   const [helpOpen, setHelpOpen] = useState(false)
   // O6: değerlendirme sırasında marka/"Mod Değiştir" doğrudan çıkmaz — önce onay istenir.
   const [exitTarget, setExitTarget] = useState<'start' | 'modes' | null>(null)
-  const modeLabel = state.mode === 'learn' ? 'Öğrenme Modu' : state.mode === 'practice' ? 'Uygulama Modu' : 'Değerlendirme Modu'
+  const modeShort = state.mode === 'learn' ? 'Öğrenme' : state.mode === 'practice' ? 'Uygulama' : 'Değerlendirme'
+  const modeLabel = `${modeShort} Modu`
   const inAssessment = state.mode === 'assessment' && state.screen === 'simulation'
+  const inWorkScreen = state.screen === 'simulation' || state.screen === 'learn'
 
   useEffect(() => {
     const onFs = () => setFs(!!document.fullscreenElement)
@@ -45,26 +46,14 @@ export function Header() {
           <span className="brand-name">Ausculta</span>
         </span>
       </button>
-      <span className="app-subtitle">Kardiyopulmoner Oskültasyon Simülatörü</span>
       <div className="spacer" />
-      {(state.screen === 'simulation' || state.screen === 'learn') && (
-        <>
+      {/* madde 3: header'ın ortasında tek bir "bağlam grubu" — mod çipi + (değerlendirmede) zamanlayıcı */}
+      {inWorkScreen && (
+        <div className="eg-header-context">
           {state.screen === 'simulation' && (
-            <span className={`eg-mode-chip ${state.mode}`}>{modeLabel}</span>
-          )}
-          {(state.screen === 'simulation' || state.screen === 'learn') && (
-            <button
-              className="eg-header-chip clickable"
-              onClick={goModes}
-              title="Mod seçim ekranına dön"
-            >
-              <IconSwap /> <span className="chip-text">Mod Değiştir</span>
-            </button>
-          )}
-          {(state.mode === 'assessment' && state.screen === 'simulation') && (
-            <span className="eg-progress-chip" aria-live="polite">
-              Soru {Math.min(state.step + 1, currentTotal(state))}/{currentTotal(state)}
-              <span className="bar"><i style={{ width: `${((state.step + 1) / currentTotal(state)) * 100}%` }} /></span>
+            <span className={`eg-mode-chip ${state.mode}`} aria-label={modeLabel}>
+              <span className="lbl-full">{modeLabel}</span>
+              <span className="lbl-short" aria-hidden="true">{modeShort}</span>
             </span>
           )}
           {state.mode === 'assessment' && state.screen === 'simulation' && (
@@ -73,24 +62,43 @@ export function Header() {
               {fmtTimer(state.assessmentTimer)}
             </span>
           )}
-        </>
+        </div>
       )}
-      {runtime?.flags.dev && <span className="eg-dev-badge">DEV</span>}
-      <button className="eg-header-chip clickable" onClick={toggleFs} aria-label={fs ? 'Tam ekrandan çık' : 'Tam ekran'} title={fs ? 'Tam ekrandan çık' : 'Tam ekran'}>
+      <div className="spacer" />
+      {inWorkScreen && (
+        <button
+          className="eg-header-chip clickable hide-mobile"
+          onClick={goModes}
+          aria-label="Mod değiştir"
+          title="Mod seçim ekranına dön"
+        >
+          <IconSwap /> <span className="chip-text">Mod Değiştir</span>
+        </button>
+      )}
+      <button
+        className="eg-header-chip clickable hide-mobile"
+        onClick={toggleFs}
+        aria-label={fs ? 'Tam ekrandan çık' : 'Tam ekran'}
+        title={fs ? 'Tam ekrandan çık' : 'Tam ekran'}
+      >
         {fs ? <IconFullscreenExit /> : <IconFullscreen />}
-        <span className="chip-text">{fs ? 'Normal' : 'Tam Ekran'}</span>
       </button>
       <span className="divider-v" />
-      <span className="eg-header-chip eg-lang" title="Arayüz dili">
-        <IconGlobe /> TR
-      </span>
-      <span className="divider-v" />
-      <button className="eg-header-chip clickable" onClick={() => setHelpOpen(true)}>
+      <button className="eg-header-chip clickable" onClick={() => setHelpOpen(true)} aria-label="Yardım" title="Yardım">
         <IconHelpCircle /> <span className="chip-text">Yardım</span>
       </button>
-      <button className="eg-header-chip clickable" onClick={() => dispatch({ type: 'goto', screen: 'sources' })}>
+      <button
+        className="eg-header-chip clickable"
+        onClick={() => dispatch({ type: 'goto', screen: 'sources' })}
+        aria-label="Kaynaklar"
+        title="Kaynaklar"
+      >
         <IconBook /> <span className="chip-text">Kaynaklar</span>
       </button>
+      {/* wave 2 madde 0: DEV rozeti header'ın en sağında, Kaynaklar'dan sonra — footer'a hiç binmez */}
+      {runtime?.flags.dev && !(typeof window !== 'undefined' && window.location.search.includes('dev=1')) && (
+        <span className="eg-dev-badge" title="Geliştirici build — teşhis paneli için ?dev=1 ekleyin">DEV</span>
+      )}
       <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
       <ConfirmModal
         open={exitTarget !== null}
@@ -105,10 +113,6 @@ export function Header() {
   )
 }
 
-function currentTotal(state: ReturnType<typeof useStore>['state']): number {
-  const c = ALL_CASES.find((x) => x.id === state.currentCaseId)
-  return c?.questions.length ?? 1
-}
 function fmtTimer(ms: number): string {
   const s = Math.floor(ms / 1000)
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
@@ -132,12 +136,12 @@ export function Footer() {
   )
 }
 
+/** madde 2: EKG dekorasyonu kaldırıldı (footer'ın üstüne biniyordu, her ekranda aynı
+ *  yerde içerikle çakışıyordu) — yalnız hafif arka plan yıkaması kalır. */
 export function EcgDeco() {
   return (
     <div className="app-bg" aria-hidden="true">
       <div className="bg-wash" />
-      <IconEcg className="ecg" />
     </div>
   )
 }
-

@@ -5,14 +5,16 @@ import libraryData from '../data/library.json'
 import { engine } from '../audio/engineSingleton'
 import { resolveLibrarySound, resolveLibrarySoundEx } from '../core/resolver'
 import { useStore } from '../core/store'
-import { libraryTitle, librarySub } from '../data/terminology'
-import pediatricRef from '../data/pediatric-reference.json'
-import { ALL_CASES } from '../data/pool'
+import { libraryTitle, libraryShortTitle, librarySub } from '../data/terminology'
+import { ALL_CASES, poolFor } from '../data/pool'
+import { countUnlistenedInOtherView, otherViewHintText } from '../core/flow'
 import { PatientStage, type StageHandle } from '../ui/PatientStage'
+import { RegionChipList } from '../ui/RegionChips'
 import { WaveformView } from '../ui/WaveformView'
 import { Toolbar } from '../ui/Toolbar'
 import { Footer, EcgDeco } from '../ui/chrome'
-import { IconHeart, IconLungs, IconWave, IconDoc, IconStethoscope, IconInfo, IconCompare } from '../ui/icons'
+import { PediatricRefModal } from '../ui/PediatricRefModal'
+import { IconHeart, IconLungs, IconWave, IconDoc, IconStethoscope, IconInfo, IconCompare, IconArrowRight } from '../ui/icons'
 
 /** Öğrenme modu (§3A): kütüphane + simülatör. Skor yok; rehberli, sınırsız dinleme. */
 
@@ -31,12 +33,18 @@ interface LibItemFull {
 }
 
 export function LearnScreen() {
-  const { state } = useStore()
-  const [selectedKey, setSelectedKey] = useState<string>('heart.normal')
+  const { state, dispatch } = useStore()
+  // madde 5 (wave 2): Sonuçlar ekranından "Öğrenme modunda çalış" ile gelindiğinde ilgili
+  // kalem seçili açılır (tek seferlik — tüketilince store'daki alan temizlenir).
+  const [selectedKey, setSelectedKey] = useState<string>(() => state.learnFocusKey ?? 'heart.normal')
   const [tab, setTab] = useState<'desc' | 'wave' | 'clin'>('desc')
+  useEffect(() => {
+    if (state.learnFocusKey) dispatch({ type: 'setLearnFocus', key: null })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const stageRef = useRef<StageHandle>(null)
   const [activePoint, setActivePoint] = useState<string | null>(null)
-  const [tipsOpen, setTipsOpen] = useState(true)
+  const [pedModalOpen, setPedModalOpen] = useState(false)
 
   const points = pointsData.points as AuscultationPoint[]
   const items = useMemo(() => {
@@ -62,9 +70,25 @@ export function LearnScreen() {
   }, [])
   const cov = coverage[item.acousticFinding] ?? { p: 0, a: 0 }
 
+  // madde 4 (wave 2): "Bu sesle uygulama yap" — bu bulguya ait ilk 3-5 uygulama vakasından
+  // tek vakalık(a yakın) bir oturum başlatır, sonra Uygulama moduna geçer.
+  const startPracticeForFinding = () => {
+    const matches = poolFor('practice').filter((c) => c.primaryAcousticFinding === item.acousticFinding)
+    const ids = matches.slice(0, 5).map((c) => c.id)
+    if (!ids.length) return
+    const seed = (Date.now() % 2147483647) | 0
+    dispatch({ type: 'startSession', practiceIds: ids, assessmentIds: state.session.assessmentIds, seed })
+    dispatch({ type: 'startMode', mode: 'practice' })
+  }
+
   // kalem değişince önceki sesi durdur
   useEffect(() => {
     engine.stop()
+  }, [selectedKey])
+
+  // madde 4 (wave 3): mobilde kütüphane yatay şerittir — seçili kalem şeritte ortalanır
+  useEffect(() => {
+    document.querySelector('.lib-item.active')?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }, [selectedKey])
 
   const stageSounds = useMemo(() => {
@@ -104,11 +128,12 @@ export function LearnScreen() {
                       <button
                         key={it.key}
                         className={`lib-item ${it.key === selectedKey ? 'active' : ''}`}
-                        onClick={() => { setSelectedKey(it.key); setTab('desc') }}
+                        onClick={() => setSelectedKey(it.key)}
+                        title={libraryTitle(it.key)}
                       >
                         <span className="ic"><GroupIcon group={g.id} /></span>
                         <span className="lib-main">
-                          <b>{libraryTitle(it.key)}</b>
+                          <b>{libraryShortTitle(it.key)}</b>
                           <span>{librarySub(it.key)}</span>
                         </span>
                         <span className="lib-right"><span className="chev">›</span></span>
@@ -134,19 +159,23 @@ export function LearnScreen() {
                   mode="learn"
                   engine={engine}
                   soundFor={soundsForStage}
-                  onVisit={() => undefined}
-                  onDwell={() => undefined}
-                  onListen={() => undefined}
-                  onPlayingChange={(_pl, pt) => setActivePoint(pt)}
+                  onVisit={(pointId) => dispatch({ type: 'visit', pointId })}
+                  onDwell={(pointId, dwellMs) => dispatch({ type: 'dwell', pointId, dwellMs })}
+                  onListen={(pointId, listenMs) => dispatch({ type: 'listen', pointId, listenMs })}
+                  onPlayingChange={(_playing, pt) => setActivePoint(pt)}
                 />
-                <div className="region-list-title">Bölge listesi (klavye ile erişim)</div>
-                <div className="region-list">
-                  {points.filter((p) => p.view === state.view && item.bestPoints.includes(p.id)).map((p) => (
-                    <button key={p.id} onClick={() => stageRef.current?.placeAt(p.id)}>
-                      {p.fullLabel}
-                    </button>
-                  ))}
-                </div>
+                <RegionChipList
+                  points={points}
+                  view={state.view}
+                  pointIds={item.bestPoints}
+                  activePoint={activePoint}
+                  visits={state.telemetry.visits}
+                  onSelect={(pointId) => stageRef.current?.placeAt(pointId)}
+                  otherViewHint={otherViewHintText(
+                    state.view,
+                    countUnlistenedInOtherView(points, item.bestPoints, state.view, state.telemetry.visits)
+                  )}
+                />
                 {activeFallback && (
                   <div className="note-strip" style={{ marginTop: 8 }}>
                     <IconInfo width={17} height={17} />
@@ -165,7 +194,12 @@ export function LearnScreen() {
                 <div className="card-title-row">
                   <div className="ic"><GroupIcon group={item.group} /></div>
                   <h3>{title}</h3>
-                  <span className="badge blue">{findingBadge(item.key)}</span>
+                  <div className="card-title-actions">
+                    <span className="badge blue">{findingBadge(item.key)}</span>
+                    <button type="button" className="btn outline small ped-ref-btn" onClick={() => setPedModalOpen(true)}>
+                      <IconInfo width={14} height={14} /> Pediatrik referans
+                    </button>
+                  </div>
                 </div>
                 <div className="tabbar info-tabs">
                   <button className={tab === 'desc' ? 'active' : ''} onClick={() => setTab('desc')}>
@@ -192,13 +226,13 @@ export function LearnScreen() {
                     )}
                     {isHeart && item.s1 && item.s2 && (
                       <div className="exp-cards mt-12">
-                        <div className="exp-card">
+                        <div className="exp-card" title={`S1: ${item.s1}`}>
                           <span className="chip s1">S1</span>
-                          <p><b>S1:</b> {item.s1}</p>
+                          <p>{item.s1}</p>
                         </div>
-                        <div className="exp-card">
+                        <div className="exp-card" title={`S2: ${item.s2}`}>
                           <span className="chip s2">S2</span>
-                          <p><b>S2:</b> {item.s2}</p>
+                          <p>{item.s2}</p>
                         </div>
                       </div>
                     )}
@@ -221,7 +255,17 @@ export function LearnScreen() {
                 )}
                 {tab === 'clin' && (
                   <div className="info-body">
-                    <div className="klin-strip">
+                    <p className="src-line" style={{ marginTop: 0 }}>
+                      <IconCompare />
+                      Vaka kapsamı: {cov.p > 0 ? `${cov.p} uygulama vakası` : 'vaka yok'}
+                      {cov.a > 0 ? `, ${cov.a} değerlendirme vakası` : ''}
+                    </p>
+                    {cov.p > 0 && (
+                      <button type="button" className="btn outline small mb-12" onClick={startPracticeForFinding}>
+                        Bu sesle uygulama yap <IconArrowRight width={14} height={14} />
+                      </button>
+                    )}
+                    <div className="klin-strip mt-12">
                       <IconStethoscope />
                       <span>{item.clinical}</span>
                     </div>
@@ -229,44 +273,16 @@ export function LearnScreen() {
                       <IconInfo />
                       Kaynak: HLS-CMDS v3 — CC BY 4.0 (DOI 10.17632/8972jxbpmp.3)
                     </p>
-                    <p className="src-line">
-                      <IconCompare />
-                      Vaka kapsamı: {cov.p > 0 ? `${cov.p} uygulama vakası` : 'vaka yok'}
-                      {cov.a > 0 ? `, ${cov.a} değerlendirme vakası` : ''}
-                    </p>
                   </div>
                 )}
               </div>
 
-              {
-                <div className="pediatric-card">
-                  <button className="ped-head" onClick={() => setTipsOpen((v) => !v)} aria-expanded={tipsOpen}>
-                    <h4>Pediatrik İpuçları</h4>
-                    <span className="ped-chev" aria-hidden="true">{tipsOpen ? '−' : '+'}</span>
-                  </button>
-                  {tipsOpen && (
-                  <div className="ped-body">
-                  <p className="ped-note">{pediatricRef.note}</p>
-                  <table className="ped-table">
-                    <thead><tr><th>Yaş</th><th>Kalp hızı</th><th>Solunum</th></tr></thead>
-                    <tbody>
-                      {pediatricRef.rows.map((r) => (
-                        <tr key={r.age}><td>{r.age}</td><td>{r.hr}/dk</td><td>{r.rr}/dk</td></tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <ul className="ped-notes">
-                    {pediatricRef.auscultationNotes.map((n) => <li key={n}>{n}</li>)}
-                  </ul>
-                  </div>
-                  )}
-                </div>
-              }
             </div>
           </div>
         </div>
       </div>
       <Footer />
+      <PediatricRefModal open={pedModalOpen} onClose={() => setPedModalOpen(false)} />
     </>
   )
 }

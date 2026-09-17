@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react'
-import { IconClose, IconStethoscope, IconWave, IconDoc, IconCheckCircle } from './icons'
+import { IconClose } from './icons'
+import { TutorialSteps } from './TutorialSteps'
 
 /** Yardım penceresi (popup). Üstteki "Yardım" düğmesinden açılır; X, ESC veya
- *  arka plana tıklayarak kapanır. İçerik: hızlı kullanım rehberi (§ UX). */
+ *  arka plana tıklayarak kapanır. madde 6 (wave 2): içerik artık TutorialScreen ile aynı
+ *  TutorialSteps bileşenini kullanır (tekilleştirme) + altında "İpuçları" bloğu. */
 export function HelpModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -54,36 +56,7 @@ export function HelpModal({ open, onClose }: { open: boolean; onClose: () => voi
           </button>
         </div>
         <div className="modal-body">
-          <ol className="help-steps">
-            <li>
-              <IconDoc />
-              <div>
-                <b>Mod seçin</b>
-                <p>Öğrenme (rehberli dinleme), Uygulama (ipuçlu vakalar) veya Değerlendirme (ipuçsuz, tek dinleme). Her oturumda havuzdan rastgele 10 vaka gelir.</p>
-              </div>
-            </li>
-            <li>
-              <IconStethoscope />
-              <div>
-                <b>Stetoskobu bölgeye sürükleyin</b>
-                <p>Göğüs üzerindeki oskültasyon bölgelerine bırakın; ses otomatik çalınır. Ön/arka görünümü alttaki araç çubuğundan değiştirin.</p>
-              </div>
-            </li>
-            <li>
-              <IconWave />
-              <div>
-                <b>Bell / Diyafram seçin</b>
-                <p>Düşük frekanslı ek sesler (S3, S4) için bell; üfürüm ve solunum sesleri için diyafram daha iyi duyurur.</p>
-              </div>
-            </li>
-            <li>
-              <IconCheckCircle />
-              <div>
-                <b>Soruları yanıtlayın</b>
-                <p>Uygulamada geri bildirim ve ipucu vardır (ipucu -5 puan). Değerlendirmede ipucu, tekrar dinleme ve bölge işareti YOKTUR; her bölge yalnız bir kez dinlenebilir.</p>
-              </div>
-            </li>
-          </ol>
+          <TutorialSteps />
           <div className="help-tips">
             <b>İpuçları</b>
             <ul>

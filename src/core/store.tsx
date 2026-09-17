@@ -30,12 +30,21 @@ export interface AppState {
   showPoints: boolean
   showLabels: boolean
   tutorialDone: boolean
+  /** öğretici bu oturumda bir kez görüldü/atlandı — kalıcı değil (kalıcı: tutorialDone) */
+  tutorialSeen: boolean
   tutorialStep: number
   assessmentTimer: number
   lastFeedback: { correct: boolean; qid: string } | null
   dragStarted: boolean
   /** oturum örneklemi (rastgele 10 vaka) — suspend ile korunur */
   session: { practiceIds: string[]; assessmentIds: string[]; seed: number }
+  /** madde 1/5: vaka bitince finishCase ile hesaplanır, nextCase ile temizlenir.
+   *  Uygulama modunda vaka sonu özet kartını tetikler; değerlendirmede aynı olayda
+   *  hemen nextCase izlediği için kalıcı görünmez. */
+  pendingSummary: CaseResult | null
+  /** madde 5 (wave 2): Sonuçlar ekranındaki "Öğrenme modunda çalış" zayıf alana odaklı
+   *  açılış için LearnScreen'e iletilen tek seferlik kütüphane anahtarı (tüketilince temizlenir). */
+  learnFocusKey: string | null
 }
 
 export const initialTelemetry: Telemetry = {
@@ -65,11 +74,14 @@ export const initialState: AppState = {
   showPoints: true,
   showLabels: true,
   tutorialDone: false,
+  tutorialSeen: false,
   tutorialStep: 0,
   assessmentTimer: 0,
   lastFeedback: null,
   dragStarted: false,
   session: { practiceIds: [], assessmentIds: [], seed: 0 },
+  pendingSummary: null,
+  learnFocusKey: null,
 }
 
 export type Action =
@@ -92,12 +104,16 @@ export type Action =
   | { type: 'useHint' }
   | { type: 'timer'; deltaMs: number }
   | { type: 'advance' }
+  | { type: 'finishCase' }
+  | { type: 'nextCase' }
   | { type: 'tutorialDone'; done: boolean }
+  | { type: 'tutorialSeen' }
   | { type: 'tutorialStep'; step: number }
   | { type: 'restore'; payload: SuspendPayload }
   | { type: 'startDrag' }
   | { type: 'resetCase' }
   | { type: 'setResults'; results: CaseResult[] }
+  | { type: 'setLearnFocus'; key: string | null }
 
 /** dışa açık: test amaçlı (K3, K4 reducer testleri) — üretim kodu StoreProvider üzerinden kullanır. */
 export function reducer(s: AppState, a: Action): AppState {
@@ -115,7 +131,7 @@ export function reducer(s: AppState, a: Action): AppState {
       // K4: yeni oturum eski sonuçları taşımaz — vaka sonuçları ve zamanlayıcı sıfırlanır.
       return {
         ...s, mode: a.mode, screen: 'simulation', caseIndex: 0, step: 0, answers: {}, revealed: {}, hintsUsed: 0,
-        telemetry: { ...initialTelemetry }, lastFeedback: null,
+        telemetry: { ...initialTelemetry }, lastFeedback: null, pendingSummary: null,
         caseResults: [], assessmentTimer: 0, attempts: s.attempts + 1,
       }
     case 'setView':
@@ -177,11 +193,19 @@ export function reducer(s: AppState, a: Action): AppState {
     case 'timer':
       return { ...s, assessmentTimer: s.assessmentTimer + a.deltaMs }
     case 'advance': {
+      // madde 1/5: yalnız vaka İÇİNDE sonraki soruya geçer. Son sorudan sonra vakayı
+      // bitirmek için 'finishCase' (skor + vaka sonu özeti), sıradaki vakaya geçmek
+      // için 'nextCase' kullanılır — primaryAction (SimulationScreen) bu ikisini
+      // nextActionForSubmit()'in kararına göre ayrı ayrı dispatch eder.
       const def = ALL_CASES.find((c) => c.id === s.currentCaseId)
       if (!def) return s
-      const isLast = def.questions[s.step + 1] == null
-      if (!isLast) return { ...s, step: s.step + 1, lastFeedback: null }
-      // vaka bitti: sonucu bir kez kaydet, sıradaki vakaya geç (§24 deterministik)
+      if (def.questions[s.step + 1] == null) return s // son soru: 'finishCase' kullanılmalı
+      return { ...s, step: s.step + 1, lastFeedback: null }
+    }
+    case 'finishCase': {
+      const def = ALL_CASES.find((c) => c.id === s.currentCaseId)
+      if (!def) return s
+      // vaka bitti: sonucu bir kez kaydet ve vaka sonu özetini (pendingSummary) üret (§24 deterministik)
       let result = scoreCase(def, s.answers, s.telemetry, s.hintsUsed)
       // O9: uygulama modunda ipucu cezası görünür puana uygulanır (değerlendirmede ipucu yok, etkilenmez)
       if (s.mode === 'practice' && s.hintsUsed > 0) {
@@ -192,6 +216,16 @@ export function reducer(s: AppState, a: Action): AppState {
       return {
         ...s,
         caseResults: [...s.caseResults, result],
+        pendingSummary: result,
+        lastFeedback: null,
+      }
+    }
+    case 'nextCase':
+      // vaka sonu özeti kapatılır, sıradaki vakaya geçilir (uygulama: "Sonraki vaka" tıklanınca;
+      // değerlendirme: finishCase hemen ardından otomatik — bkz. SimulationScreen primaryAction)
+      return {
+        ...s,
+        pendingSummary: null,
         step: 0,
         answers: {},
         revealed: {},
@@ -200,9 +234,10 @@ export function reducer(s: AppState, a: Action): AppState {
         caseIndex: s.caseIndex + 1,
         lastFeedback: null,
       }
-    }
     case 'tutorialDone':
       return { ...s, tutorialDone: a.done }
+    case 'tutorialSeen':
+      return { ...s, tutorialSeen: true }
     case 'tutorialStep':
       return { ...s, tutorialStep: a.step }
     case 'restore': {
@@ -227,9 +262,11 @@ export function reducer(s: AppState, a: Action): AppState {
     case 'startDrag':
       return { ...s, dragStarted: true }
     case 'resetCase':
-      return { ...s, step: 0, answers: {}, revealed: {}, hintsUsed: 0, telemetry: { ...initialTelemetry }, lastFeedback: null }
+      return { ...s, step: 0, answers: {}, revealed: {}, hintsUsed: 0, telemetry: { ...initialTelemetry }, lastFeedback: null, pendingSummary: null }
     case 'setResults':
       return { ...s, caseResults: a.results, screen: 'results' }
+    case 'setLearnFocus':
+      return { ...s, learnFocusKey: a.key }
     default:
       return s
   }

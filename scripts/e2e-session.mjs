@@ -23,9 +23,9 @@ await p.goto('http://localhost:5173/?fresh=1', { waitUntil: 'networkidle' })
 await p.getByRole('button', { name: /Simülatörü başlat/ }).click()
 await p.waitForTimeout(400)
 await p.locator('input[type=checkbox]').first().check().catch(() => undefined)
-await p.getByRole('button', { name: /Anladım/ }).click().catch(() => undefined)
+await p.getByRole('button', { name: /Atla/ }).click().catch(() => undefined)
 await p.waitForTimeout(400)
-await p.getByRole('button', { name: /Bu modu seç/ }).nth(2).click()
+await p.getByRole('button', { name: /Değerlendirmeye gir/ }).click()
 await p.waitForTimeout(800)
 
 let guard = 0

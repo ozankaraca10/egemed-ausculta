@@ -15,6 +15,11 @@ import { EXTERNAL_RECORDS } from '../src/core/resolver'
 import { computeMetrics } from '../src/data/metrics'
 import { serializeSuspend, deserializeSuspend, SUSPEND_LIMIT_12, SUSPEND_LIMIT_2004 } from '../src/core/suspend'
 import { ScormRuntime, reducer, initialState, buildSuspend } from '../src/core/store'
+import {
+  nextActionForSubmit, regionChipState, countUnlistenedInOtherView, otherViewHintText,
+  libraryKeyForCase, firstWeakLibraryKey, weakDomainKeys, tutorialProgress,
+} from '../src/core/flow'
+import { libraryShortTitle, libraryTitle } from '../src/data/terminology'
 import type { CaseDef, SuspendPayload, Telemetry } from '../src/core/types'
 
 const cases = casesData.cases as unknown as CaseDef[]
@@ -141,6 +146,13 @@ describe('suspend data', () => {
 
 /* ---------------- reducer: oturum/mod geçişleri (K3, K4) ---------------- */
 describe('reducer: yeni oturum ve devam ettirme', () => {
+  it('öğretici "Atla" ile oturum içinde görüldü sayılır; kalıcı tutorialDone değişmez', () => {
+    const seen = reducer(initialState, { type: 'tutorialSeen' })
+    expect(seen.tutorialSeen).toBe(true)
+    expect(seen.tutorialDone).toBe(false)
+    // suspend'e yazılmaz (yalnız kalıcı bayrak taşınır)
+    expect(buildSuspend(seen).tutorialDone).toBe(false)
+  })
   it('K4: startMode eski vaka sonuçlarını ve zamanlayıcıyı sıfırlar', () => {
     const dirty = { ...initialState, caseResults: [{ caseId: 'x', total: 90, max: 100, mastery: true, domains: {} as never, answers: [], hintsUsed: 0 }], assessmentTimer: 45000, attempts: 2 }
     const next = reducer(dirty, { type: 'startMode', mode: 'assessment' })
@@ -174,12 +186,35 @@ describe('reducer: yeni oturum ve devam ettirme', () => {
       telemetry,
       hintsUsed: 2,
     }
-    const practiceNext = reducer({ ...baseState, mode: 'practice' as const }, { type: 'advance' })
+    const practiceNext = reducer({ ...baseState, mode: 'practice' as const }, { type: 'finishCase' })
     expect(practiceNext.caseResults[0].total).toBe(90) // 100 - 2*5
     expect(practiceNext.caseResults[0].mastery).toBe(true)
+    expect(practiceNext.pendingSummary?.total).toBe(90)
 
-    const assessmentNext = reducer({ ...baseState, mode: 'assessment' as const }, { type: 'advance' })
+    const assessmentNext = reducer({ ...baseState, mode: 'assessment' as const }, { type: 'finishCase' })
     expect(assessmentNext.caseResults[0].total).toBe(100) // değerlendirmede ipucu cezası yok
+  })
+
+  it('madde 1/5: advance son soruda vakayı bitirmez — finishCase/nextCase gerekir', () => {
+    const def = ALL_CASES.find((c) => c.id === 'case_normal_heart')!
+    const baseState = { ...initialState, mode: 'practice' as const, currentCaseId: def.id, step: def.questions.length - 1 }
+    // son soruda 'advance' hiçbir şey yapmamalı (state değişmez)
+    const afterAdvance = reducer(baseState, { type: 'advance' })
+    expect(afterAdvance).toBe(baseState)
+    expect(afterAdvance.caseResults).toEqual([])
+  })
+
+  it('madde 5: finishCase sonrası nextCase caseIndex\'i ilerletir ve pendingSummary\'yi temizler', () => {
+    const def = ALL_CASES.find((c) => c.id === 'case_normal_heart')!
+    const allCorrect = Object.fromEntries(def.questions.map((q) => [q.id, q.correct]))
+    const baseState = { ...initialState, mode: 'practice' as const, currentCaseId: def.id, step: def.questions.length - 1, answers: allCorrect }
+    const finished = reducer(baseState, { type: 'finishCase' })
+    expect(finished.pendingSummary).not.toBeNull()
+    expect(finished.caseIndex).toBe(0) // finishCase vakayı DEĞİŞTİRMEZ
+    const next = reducer(finished, { type: 'nextCase' })
+    expect(next.pendingSummary).toBeNull()
+    expect(next.caseIndex).toBe(1)
+    expect(next.step).toBe(0)
   })
 
   it('K3: serialize → deserialize → restore sonrası aynı oturum vaka listesi korunur', () => {
@@ -880,5 +915,158 @@ describe('ses eşleme', () => {
     for (const pid of filtered) expect(pid.includes('posterior')).toBe(false)
     expect(filtered.length).toBeGreaterThan(0)
     expect(filtered.length).toBeLessThan(lungCase.soundAssignments.length)
+  })
+})
+
+/* ---------------- madde 1: uygulamada submit sonrası advance olmaz ---------------- */
+describe('nextActionForSubmit (madde 1)', () => {
+  it('uygulama modunda ilk tık yalnız gönderir — advance ÇAĞRILMAZ', () => {
+    expect(nextActionForSubmit('practice', false, false)).toBe('submit')
+    expect(nextActionForSubmit('practice', false, true)).toBe('submit')
+  })
+  it('uygulama modunda geri bildirim gösterildikten (revealed) sonra "Devam Et"/"Vakayı tamamla" ilerler', () => {
+    expect(nextActionForSubmit('practice', true, false)).toBe('advance')
+    expect(nextActionForSubmit('practice', true, true)).toBe('finish')
+  })
+  it('değerlendirmede geri bildirim yok — submit hemen ilerler', () => {
+    expect(nextActionForSubmit('assessment', false, false)).toBe('submit-then-advance')
+    expect(nextActionForSubmit('assessment', false, true)).toBe('submit-then-finish')
+  })
+})
+
+/* ---------------- madde 1 (wave 2): bölge chip'leri — saf durum hesabı ---------------- */
+describe('regionChipState (madde 1, wave 2)', () => {
+  it('stetoskopun üstünde olan nokta "active" döner', () => {
+    expect(regionChipState('cardiac_mitral', 'cardiac_mitral', {})).toBe('active')
+  })
+  it('bu oturumda dinlenmiş (listenMs>0) ama aktif olmayan nokta "listened" döner', () => {
+    expect(regionChipState('cardiac_aortic', 'cardiac_mitral', { cardiac_aortic: { listenMs: 1200 } })).toBe('listened')
+  })
+  it('hiç dinlenmemiş, aktif olmayan nokta "default" döner', () => {
+    expect(regionChipState('cardiac_aortic', 'cardiac_mitral', {})).toBe('default')
+    expect(regionChipState('cardiac_aortic', null, { cardiac_aortic: { listenMs: 0 } })).toBe('default')
+  })
+  it('aktiflik dinlenmiş olmaya önceliklidir', () => {
+    expect(regionChipState('cardiac_mitral', 'cardiac_mitral', { cardiac_mitral: { listenMs: 5000 } })).toBe('active')
+  })
+})
+
+describe('countUnlistenedInOtherView / otherViewHintText (madde 1, wave 2)', () => {
+  const pts = [
+    { id: 'p1', view: 'front' as const },
+    { id: 'p2', view: 'front' as const },
+    { id: 'p3', view: 'back' as const },
+    { id: 'p4', view: 'back' as const },
+  ]
+  it('yalnız öbür görünümdeki, pointIds içinde olan ve dinlenmemiş noktaları sayar', () => {
+    expect(countUnlistenedInOtherView(pts, ['p1', 'p2', 'p3', 'p4'], 'front', {})).toBe(2)
+    expect(countUnlistenedInOtherView(pts, ['p1', 'p2', 'p3', 'p4'], 'front', { p3: { listenMs: 400 } })).toBe(1)
+  })
+  it('pointIds verilmezse tüm öbür-görünüm noktaları sayılır', () => {
+    expect(countUnlistenedInOtherView(pts, undefined, 'back', {})).toBe(2)
+  })
+  it('otherViewHintText: sayı 0 ise null, değilse "Arka/Ön görünümde N bölge daha"', () => {
+    expect(otherViewHintText('front', 0)).toBeNull()
+    expect(otherViewHintText('front', 3)).toBe('Arka görünümde 3 bölge daha')
+    expect(otherViewHintText('back', 1)).toBe('Ön görünümde 1 bölge daha')
+  })
+})
+
+/* ---------------- madde 5 (wave 2): zayıf alan → Öğrenme odağı ---------------- */
+describe('libraryKeyForCase / firstWeakLibraryKey / weakDomainKeys (madde 5, wave 2)', () => {
+  const libraryItems = [
+    { key: 'heart.normal', category: 'heart', acousticFinding: 'normal' },
+    { key: 'heart.s3', category: 'heart', acousticFinding: 's3' },
+    { key: 'lung.normal', category: 'lung', acousticFinding: 'normal' },
+  ]
+  it('libraryKey doluysa doğrudan onu kullanır', () => {
+    const c = { libraryKey: 'heart.s3', primaryAcousticFinding: 'normal', soundAssignments: [{ category: 'heart' }] }
+    expect(libraryKeyForCase(c, libraryItems)).toBe('heart.s3')
+  })
+  it('libraryKey yoksa kategori + akustik bulgu eşleşmesiyle bulur (heart.normal ≠ lung.normal)', () => {
+    const heartCase = { primaryAcousticFinding: 'normal', soundAssignments: [{ category: 'heart' }] }
+    const lungCase = { primaryAcousticFinding: 'normal', soundAssignments: [{ category: 'lung' }] }
+    expect(libraryKeyForCase(heartCase, libraryItems)).toBe('heart.normal')
+    expect(libraryKeyForCase(lungCase, libraryItems)).toBe('lung.normal')
+  })
+  it('eşleşme yoksa veya vaka tanımsızsa null', () => {
+    expect(libraryKeyForCase(undefined, libraryItems)).toBeNull()
+    expect(libraryKeyForCase({ primaryAcousticFinding: 'yok', soundAssignments: [{ category: 'heart' }] }, libraryItems)).toBeNull()
+  })
+
+  it('firstWeakLibraryKey: yanlış yanıtı olan İLK vakanın anahtarını döndürür', () => {
+    const results = [
+      { caseId: 'c1', answers: [{ correct: true }] },
+      { caseId: 'c2', answers: [{ correct: false }, { correct: true }] },
+      { caseId: 'c3', answers: [{ correct: false }] },
+    ]
+    const resolve = (id: string) => (id === 'c2' ? 'heart.s3' : id === 'c3' ? 'lung.normal' : null)
+    expect(firstWeakLibraryKey(results, resolve)).toBe('heart.s3')
+  })
+  it('firstWeakLibraryKey: hiç yanlış yoksa veya eşleşme yoksa null', () => {
+    expect(firstWeakLibraryKey([{ caseId: 'c1', answers: [{ correct: true }] }], () => 'heart.s3')).toBeNull()
+    expect(firstWeakLibraryKey([{ caseId: 'c1', answers: [{ correct: false }] }], () => null)).toBeNull()
+  })
+
+  it('weakDomainKeys: yalnız max>0 ve yüzdesi eşiğin altında olan alanları döndürür', () => {
+    const domains = {
+      technique: { earned: 20, max: 20 }, // %100
+      localization: { earned: 5, max: 20 }, // %25 — zayıf
+      recognition: { earned: 0, max: 0 }, // soru yok — hariç
+      interpretation: { earned: 11, max: 20 }, // %55 — zayıf
+    }
+    expect(weakDomainKeys(domains, 60).sort()).toEqual(['interpretation', 'localization'].sort())
+  })
+  it('weakDomainKeys: domains null ise boş dizi', () => {
+    expect(weakDomainKeys(null)).toEqual([])
+  })
+})
+
+/* ---------------- madde 5 (wave 3): interaktif öğretici — saf adım-makinesi ---------------- */
+describe('tutorialProgress (madde 5, wave 3)', () => {
+  it('hiç olay yoksa hiçbir adım tamam değildir, sıradaki adım 0', () => {
+    const p = tutorialProgress([])
+    expect(p.steps).toEqual([false, false, false])
+    expect(p.currentStep).toBe(0)
+    expect(p.allDone).toBe(false)
+  })
+  it('yalnız drag olayı: 1. adım tamam, sıradaki 1', () => {
+    const p = tutorialProgress(['drag'])
+    expect(p.steps).toEqual([true, false, false])
+    expect(p.currentStep).toBe(1)
+    expect(p.allDone).toBe(false)
+  })
+  it('sıra bağımsızdır — snap, drag olmadan da gelebilir (ör. klavye ile yerleştirme)', () => {
+    const p = tutorialProgress(['snap'])
+    expect(p.steps).toEqual([false, true, false])
+    expect(p.currentStep).toBe(0)
+  })
+  it('tekrarlanan olaylar tekrar sayılmaz, sonucu değiştirmez', () => {
+    const p = tutorialProgress(['drag', 'drag', 'snap'])
+    expect(p.steps).toEqual([true, true, false])
+    expect(p.currentStep).toBe(2)
+  })
+  it('üç olay da gelince hepsi tamam, allDone true, currentStep 3', () => {
+    const p = tutorialProgress(['drag', 'snap', 'head'])
+    expect(p.steps).toEqual([true, true, true])
+    expect(p.currentStep).toBe(3)
+    expect(p.allDone).toBe(true)
+  })
+})
+
+/* ---------------- madde 4 (wave 2): kütüphane kısa başlık ---------------- */
+describe('libraryShortTitle (madde 4, wave 2)', () => {
+  it('üfürüm kalemleri için kısa başlık üretir (tam ad ile aynı değildir)', () => {
+    expect(libraryShortTitle('heart.murmur.early_systolic')).toBe('Erken sistolik üfürüm')
+    expect(libraryTitle('heart.murmur.early_systolic')).toBe('Sistolik Üfürüm (Erken Sistolik)')
+    expect(libraryShortTitle('heart.murmur.early_systolic')).not.toBe(libraryTitle('heart.murmur.early_systolic'))
+  })
+  it('akciğer kalemleri için kısa başlık üretir', () => {
+    expect(libraryShortTitle('lung.fine_crackles')).toBe('İnce Raller')
+    expect(libraryShortTitle('lung.coarse_crackles')).toBe('Kaba Raller')
+  })
+  it('bilinmeyen anahtar için çökmeden yedek metin döner', () => {
+    expect(libraryShortTitle('mixed.msm_wheezing')).toBeTruthy()
+    expect(() => libraryShortTitle('bilinmeyen.key')).not.toThrow()
   })
 })

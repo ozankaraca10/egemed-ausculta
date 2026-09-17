@@ -4,8 +4,9 @@ import { bus } from '../core/events'
 import { resolveCaseSounds } from '../core/resolver'
 import { ALL_CASES } from '../data/pool'
 
-/** Geliştirici teşhis paneli (§38). Üretim öğrenci arayüzünde GÖRÜNMEZ; yalnız dev build + ?dev=1. */
-
+/** Geliştirici teşhis paneli (§38). Üretim öğrenci arayüzünde GÖRÜNMEZ; yalnız dev build + ?dev=1.
+ *  wave 2 madde 0: DEV rozeti artık header'ın sağ ucunda gösterilir (bkz. ui/chrome.tsx Header) —
+ *  footer'a binen eski sabit-konumlu rozet kaldırıldı. */
 export function DevPanel() {
   const { state, runtime } = useStore()
   // D8: caseIndex havuz sıralamasına değil, tek doğruluk kaynağı currentCaseId'ye göre çözülür.
@@ -48,22 +49,22 @@ export function DevPanel() {
         ))}
       </div>
       {current && (
-        <div style={{ padding: '0 14px 14px' }}>
-          <strong style={{ color: '#93c5fd' }}>Ses haritası</strong>
+        <div className="dev-panel-sounds">
+          <strong className="dev-accent">Ses haritası</strong>
           {current.soundAssignments.map((a) => {
             const rec = resolved[a.pointId]
             return (
-              <div key={a.pointId} style={{ marginBottom: 6 }}>
-                <div style={{ color: '#facc15' }}>{a.pointId}</div>
+              <div key={a.pointId} className="dev-panel-row">
+                <div className="dev-warn">{a.pointId}</div>
                 {rec ? (
                   <>
                     <div>→ {rec.id}</div>
-                    <div style={{ color: '#94a3b8' }}>
+                    <div className="dev-muted">
                       src: {rec.sourceFile} | lok: {rec.recordedLocation} | dur: {rec.durationSec}s
                     </div>
                   </>
                 ) : (
-                  <div style={{ color: '#f87171' }}>→ kayıt yok (eksik)</div>
+                  <div className="dev-err">→ kayıt yok (eksik)</div>
                 )}
               </div>
             )

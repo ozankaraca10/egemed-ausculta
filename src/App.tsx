@@ -15,6 +15,10 @@ import { ResultsScreen } from './screens/ResultsScreen'
 import { SourcesScreen } from './screens/SourcesScreen'
 import { DevPanel } from './screens/DevPanel'
 
+/** madde 7: doküman ekranları sayfa düzeyinde kaydırılır (footer içeriğin sonunda akar);
+ *  uygulama ekranları (learn/simulation) 100dvh kaydırmasız kalır. */
+const DOC_SCREENS = new Set(['start', 'modes', 'tutorial', 'results', 'sources'])
+
 const pointIds = (pointsData.points as { id: string }[]).map((p) => p.id)
 const soundKeys = new Set(RECORDS.map((r) => `${r.category}.${r.acousticFinding}`))
 
@@ -31,14 +35,20 @@ function Shell() {
   useEffect(() => {
     engine.stop()
   }, [state.screen])
+  // wave 3: SPA gezinmesi sayfa yenilemez — önceki ekrandan kalan kaydırma konumu taşınırsa
+  // mobilde (≤1080, sayfa düzeyinde kaydırma) position:sticky ögeleri (header, kütüphane
+  // şeridi, toolbar) yanlış/negatif konumda "sıkışmış" görünüyordu. Her ekran değişiminde tepeye dön.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [state.screen])
   // öğretici: ilk kullanımda göster (§45)
   useEffect(() => {
-    if (state.screen === 'modes' && !state.tutorialDone) dispatch({ type: 'goto', screen: 'tutorial' })
+    if (state.screen === 'modes' && !state.tutorialDone && !state.tutorialSeen) dispatch({ type: 'goto', screen: 'tutorial' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.screen, state.tutorialDone])
+  }, [state.screen, state.tutorialDone, state.tutorialSeen])
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${DOC_SCREENS.has(state.screen) ? ' app-shell--doc' : ''}`}>
       <Header />
       <main className="app-content">
         {state.screen === 'start' && <StartScreen />}
@@ -48,7 +58,6 @@ function Shell() {
         {state.screen === 'simulation' && <SimulationScreen />}
         {state.screen === 'results' && <ResultsScreen />}
         {state.screen === 'sources' && <SourcesScreen />}
-        {state.screen === 'help' && <TutorialScreen />}
       </main>
       <DevPanel />
     </div>

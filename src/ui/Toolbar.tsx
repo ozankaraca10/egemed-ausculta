@@ -6,7 +6,10 @@ import { engine } from '../audio/engineSingleton'
 import type { StageHandle } from './PatientStage'
 import { IconBell, IconDiaphragm, IconVolume, IconVolumeX, IconLightbulb, IconBodyFront, IconBodyBack } from './icons'
 
-/** Alt araç çubuğu (§20): Bell/Diyafram · Ön/Arka · Ses düzeyi · Tekrar dinle · İpucu */
+/** Alt araç çubuğu (§20): Bell/Diyafram · Ön/Arka · Ses düzeyi · Tekrar dinle · İpucu.
+ *  madde 6 (wave 3): dinleme durumu göstergesi buradan kalktı — sahnenin sol üst köşesinde
+ *  küçük bir rozet olarak gösterilir (`.stage-badge`, bkz. PatientStage.tsx); toolbar yalnız
+ *  kontrolleri barındırır, en dolu senaryoda daralmaz. */
 
 interface Props {
   caseDef?: CaseDef
@@ -113,16 +116,29 @@ export function Toolbar({ caseDef, stageRef, activePoint, question, onHint, stri
             </button>
           </>
         )}
+        {/* madde 4 (wave 3): mobilde toolbar sahnenin altında, soru kartının üstünde yapışkan
+            kalır — soruya hızlı erişim için küçük bir kısayol düğmesi (yalnız ≤720px'te görünür;
+            yalnız Uygulama/Değerlendirme'de — LearnScreen bu prop'u vermez) */}
+        {caseDef && (
+          <button
+            type="button"
+            className="btn outline small jump-to-q"
+            onClick={() => document.querySelector('.sim-side .q-card-dark, .sim-side .case-end-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          >
+            Soruya git ↓
+          </button>
+        )}
         <div className="spacer" style={{ flex: 1 }} />
         {showHint && (
           <button
             className="btn outline small"
+            title="İpucu kullanımı -5 puan"
             onClick={() => {
               onHint?.()
               setHintOpen(true)
             }}
           >
-            <IconLightbulb /> İpucu (-5 puan)
+            <IconLightbulb /> İpucu
           </button>
         )}
       </div>

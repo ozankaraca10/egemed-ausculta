@@ -36,6 +36,8 @@ interface Props {
   onDwell: (pointId: string, ms: number) => void
   onListen: (pointId: string, ms: number) => void
   onPlayingChange: (playing: boolean, pointId: string | null) => void
+  /** madde 5 (wave 3): interaktif öğretici — kullanıcı stetoskopu sürüklemeye başladığında bildirir */
+  onDragStart?: () => void
 }
 
 type ViewCfg = { image?: string; svg?: string; width: number; height: number }
@@ -51,7 +53,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
   {
     points, filterIds, bodyType = 'erkek', strict = false,
     view, head, volume, showPoints, showLabels, mode, engine, soundFor,
-    onVisit, onDwell, onListen, onPlayingChange,
+    onVisit, onDwell, onListen, onPlayingChange, onDragStart,
   },
   ref
 ) {
@@ -264,6 +266,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
     setDragging(true)
     unplace()
     engine.ensureContext().catch(() => undefined)
+    onDragStart?.()
   }
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragRef.current || !wrapRef.current) return
@@ -309,6 +312,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
     if (arrows[e.key]) {
       e.preventDefault()
       unplace()
+      onDragStart?.()
       arrows[e.key]()
       applyPos()
       return
@@ -343,8 +347,16 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
   )
   const hideTags = mode === 'assessment' // §21
 
+  const activeLabel = snapped ? points.find((p) => p.id === snapped)?.label : undefined
+
   return (
     <div className={`stage ${dragging ? 'dragging' : ''}`}>
+      {playing && activeLabel && (
+        <div className={`stage-badge ${playing ? 'playing' : ''}`} aria-live="polite">
+          <span className="dot-live" aria-hidden="true" />
+          {activeLabel}
+        </div>
+      )}
       <div ref={fitRef} className="stage-fit">
       <div ref={wrapRef} className="body-wrap" style={{ width: box.w || undefined, height: box.h || undefined }}>
         {cfg.svg === 'pediatric-front' || cfg.svg === 'pediatric-back' ? (
@@ -370,7 +382,7 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
             <span className="ring" />
             <span className="dot" />
             {showLabels && showPoints && !hideTags && !strict && (
-              <span className={`tag ${p.tagSide}`}>{p.label}</span>
+              <span className={`tag ${p.tagSide} ${snapped === p.id ? 'tag--lifted' : ''}`}>{p.label}</span>
             )}
           </div>
         ))}
@@ -389,12 +401,6 @@ export const PatientStage = forwardRef<StageHandle, Props>(function PatientStage
           <span className="contact-pulse" key={pulseKey} />
           <Chestpiece onBody={!!snapped} />
         </div>
-        {playing && (
-          <div className="play-state playing stage-badge">
-            <span className="eq"><i /><i /><i /><i /></span>
-            <span>Oskültasyon</span>
-          </div>
-        )}
         {!snapped && !playing && visiblePoints.length > 0 && (
           <div className="dwell-hint">Stetoskopu oskültasyon bölgesine sürükleyin</div>
         )}

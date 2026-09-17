@@ -29,7 +29,7 @@ const toModes = async (page) => {
   await page.getByRole('button', { name: /Simülatörü başlat/ }).click()
   await page.waitForTimeout(500)
   await page.locator('input[type=checkbox]').first().check()
-  await page.getByRole('button', { name: /Anladım/ }).click()
+  await page.getByRole('button', { name: /Atla/ }).click()
   await page.waitForTimeout(500)
 }
 
@@ -42,10 +42,10 @@ const run = async () => {
   await p1.waitForTimeout(500)
   await p1.screenshot({ path: `${OUT}/desktop-02-tutorial.png` })
   await p1.locator('input[type=checkbox]').first().check()
-  await p1.getByRole('button', { name: /Anladım/ }).click()
+  await p1.getByRole('button', { name: /Atla/ }).click()
   await p1.waitForTimeout(500)
   await p1.screenshot({ path: `${OUT}/desktop-03-modes.png` })
-  await p1.getByRole('button', { name: /Bu modu seç/ }).nth(1).click()
+  await p1.getByRole('button', { name: /Vakaları çöz/ }).click()
   await p1.waitForTimeout(800)
   await p1.screenshot({ path: `${OUT}/desktop-04-practice.png` })
   // stetoskopu apekse sürükle (mitral 0.632, 0.515)
@@ -72,7 +72,7 @@ const run = async () => {
   p2.on('console', (m) => { if (m.type() === 'error') errors.push(`[learn] ${m.text()}`) })
   await p2.goto(`${BASE}?fresh=1`, { waitUntil: 'networkidle' })
   await toModes(p2)
-  await p2.getByRole('button', { name: /Bu modu seç/ }).first().click()
+  await p2.getByRole('button', { name: /Öğrenmeye başla/ }).click()
   await p2.waitForTimeout(900)
   await p2.screenshot({ path: `${OUT}/desktop-06-learn-heart.png` })
   // akciğer kütüphanesi + arka görünüm
@@ -87,7 +87,7 @@ const run = async () => {
   p3.on('pageerror', (e) => errors.push(`[tablet] ${e}`))
   await p3.goto(`${BASE}?fresh=1`, { waitUntil: 'networkidle' })
   await toModes(p3)
-  await p3.getByRole('button', { name: /Bu modu seç/ }).nth(1).click()
+  await p3.getByRole('button', { name: /Vakaları çöz/ }).click()
   await p3.waitForTimeout(800)
   await p3.screenshot({ path: `${OUT}/tablet-04-practice.png`, fullPage: true })
 
@@ -99,7 +99,7 @@ const run = async () => {
   await p4.screenshot({ path: `${OUT}/mobile-01-start.png` })
   await toModes(p4)
   await p4.screenshot({ path: `${OUT}/mobile-03-modes.png` })
-  await p4.getByRole('button', { name: /Bu modu seç/ }).nth(1).click()
+  await p4.getByRole('button', { name: /Vakaları çöz/ }).click()
   await p4.waitForTimeout(800)
   await p4.screenshot({ path: `${OUT}/mobile-04-practice.png`, fullPage: true })
 

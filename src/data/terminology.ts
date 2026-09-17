@@ -154,6 +154,33 @@ export function libraryTitle(key: string): string {
   return MIXED_TITLES[key]?.title ?? 'Kombine ses'
 }
 
+/** madde 4 (wave 2): sol kütüphane listesinde dar sütunda kesilmeyen kısa başlık (ör.
+ *  "Erken sistolik üfürüm"). Tam ad `libraryTitle()`'da kalır (buton `title` özniteliği). */
+export function libraryShortTitle(key: string): string {
+  try {
+    if (key.startsWith('heart')) return heartShortLabel(key)
+    if (key.startsWith('lung')) return lungShortLabel(key)
+  } catch {
+    /* yedek aşağıda */
+  }
+  return MIXED_TITLES[key]?.title ?? 'Kombine ses'
+}
+
+function heartShortLabel(key: string): string {
+  const k = bare(key)
+  if (k.startsWith('murmur.')) {
+    const sub = k.split('.')[1] as keyof typeof TERMINOLOGY.heart.murmur
+    const t = TERMINOLOGY.heart.murmur[sub]
+    if (t) return t.short
+  }
+  const t = TERMINOLOGY.heart[k as Exclude<HeartFindingKey, `murmur.${string}`>]
+  return t?.short ?? 'Kalp sesi'
+}
+
+function lungShortLabel(key: string): string {
+  return TERMINOLOGY.lung[bare(key) as LungFindingKey]?.short ?? 'Akciğer sesi'
+}
+
 export function librarySub(key: string): string {
   try {
     if (key.startsWith('heart')) return heartLibrarySub(key)

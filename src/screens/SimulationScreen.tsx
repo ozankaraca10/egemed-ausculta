@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { AuscultationPoint, CaseDef, Question } from '../core/types'
+import type { AuscultationPoint, CaseDef, CaseResult, Question, ScoringWeights } from '../core/types'
 import pointsData from '../data/auscultation-points.json'
 import { ALL_CASES, poolFor } from '../data/pool'
 import { sampleSession, SESSION_SIZE } from '../core/session'
@@ -7,11 +7,14 @@ import type { BodyType } from '../ui/PatientStage'
 import { engine } from '../audio/engineSingleton'
 import { resolveCaseSoundsEx, resolveCaseSounds, assessmentPointFilter } from '../core/resolver'
 import { useStore, computeAggregate } from '../core/store'
+import { nextActionForSubmit, countUnlistenedInOtherView, otherViewHintText } from '../core/flow'
 import { bus } from '../core/events'
 import { PatientStage, type StageHandle } from '../ui/PatientStage'
 import { Toolbar } from '../ui/Toolbar'
 import { QuestionCard, FeedbackCard } from '../ui/Questions'
+import { RegionChipList } from '../ui/RegionChips'
 import { Footer, EcgDeco } from '../ui/chrome'
+import { PediatricRefModal } from '../ui/PediatricRefModal'
 import { IconDoc, IconArrowRight, IconInfo } from '../ui/icons'
 
 /** Simülasyon ekranı — Uygulama & Değerlendirme (§3B, §3C): hasta solda, olgu/görev/soru sağda. */
@@ -44,6 +47,7 @@ export function SimulationScreen() {
   }, [sessionCases.length, state.mode])
   const stageRef = useRef<StageHandle>(null)
   const [activePoint, setActivePoint] = useState<string | null>(null)
+  const [pedModalOpen, setPedModalOpen] = useState(false)
 
   const isAssessment = state.mode === 'assessment'
   const resolved = useMemoSounds(caseDef)
@@ -55,6 +59,7 @@ export function SimulationScreen() {
   const q: Question | undefined = caseDef.questions[state.step]
   const canSubmit = !!q && (state.answers[q.id]?.length ?? 0) > 0
   const revealed = q ? !!state.revealed[q.id] : false
+  const isPediatricCase = (caseDef as CaseDef & { population?: string }).population === 'pediatrik'
 
   // vaka bitince: aggregate + SCORM raporu + sonuç ekranı
   useEffect(() => {
@@ -79,16 +84,54 @@ export function SimulationScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [caseDef.id])
 
+  // madde 5: olgu kartı yeni vakada 600ms kısa vurgu (kenar parlaması)
+  const [caseFlash, setCaseFlash] = useState(false)
+  useEffect(() => {
+    setCaseFlash(true)
+    const t = window.setTimeout(() => setCaseFlash(false), 600)
+    return () => window.clearTimeout(t)
+  }, [caseDef.id])
+
+  // madde 5: değerlendirmede vaka değişince 1.4s geçiş paneli (ilk vaka hariç); süre boyunca
+  // sahne/soru pasif. prefers-reduced-motion animasyonu kapatır, süre aynı kalır (global CSS).
+  const [transitioning, setTransitioning] = useState(false)
+  const firstCaseRef = useRef(true)
+  useEffect(() => {
+    if (!isAssessment) return
+    if (firstCaseRef.current) {
+      firstCaseRef.current = false
+      return
+    }
+    setTransitioning(true)
+    const t = window.setTimeout(() => setTransitioning(false), 1400)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caseDef.id])
+
+  // madde 5: değerlendirmede geri bildirim/özet kartı gösterilmez — finishCase'in hemen
+  // ardından otomatik olarak sıradaki vakaya geçilir (bkz. yukarıdaki geçiş paneli).
+  useEffect(() => {
+    if (!isAssessment || !state.pendingSummary) return
+    dispatch({ type: 'nextCase' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAssessment, state.pendingSummary])
+
   const primaryAction = () => {
     if (!q) return
-    if (state.mode === 'practice' && revealed) {
+    const action = nextActionForSubmit(state.mode, revealed, isLastQuestion(caseDef, q))
+    if (action === 'advance') {
       dispatch({ type: 'advance' })
+      return
+    }
+    if (action === 'finish') {
+      dispatch({ type: 'finishCase' })
       return
     }
     if (!canSubmit) return
     const given = state.answers[q.id] ?? []
     const correct = isCorrect(q, given)
     dispatch({ type: 'submitAnswer', qid: q.id, correct })
+    // saveInteractions çağrısı her iki modda son soru GÖNDERİLDİĞİNDE yapılır (submit anında)
     if (isLastQuestion(caseDef, q)) {
       const now = Date.now()
       const latency: Record<string, number> = {}
@@ -98,19 +141,45 @@ export function SimulationScreen() {
       }
       runtime?.saveInteractions(caseDef.id, caseDef.questions, state.answers, latency)
     }
-    dispatch({ type: 'advance' })
+    if (action === 'submit-then-finish') dispatch({ type: 'finishCase' })
+    else if (action === 'submit-then-advance') dispatch({ type: 'advance' })
+    // action === 'submit' (uygulama, ilk tık): yalnız gönderilir — geri bildirim gösterilir, İLERLEME YOK
   }
+
+  const showCaseEndCard = state.mode === 'practice' && !!state.pendingSummary
 
   return (
     <>
       <EcgDeco />
       <div className="screen" style={{ position: 'relative', zIndex: 1 }}>
         <div className="container tall screen-body no-scroll">
-          <div className={`sim-grid ${state.mode === 'assessment' ? 'wide-left' : ''}`}>
-            <div className="sim-main">
+          <div
+            className={[
+              'sim-grid',
+              isAssessment ? 'wide-left mode-assessment' : 'mode-practice',
+              transitioning ? 'is-transitioning' : '',
+            ].join(' ')}
+          >
+            {transitioning && (
+              <div className="case-transition" role="status" aria-live="polite">
+                <div className="case-transition-card">
+                  <div className="ct-big">Vaka {state.caseIndex + 1} / {caseList.length} · Yeni hasta</div>
+                  <div className="ct-sub">Olgu bilgisini okuyun ve muayeneye başlayın.</div>
+                </div>
+              </div>
+            )}
+            <div className={`sim-main ${showCaseEndCard ? 'is-inert' : ''}`}>
               {isAssessment && (
-                <div className="strict-banner" role="alert">
-                  <strong>Manuel muayene modu.</strong> Her bölge yalnızca <b>bir kez</b> dinlenebilir; işaretleme, ipucu ve tekrar dinleme yoktur.
+                <div className={`strict-banner ${state.caseIndex > 0 ? 'compact' : ''}`} role="alert">
+                  {state.caseIndex === 0 ? (
+                    <>
+                      <strong>Manuel muayene modu.</strong>
+                      {/* madde 4 (wave 3): mobilde tek satır kompakt kalması için ayrıntı metni gizlenir */}
+                      <span className="strict-banner-detail"> Her bölge yalnızca <b>bir kez</b> dinlenebilir; işaretleme, ipucu ve tekrar dinleme yoktur.</span>
+                    </>
+                  ) : (
+                    <span><strong>Manuel muayene</strong> · tek dinleme</span>
+                  )}
                 </div>
               )}
               <div className="stage-card">
@@ -140,18 +209,22 @@ export function SimulationScreen() {
                   onVisit={(pointId) => { dispatch({ type: 'visit', pointId }); bus.emit({ type: 'auscultation_started', pointId, at: Date.now() }) }}
                   onDwell={(pointId, dwellMs) => dispatch({ type: 'dwell', pointId, dwellMs })}
                   onListen={(pointId, listenMs) => dispatch({ type: 'listen', pointId, listenMs })}
-                  onPlayingChange={(_pl, pt) => setActivePoint(pt)}
+                  onPlayingChange={(_playing, pt) => setActivePoint(pt)}
                 />
-                <div className="region-list-title sr-only-until-focus">Bölge listesi (klavye ile erişim)</div>
-                <div className="region-list sr-only-until-focus">
-                  {points
-                    .filter((pt) => pt.view === state.view && pointIds.includes(pt.id))
-                    .map((pt) => (
-                      <button key={pt.id} onClick={() => stageRef.current?.placeAt(pt.id)}>
-                        {pt.fullLabel}
-                      </button>
-                    ))}
-                </div>
+                <RegionChipList
+                  points={points}
+                  view={state.view}
+                  pointIds={pointIds}
+                  activePoint={activePoint}
+                  visits={state.telemetry.visits}
+                  onSelect={(pointId) => stageRef.current?.placeAt(pointId)}
+                  hideUntilFocus={isAssessment}
+                  otherViewHint={
+                    isAssessment
+                      ? null
+                      : otherViewHintText(state.view, countUnlistenedInOtherView(points, pointIds, state.view, state.telemetry.visits))
+                  }
+                />
                 {!isAssessment && activePoint && resolved.fallbacks[activePoint] && (
                   <div className="note-strip" style={{ marginTop: 0 }}>
                     <IconInfo width={16} height={16} />
@@ -174,21 +247,25 @@ export function SimulationScreen() {
             </div>
 
             <div className="sim-side">
-              <div className="card">
+              <div className={`card ${caseFlash ? 'case-flash' : ''}`}>
                 <div className="card-title-row">
                   <div className="ic"><IconDoc /></div>
                   <h3>Olgu</h3>
-                  <span className="badge blue">Vaka {state.caseIndex + 1}/{caseList.length}</span>
+                  <div className="card-title-actions">
+                    <span className="badge blue">Vaka {state.caseIndex + 1}/{caseList.length}</span>
+                    {!isAssessment && caseDef.mappingNote && <MappingNotePopover note={caseDef.mappingNote} />}
+                    {!isAssessment && isPediatricCase && (
+                      <button type="button" className="btn outline small ped-ref-btn" onClick={() => setPedModalOpen(true)}>
+                        <IconInfo width={14} height={14} /> Pediatrik referans
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p style={{ marginTop: 0 }}>
-                  <strong>{caseDef.patient.age} yaşında {caseDef.patient.sex} hasta.</strong> <b>Başvuru:</b> {caseDef.chiefComplaint}. {caseDef.history}
+                  <strong>{caseDef.patient.age} yaşında {caseDef.patient.sex} hasta.</strong> <b>Başvuru:</b> {caseDef.chiefComplaint}.{' '}
+                  {/* madde 4 (wave 3): mobilde olgu kartı kısa kalsın diye öykü metni gizlenir (yaş/cinsiyet/başvuru yeterli) */}
+                  <span className="case-history-full">{caseDef.history}</span>
                 </p>
-                {!isAssessment && caseDef.mappingNote && (
-                  <div className="note-strip" style={{ marginTop: 10 }}>
-                    <IconInfo width={16} height={16} />
-                    <span className="small">{caseDef.mappingNote}</span>
-                  </div>
-                )}
                 <div className="kv-grid">
                   {caseDef.vitalSigns.hr && <KV k="Kalp hızı" v={`${caseDef.vitalSigns.hr}/dk`} />}
                   {caseDef.vitalSigns.rr && <KV k="Solunum" v={`${caseDef.vitalSigns.rr}/dk`} />}
@@ -198,8 +275,16 @@ export function SimulationScreen() {
                 </div>
               </div>
 
-              
-              {q && (
+              {showCaseEndCard && state.pendingSummary ? (
+                <CaseEndCard
+                  summary={state.pendingSummary}
+                  caseDef={caseDef}
+                  caseNumber={state.caseIndex + 1}
+                  totalCases={caseList.length}
+                  isLast={state.caseIndex + 1 >= caseList.length}
+                  onNext={() => dispatch({ type: 'nextCase' })}
+                />
+              ) : q && (
                 <div className="card q-card-dark">
                   <QuestionCard
                     q={q}
@@ -207,13 +292,15 @@ export function SimulationScreen() {
                     value={state.answers[q.id] ?? []}
                     onChange={(values) => dispatch({ type: 'answer', qid: q.id, values })}
                     revealed={revealed}
+                    index={state.step}
+                    total={caseDef.questions.length}
                   />
                   {state.mode === 'practice' && revealed && (
                     <FeedbackCard correct={isCorrect(q, state.answers[q.id] ?? [])} q={q} given={state.answers[q.id] ?? []} />
                   )}
                   <div className="q-nav">
                     <button
-                      className="btn primary"
+                      className={`btn ${isAssessment ? 'purple' : 'primary'}`}
                       style={{ flex: 1 }}
                       onClick={primaryAction}
                       disabled={!canSubmit && !(state.mode === 'practice' && revealed)}
@@ -226,7 +313,7 @@ export function SimulationScreen() {
                 </div>
               )}
 
-              {state.mode === 'practice' && (
+              {state.mode === 'practice' && !showCaseEndCard && (
                 <div className="note-strip">
                   <IconInfo />
                   <span>İpucu kullanmak uygulama puanınızı düşürür. Değerlendirme modunda ipucu yoktur.</span>
@@ -237,7 +324,108 @@ export function SimulationScreen() {
         </div>
       </div>
       <Footer />
+      <PediatricRefModal open={pedModalOpen} onClose={() => setPedModalOpen(false)} />
     </>
+  )
+}
+
+/** madde 5: uygulama modunda vaka bitince gösterilen özet kartı — soru kartının yerinde,
+ *  sahne "pasif" hâlde. Skoru, alan bazlı kısa çubukları, klinik özeti/ayırıcı tanıyı ve
+ *  teknik notunu gösterir; "Sonraki vaka" ile nextCase dispatch edilir. */
+function CaseEndCard({
+  summary, caseDef, caseNumber, totalCases, isLast, onNext,
+}: {
+  summary: CaseResult
+  caseDef: CaseDef
+  caseNumber: number
+  totalCases: number
+  isLast: boolean
+  onNext: () => void
+}) {
+  const rows: { key: keyof ScoringWeights; label: string }[] = [
+    { key: 'technique', label: 'Teknik' },
+    { key: 'localization', label: 'Lokalizasyon' },
+    { key: 'recognition', label: 'Tanıma' },
+    { key: 'interpretation', label: 'Yorum' },
+  ]
+  return (
+    <div className="card q-card-dark case-end-card">
+      <div className="case-end-head">
+        <h2>Vaka {caseNumber} / {totalCases} tamamlandı</h2>
+        <span className="case-end-score">{Math.round(summary.total)} / 100</span>
+      </div>
+      <div className="case-end-bars">
+        {rows.map((d) => {
+          const v = summary.domains[d.key]
+          if (!v || v.max === 0) return null
+          const pct = Math.round((v.earned / v.max) * 100)
+          return (
+            <div className="ce-bar-row" key={d.key}>
+              <span>{d.label}</span>
+              <span className="ce-bar"><i style={{ width: `${pct}%` }} /></span>
+              <span className="ce-pct">%{pct}</span>
+            </div>
+          )
+        })}
+      </div>
+      {caseDef.feedback?.summary && (
+        <div className="case-end-block">
+          <b>Klinik özet</b>
+          <p>{caseDef.feedback.summary}</p>
+        </div>
+      )}
+      {caseDef.feedback?.differential && (
+        <div className="case-end-block">
+          <b>Ayırıcı düşünceler</b>
+          <p>{caseDef.feedback.differential}</p>
+        </div>
+      )}
+      {caseDef.feedback?.techniqueNotes && <p className="case-end-note">{caseDef.feedback.techniqueNotes}</p>}
+      <div className="q-nav">
+        <button className="btn primary" style={{ flex: 1 }} onClick={onNext}>
+          {isLast ? 'Sonuçları gör' : 'Sonraki vaka'} <IconArrowRight />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/** madde 7 (wave 2): kayıt bilgisi artık tıklamayla açılan bir popover — dokunmatikte de
+ *  çalışır (title tooltip yerine). Dışarı tıklayınca / ESC ile kapanır. */
+function MappingNotePopover({ note }: { note: string }) {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const onDoc = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onDoc)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDoc)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+  return (
+    <div className="popover-wrap" ref={wrapRef}>
+      <button
+        type="button"
+        className="btn outline small mapping-note-btn"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <IconInfo width={14} height={14} /> Kayıt bilgisi
+      </button>
+      {open && (
+        <div className="popover" role="note">
+          {note}
+        </div>
+      )}
+    </div>
   )
 }
 

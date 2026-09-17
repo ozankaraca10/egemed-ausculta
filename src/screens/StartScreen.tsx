@@ -37,13 +37,12 @@ export function StartScreen() {
     dispatch({ type: 'goto', screen: 'modes' })
   }
 
-  const stats: { label: string; tip: string }[] = [
-    { label: `${M.datasets} veri seti`, tip: `Uygulamada kullanılan veri setleri: HLS-CMDS v3 (klinik manikin) ve CirCor (gerçek pediatrik hasta kayıtları). Her ikisinin lisansı doğrulanmıştır.` },
-    { label: `${M.bundledRecordings} klinik kayıt`, tip: 'Pakete dahil doğrulanmış oskültasyon kaydı (HLS-CMDS v3) + gerçek hasta kayıtları.' },
-    { label: `${M.soundClasses} ses sınıfı`, tip: 'Kalp, akciğer ve kombine sınıflar; her biri klinik metafor ve dalga formuyla.' },
-    { label: `${M.totalCases} vaka`, tip: `Her oturumda havuzdan rastgele ${10} vaka; ${M.pediatricCases} pediatrik vaka dahil.` },
-    { label: `${M.assessmentQuestions} soru`, tip: `Doğrulanmış ${M.assessmentPoolSize} değerlendirme vakasına dağıtılmış soru havuzu.` },
-    { label: 'SCORM uyumlu', tip: 'SCORM 1.2; puan ve durum LMS’e raporlanır.' },
+  // madde 6 (wave 3): eski "•" ayraçlı metrik satırı title tooltip'e dayanıyordu (dokunmatikte
+  // çalışmıyordu) — artık "Neden güvenilir?" başlıklı 3 kutu, her biri kalıcı açıklama satırıyla.
+  const whyBoxes: { label: string; desc: string }[] = [
+    { label: `${M.datasets} veri seti`, desc: 'HLS-CMDS v3 + CirCor — lisansı doğrulanmış klinik kaynaklar.' },
+    { label: `${M.bundledRecordings} klinik kayıt`, desc: 'Pakete dahil, gerçek hasta/manikin oskültasyon kaydı.' },
+    { label: `${M.totalCases} vaka · ${M.assessmentQuestions} soru`, desc: `Her oturumda rastgele 10 vaka; ${M.pediatricCases} pediatrik vaka dahil.` },
   ]
 
   return (
@@ -55,15 +54,12 @@ export function StartScreen() {
           src="brand/logo-vertical-web.png"
           alt="EGEMED Ausculta — Kardiyopulmoner Oskültasyon Simülatörü"
         />
-        <p className="hero-eyebrow">Kardiyopulmoner Oskültasyon Simülatörü</p>
-        <h1 className="hero-title">
-          Kalbin ve akciğerlerin sesini,
-          <br />
-          gerçek kayıtlarla birlikte keşfet.
-        </h1>
+        {/* madde 6 (wave 3): ürün adı logoda zaten var — ayrı bir eyebrow/isim tekrarı yok;
+            başlık artık tek satırlık bir değer önerisi */}
+        <h1 className="hero-title">Gerçek kayıtlarla kalp ve akciğer sesini keşfedin.</h1>
         <p className="hero-sub">
-          {M.soundClasses} ses sınıfı, {M.totalCases} klinik vaka, yetişkin ve pediatrik gövde üzerinde
-          sistematik oskültasyon; SCORM uyumlu ölçme ve değerlendirme.
+          {M.soundClasses} ses sınıfı, yetişkin ve pediatrik gövde üzerinde sistematik oskültasyon;
+          SCORM uyumlu ölçme ve değerlendirme.
         </p>
         <button className="hero-cta" onClick={begin}>
           Simülatörü başlat <IconArrowRight />
@@ -77,14 +73,17 @@ export function StartScreen() {
             <IconBook /> Kaynaklar ve veri setleri
           </button>
         </div>
-        <ul className="hero-stats" role="list" aria-label="İçerik metrikleri">
-          {stats.map((s, i) => (
-            <li key={s.label} title={s.tip}>
-              {i > 0 && <span className="stat-dot" aria-hidden="true" />}
-              <span>{s.label}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="why-section" aria-label="Neden güvenilir?">
+          <p className="why-title">Neden güvenilir?</p>
+          <div className="why-grid">
+            {whyBoxes.map((w) => (
+              <div className="why-box" key={w.label}>
+                <b>{w.label}</b>
+                <span>{w.desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
         <button className="hero-audio-hint" onClick={() => void playTone()}>
           <IconHeadphones />
           Oskültasyon seslerini doğru değerlendirebilmek için kulaklık kullanmanız önerilir.

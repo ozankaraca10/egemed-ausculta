@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import type { Question } from '../core/types'
 import { shuffledOptions } from '../core/session'
-import { IconCheck } from './icons'
+import { IconCheck, IconCheckCircle, IconXCircle } from './icons'
 
 /** Yeniden kullanılabilir soru bileşenleri (§23): tek/çok seçim, ses tanıma,
  *  lokalizasyon, bell/diyafram, yorum, tanı, sıralama. */
@@ -15,9 +15,15 @@ interface Props {
   revealed: boolean
   disabled?: boolean
   showEyebrow?: boolean
+  /** madde 1: revealed iken doğru seçeneği işaretlemek için (yoksa q.correct kullanılır) */
+  correctIds?: string[]
+  /** madde 4: soru sayacı — vakadaki adım indeksi (0 tabanlı) */
+  index?: number
+  /** madde 4: vakadaki toplam soru sayısı */
+  total?: number
 }
 
-export function QuestionCard({ q, caseId, value, onChange, revealed, disabled, showEyebrow = true }: Props) {
+export function QuestionCard({ q, caseId, value, onChange, revealed, disabled, showEyebrow = true, correctIds, index, total }: Props) {
   const toggle = (id: string) => {
     if (disabled || revealed) return
     if (q.type === 'multi_choice') {
@@ -46,6 +52,7 @@ export function QuestionCard({ q, caseId, value, onChange, revealed, disabled, s
   // vaka+soru id'sinden türeyen tohumla deterministik karıştırma.
   const options = shuffledOptions(caseId, q.id, q.options)
   const btnRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const correct = correctIds ?? q.correct
 
   /** D3: tek seçimli sorularda ok tuşlarıyla gezinme (ARIA radiogroup deseni) */
   const onOptKeyDown = (e: React.KeyboardEvent, index: number) => {
@@ -59,20 +66,38 @@ export function QuestionCard({ q, caseId, value, onChange, revealed, disabled, s
     toggle(options[next].id)
   }
 
+  const showProgress = typeof index === 'number' && typeof total === 'number' && total > 0
+
   return (
     <div className="q-block">
-      {showEyebrow && <div className="q-eyebrow">{eyebrowLabel[q.type] ?? 'Soru'}</div>}
+      {showEyebrow && (
+        <div className="q-eyebrow-row">
+          <span className="q-eyebrow">{eyebrowLabel[q.type] ?? 'Soru'}</span>
+          {showProgress && (
+            <span className="q-progress" aria-label={`Soru ${index! + 1} / ${total}`}>
+              <span>Soru {index! + 1} / {total}</span>
+              <span className="q-progress-dots" aria-hidden="true">
+                {Array.from({ length: total! }, (_, i) => (
+                  <i key={i} className={i < index! ? 'done' : i === index! ? 'active' : ''} />
+                ))}
+              </span>
+            </span>
+          )}
+        </div>
+      )}
       <p className="q-text">{q.prompt}</p>
       {q.help && <p className="q-help">{q.help}</p>}
       <div className="opt-list" role={isMulti ? 'group' : 'radiogroup'} aria-label={q.prompt}>
         {options.map((o, i) => {
           const selected = value.includes(o.id)
+          const isCorrectOpt = revealed && correct.includes(o.id)
+          const isWrongSelected = revealed && selected && !correct.includes(o.id)
           return (
             <button
               key={o.id}
               ref={(el) => { btnRefs.current[i] = el }}
               type="button"
-              className={`opt ${selected ? 'selected' : ''}`}
+              className={`opt ${selected ? 'selected' : ''} ${isCorrectOpt ? 'is-correct' : ''} ${isWrongSelected ? 'is-wrong' : ''}`}
               onClick={() => toggle(o.id)}
               onKeyDown={(e) => onOptKeyDown(e, i)}
               role={isMulti ? 'checkbox' : 'radio'}
@@ -83,6 +108,8 @@ export function QuestionCard({ q, caseId, value, onChange, revealed, disabled, s
                 {isMulti && <IconCheck />}
               </span>
               <span>{o.label}</span>
+              {isCorrectOpt && <span className="mark" aria-hidden="true"><IconCheckCircle /></span>}
+              {isWrongSelected && <span className="mark" aria-hidden="true"><IconXCircle /></span>}
             </button>
           )
         })}
@@ -115,16 +142,6 @@ export function FeedbackCard({ correct, q, given }: { correct: boolean; q: Quest
         </p>
       )}
       <p className="feedback-text">{correct ? q.feedbackCorrect : q.feedbackIncorrect}</p>
-    </div>
-  )
-}
-
-/** Cevaplanan soruların özet çipi */
-export function QuestionProgress({ total, done }: { total: number; done: number }) {
-  return (
-    <div className="eg-progress-chip" aria-label={`Soru ${done} / ${total}`}>
-      <span>Soru {done}/{total}</span>
-      <span className="bar"><i style={{ width: `${(done / total) * 100}%` }} /></span>
     </div>
   )
 }
