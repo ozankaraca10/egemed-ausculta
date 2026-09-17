@@ -48,6 +48,14 @@ export function StartScreen() {
   return (
     <div className="screen start-hero-screen">
       <div className="hero-glow" aria-hidden="true" />
+      {/* Kurum logosu: solda silik, büyük arka plan (public/brand/ege-tip-logo.png; dosya yoksa görünmez) */}
+      <img
+        className="hero-bg-seal"
+        src="brand/ege-tip-logo.png"
+        alt=""
+        aria-hidden="true"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+      />
       <div className="start-hero">
         <img
           className="hero-logo"

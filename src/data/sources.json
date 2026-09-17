@@ -1,5 +1,54 @@
 {
   "version": 1,
+  "module": {
+    "product": "EGEMED Ausculta",
+    "subtitle": "Kardiyopulmoner Oskültasyon Simülatörü",
+    "trademark": "EGEMED Ausculta™",
+    "developedBy": "Ege Üniversitesi Tıp Fakültesi Dekanlığı",
+    "copyright": "Tüm hakları saklıdır © 2026"
+  },
+  "credits": [
+    {
+      "role": "Yazılım geliştirme, öğretim ve ölçme-değerlendirme tasarımı",
+      "people": [
+        {
+          "name": "Doç. Dr. Ozan KARACA",
+          "url": "https://unisis.ege.edu.tr/researcher=ozan.karaca"
+        }
+      ]
+    },
+    {
+      "role": "Öğretim tasarımı ve tıbbi validasyon",
+      "people": [
+        {
+          "name": "Prof. Dr. Hatice ŞAHİN",
+          "url": "https://unisis.ege.edu.tr/researcher=hatice.sahin"
+        },
+        {
+          "name": "Prof. Dr. Burcu BARUTÇUOĞLU",
+          "url": "https://unisis.ege.edu.tr/researcher=burcu.barutcuoglu"
+        },
+        {
+          "name": "Prof. Dr. İpek KAPLAN BULUT",
+          "url": "https://unisis.ege.edu.tr/researcher=ipek.kaplan.bulut"
+        }
+      ]
+    },
+    {
+      "role": "Kullanıcı kabul testleri",
+      "people": [
+        {
+          "name": "Öğrenci 1"
+        },
+        {
+          "name": "Öğrenci 2"
+        },
+        {
+          "name": "Öğrenci 3"
+        }
+      ]
+    }
+  ],
   "datasets": [
     {
       "id": "hls-cmds-v3",
@@ -41,11 +90,6 @@
       "note": "Pediatrik gerçek hasta kayıtları (4 örnek vaka havuzunda kullanılıyor)."
     }
   ],
-  "disclaimer": "Sesler klinik manikin kayıtlarından alınmıştır; gerçek hasta kaydı değildir. Simülasyon eğitim amaçlıdır, tek başına klinik tanı koymak için kullanılamaz.",
-  "module": {
-    "product": "EGEMED Ausculta",
-    "subtitle": "Kardiyopulmoner Oskültasyon Simülatörü"
-  },
   "assets": [
     {
       "id": "body-front-back",
@@ -132,5 +176,6 @@
         "yaş/cinsiyet"
       ]
     }
-  ]
+  ],
+  "disclaimer": "Ses kayıtlarının büyük bölümü klinik manikinden alınmıştır; CirCor kaynaklı az sayıdaki gerçek pediatrik hasta kaydı ilgili vakalarda açıkça belirtilir. Simülasyon eğitim amaçlıdır; tek başına klinik tanı koymak için kullanılamaz."
 }

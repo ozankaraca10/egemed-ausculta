@@ -1,141 +1,222 @@
 import { useStore } from '../core/store'
 import { Footer, EcgDeco } from '../ui/chrome'
 import sourcesData from '../data/sources.json'
-import { IconInfo } from '../ui/icons'
+import { IconInfo, IconBook, IconHeart, IconDoc } from '../ui/icons'
 
-/** Kaynaklar ve Veri Setleri (§33). Attribution sources.json'dan UI'a ve makine okunur şekilde. */
+/** Kaynaklar ve Katkıda Bulunanlar (§33). Tüm metinler makine okunur `sources.json`'dan gelir:
+ *  geliştiriciler (`credits`, Ünisis bağlantılı), kurum (`module`), veri setleri (`datasets`),
+ *  görsel varlıklar (`assets`) ve sorumluluk notu (`disclaimer`). */
 
-export interface InventoryEntry {
+interface CreditPerson {
+  name: string
+  url?: string
+}
+interface CreditGroup {
+  role: string
+  people: CreditPerson[]
+}
+interface Dataset {
   id: string
   title: string
-  type: string
-  population: string
-  recordings: number
-  sampleRateHz: number | null
+  authors: string[]
+  datasetDoi: string
+  articleDoi?: string
   license: string
-  licenseVerified: boolean
-  status: string
-  accessUrl: string
-  notes: string
-  importScript: string | null
+  licenseUrl?: string
+  usage?: string
+  attributionText: string
+}
+interface Asset {
+  id: string
+  title: string
+  authors: string[]
+  source: string
+  license: string
+  licenseUrl?: string
+  usage: string
   attributionText: string
 }
 
-function statusLabel(s: string): string {
-  const map: Record<string, string> = {
-    bundled: 'pakete dahil',
-    samples_included: 'örnekler aktarıldı',
-    importer_ready: 'içe aktarılabilir',
-    inventory_only: 'envanter (eşleme uygun değil)',
-    license_review: 'lisans incelemesi gerekli',
-  }
-  return map[s] ?? s
+const data = sourcesData as unknown as {
+  module: { product: string; subtitle: string; developedBy: string; copyright: string }
+  credits: CreditGroup[]
+  datasets: Dataset[]
+  assets?: Asset[]
+  inventory: { id: string; status: string; recordings: number; population: string }[]
+  disclaimer: string
 }
-function typeLabel(t: string): string {
-  return t === 'heart' ? 'kalp sesleri' : t === 'lung' ? 'akciğer sesleri' : 'kalp + akciğer'
+
+/** "Doç. Dr. Ozan KARACA" → "OK"; unvanlar (Dr., Prof., Doç.) atlanır */
+function initials(name: string): string {
+  const parts = name
+    .replace(/\./g, '')
+    .split(/\s+/)
+    .filter((p) => p && !/^(Prof|Doç|Dr|Uzm|Öğr|Gör|Arş)$/i.test(p))
+  return parts.map((p) => p[0]).join('').slice(0, 2).toUpperCase()
+}
+
+/** DOI kısaltması → tam bağlantı; zaten URL ise dokunmaz */
+function doiHref(v: string): string {
+  return /^https?:\/\//i.test(v) ? v : `https://doi.org/${v}`
+}
+
+/** Lisans metninden kısa çip etiketi ("CC BY 4.0", "ODC-BY 1.0", "CC0 1.0") */
+function licenseShort(license: string): string {
+  const m = license.match(/CC BY(?:-SA)? \d\.\d|ODC-BY \d\.\d|CC0 \d\.\d/i)
+  return m ? m[0] : license
 }
 
 export function SourcesScreen() {
-  const brandBlock = (
-    <div className="brand-card">
-      <img src="brand/logo-horizontal-web.png" alt="EGEMED Ausculta" />
-      <p>
-        EGEMED Ausculta, tıp fakültesi öğrencileri için geliştirilmiş kardiyopulmoner oskültasyon
-        eğitimidir. Ses içerikleri lisanslı açık veri setlerinden oskültasyon taksonomisine doğrulanmış
-        eşlemeyle aktarılmıştır (ayrıntı aşağıda).
-      </p>
-    </div>
-  )
   const { dispatch } = useStore()
+  const invById = new Map(data.inventory.map((i) => [i.id, i]))
+
   return (
     <>
       <EcgDeco />
       <div className="screen" style={{ position: 'relative', zIndex: 1 }}>
         <div className="src-wrap screen-body">
-          <h1 className="src-title">Kaynaklar ve Veri Setleri</h1>
-          <p className="src-sub">Bu modülde kullanılan klinik ses kayıtları, atıf bilgileri ve araştırılan veri seti envanteri.</p>
-          {brandBlock}
-
-          <h2 className="inv-title">Veri Seti Envanteri</h2>
+          <h1 className="src-title">Kaynaklar ve Katkıda Bulunanlar</h1>
           <p className="src-sub">
-            Platformun taksonomisiyle karşılaştırılan açık erişimli veri setleri. Yalnız lisansı doğrulanmış ve
-            etiketleri birebir eşlenebilen veri setleri içeriğe alınır; uymayan etiketler uydurulmaz.
+            {data.module.product}
+            <sup className="tm">™</sup> {data.module.subtitle}'nü geliştiren ekip, kurum bilgisi ve modülde kullanılan
+            klinik ses kayıtlarının atıf ve lisans bilgileri.
           </p>
-          <div className="inv-rows">
-            {(sourcesData.inventory as InventoryEntry[]).map((it) => (
-              <div className={`inv-row ${it.status}`} key={it.id}>
-                <div className="inv-head">
-                  <b>{it.title}</b>
-                  <span className={`inv-chip ${it.status}`}>{statusLabel(it.status)}</span>
-                  {it.licenseVerified
-                    ? <span className="inv-chip lic-ok">lisans doğrulandı</span>
-                    : <span className="inv-chip lic-review">lisans incelemesi</span>}
-                </div>
-                <div className="inv-meta">
-                  <span>{typeLabel(it.type)}</span>
-                  <span>{it.population}</span>
-                  <span>{it.recordings != null ? `${it.recordings.toLocaleString('tr-TR')} kayıt` : 'kayıt sayısı doğrulanmadı'}</span>
-                  {it.sampleRateHz ? <span>{it.sampleRateHz} Hz</span> : null}
-                  <span>{it.license}</span>
-                </div>
-                <div className="inv-notes">{it.notes}</div>
-                <div className="inv-foot">
-                  <span className="muted small">{it.attributionText}</span>
-                  <a className="small" href={it.accessUrl} target="_blank" rel="noreferrer">kaynağa git ↗</a>
-                </div>
-                {it.importScript && <div className="inv-cmd"><code>{it.importScript}</code></div>}
-              </div>
-            ))}
-          </div>
 
-          {sourcesData.datasets.map((d) => (
-            <div className="card src-card" key={d.id}>
-              <h3>{d.title}</h3>
-              <div className="auth">{d.authors.join(', ')}</div>
-              <div className="src-kv">
-                <span className="k">Veri seti DOI</span>
-                <span className="v">{d.datasetDoi}</span>
-                {d.articleDoi && (
-                  <>
-                    <span className="k">Makale DOI</span>
-                    <span className="v">{d.articleDoi}</span>
-                  </>
-                )}
-                <span className="k">Lisans</span>
-                <span className="v">
-                  <span className="license-chip">CC BY 4.0</span> — Creative Commons Attribution 4.0 International
-                </span>
-                <span className="k">Kullanım</span>
-                <span className="v">{d.usage ?? 'Kaynak kayıtlar eğitim amaçlı kullanılmıştır.'}</span>
-              </div>
-              <p className="muted small mt-12">{d.attributionText}</p>
+          {/* ---- Geliştiriciler ---- */}
+          <section className="src-section" aria-labelledby="credits-h" style={{ marginTop: 0 }}>
+            <h2 id="credits-h"><IconHeart /> Geliştiriciler</h2>
+            <p className="src-sub">Kişi adları Ege Üniversitesi Akademik Veri Yönetim Sistemi (Ünisis) profillerine bağlanır.</p>
+            <div className="credit-groups">
+              {data.credits.map((g, gi) => (
+                <div className={`credit-group ${gi === 0 ? 'lead' : ''}`} key={g.role}>
+                  <div className="credit-role">{g.role}</div>
+                  <ul className="credit-people">
+                    {g.people.map((p) =>
+                      p.url ? (
+                        <li key={p.name}>
+                          <a className="credit-person" href={p.url} target="_blank" rel="noreferrer" title={`${p.name} — Ünisis profili`}>
+                            <span className="credit-avatar" aria-hidden="true">{initials(p.name)}</span>
+                            <span>{p.name}</span>
+                            <span className="ext" aria-hidden="true">↗</span>
+                          </a>
+                        </li>
+                      ) : (
+                        <li key={p.name}>
+                          <span className="credit-person placeholder">
+                            <span className="credit-avatar" aria-hidden="true">{initials(p.name)}</span>
+                            <span>{p.name}</span>
+                          </span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              ))}
             </div>
-          ))}
+          </section>
 
-          {sourcesData.assets?.map((a: { id: string; title: string; authors: string[]; source: string; license: string; usage: string; attributionText: string }) => (
-            <div className="card src-card" key={a.id}>
-              <h3>{a.title}</h3>
-              <div className="auth">{a.authors.join(', ')} — {a.source}</div>
-              <div className="src-kv">
-                <span className="k">Lisans</span>
-                <span className="v"><span className="license-chip">CC0 1.0</span> — {a.license}</span>
-                <span className="k">Kullanım</span>
-                <span className="v">{a.usage}</span>
+          {/* ---- Kurum ---- */}
+          <section className="src-section" aria-labelledby="inst-h">
+            <h2 id="inst-h"><IconDoc /> Kurum</h2>
+            <div className="inst-card">
+              <img src="brand/logo-icon-web.png" alt="" />
+              <div>
+                <h3>
+                  {data.module.product}<sup className="tm">™</sup> — {data.module.subtitle}
+                </h3>
+                <p>
+                  {data.module.developedBy} tarafından, tıp fakültesi öğrencilerinin kardiyopulmoner oskültasyon
+                  becerilerini geliştirmek amacıyla hazırlanmıştır. {data.module.copyright}.
+                </p>
               </div>
-              <p className="muted small mt-12">{a.attributionText}</p>
             </div>
-          ))}
+          </section>
 
-          <div className="card">
-            <div className="note-strip" style={{ marginTop: 0 }}>
-              <IconInfo />
-              <span>{sourcesData.disclaimer}</span>
-            </div>
-            <p className="muted small mt-12">
-              Atıf verileri makine okunur olarak <code>src/data/sources.json</code> dosyasında da saklanır.
-              Bu modül; tıp fakültesi öğrencilerine yönelik eğitim amaçlı geliştirilmiştir (EGEMED).
+          {/* ---- Veri setleri ---- */}
+          <section className="src-section" aria-labelledby="ds-h">
+            <h2 id="ds-h"><IconBook /> Ses Veri Setleri</h2>
+            <p className="src-sub">
+              Yalnız lisansı doğrulanmış ve etiketleri oskültasyon taksonomisine birebir eşlenen açık veri setleri
+              kullanılır; uymayan etiketler uydurulmaz.
             </p>
-          </div>
+            <div className="ds-grid">
+              {data.datasets.map((d) => {
+                const inv = invById.get(d.id)
+                return (
+                  <article className="ds-card" key={d.id}>
+                    <h3>{d.title}</h3>
+                    <div className="auth">{d.authors.join(', ')}</div>
+                    <div className="ds-chips">
+                      <span className="ds-chip lic">{licenseShort(d.license)}</span>
+                      {inv && (
+                        <span className="ds-chip">
+                          {inv.status === 'bundled' ? 'pakete dahil' : 'örnek kayıtlar'} · {inv.recordings.toLocaleString('tr-TR')} kayıt
+                        </span>
+                      )}
+                      {inv?.population && <span className={`ds-chip ${/pediatrik|gerçek/i.test(inv.population) ? 'real' : ''}`}>{inv.population}</span>}
+                    </div>
+                    <div className="src-kv">
+                      <span className="k">Veri seti</span>
+                      <span className="v"><a href={doiHref(d.datasetDoi)} target="_blank" rel="noreferrer">{d.datasetDoi}</a></span>
+                      {d.articleDoi && (
+                        <>
+                          <span className="k">Makale</span>
+                          <span className="v"><a href={doiHref(d.articleDoi)} target="_blank" rel="noreferrer">{d.articleDoi}</a></span>
+                        </>
+                      )}
+                      <span className="k">Lisans</span>
+                      <span className="v">
+                        {d.licenseUrl ? <a href={d.licenseUrl} target="_blank" rel="noreferrer">{d.license}</a> : d.license}
+                      </span>
+                      {d.usage && (
+                        <>
+                          <span className="k">Kullanım</span>
+                          <span className="v">{d.usage}</span>
+                        </>
+                      )}
+                    </div>
+                    <p className="ds-cite">{d.attributionText}</p>
+                  </article>
+                )
+              })}
+            </div>
+          </section>
+
+          {/* ---- Görsel varlıklar ---- */}
+          {data.assets && data.assets.length > 0 && (
+            <section className="src-section" aria-labelledby="assets-h">
+              <h2 id="assets-h"><IconDoc /> Görsel Varlıklar</h2>
+              <div className="ds-grid">
+                {data.assets.map((a) => (
+                  <article className="ds-card" key={a.id}>
+                    <h3>{a.title}</h3>
+                    <div className="auth">{a.authors.join(', ')} — {a.source}</div>
+                    <div className="ds-chips"><span className="ds-chip lic">{licenseShort(a.license)}</span></div>
+                    <div className="src-kv">
+                      <span className="k">Lisans</span>
+                      <span className="v">{a.licenseUrl ? <a href={a.licenseUrl} target="_blank" rel="noreferrer">{a.license}</a> : a.license}</span>
+                      <span className="k">Kullanım</span>
+                      <span className="v">{a.usage}</span>
+                    </div>
+                    <p className="ds-cite">{a.attributionText}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ---- Sorumluluk notu ---- */}
+          <section className="src-section" aria-label="Sorumluluk notu">
+            <div className="src-disclaimer">
+              <IconInfo />
+              <div>
+                <p style={{ margin: 0 }}>{data.disclaimer}</p>
+                <p className="small" style={{ margin: '6px 0 0' }}>
+                  Atıf ve katkı verileri makine okunur biçimde <code>src/data/sources.json</code> dosyasında saklanır.
+                </p>
+              </div>
+            </div>
+          </section>
 
           <div className="results-actions" style={{ justifyContent: 'flex-start' }}>
             <button className="btn outline" onClick={() => dispatch({ type: 'goto', screen: 'start' })}>

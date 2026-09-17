@@ -266,7 +266,7 @@ html { -webkit-text-size-adjust: 100%; }
 .footer-attr { color: var(--ink-600); }
 /* madde 2: sağ lisans önce gider; 860px altında yalnız sol kurum + orta © kalır (ürün adı gizlenir) */
 @media (max-width: 1280px) { .footer-right { display: none; } }
-@media (max-width: 860px) { .footer-sub { display: none; } }
+@media (max-width: 860px) { .footer-sub, .footer-attr2 { display: none; } }
 /* ---------------- Mod seçimi ---------------- */
 /* wave 2 madde 2: stepper küçültüldü */
 .stepper { display: flex; align-items: flex-start; justify-content: center; gap: 0; margin: 12px auto 2px; max-width: 520px; }
@@ -976,3 +976,73 @@ html { -webkit-text-size-adjust: 100%; }
   .eg-header .eg-header-chip { padding: 6px; }
   .eg-header .eg-timer { font-size: var(--fs-xs); }
 }
+
+/* ---------------- Marka ™ ve footer metni ---------------- */
+.tm { font-size: .5em; vertical-align: super; margin-left: 1px; font-weight: 600; letter-spacing: 0; }
+.footer-text { display: block; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-sm); color: var(--ink-600); line-height: 1.3; }
+.footer-brand { font-weight: 800; color: var(--navy-800); }
+.footer-inst { font-weight: 500; }
+.footer-left { flex: 1 1 auto; min-width: 0; }
+.footer-right { flex-shrink: 0; }
+@media (max-width: 1500px) { .footer-attr2 { display: none; } }
+@media (max-width: 1100px) { .footer-inst { display: none; } }
+@media (max-width: 720px) { .footer-sub { display: none; } }
+
+/* ---------------- Landing: solda silik kurum logosu ---------------- */
+.hero-bg-seal {
+  position: absolute; left: -6vw; top: 50%; transform: translateY(-50%);
+  width: min(52vh, 34vw); max-width: 520px; height: auto;
+  opacity: .07; filter: grayscale(1); pointer-events: none; user-select: none; z-index: 0;
+}
+@media (max-width: 720px) { .hero-bg-seal { width: 60vw; left: -14vw; opacity: .06; } }
+
+/* ---------------- Kaynaklar ve Katkıda Bulunanlar ---------------- */
+.src-section { margin-top: var(--sp-6); }
+.src-section > h2 { font-size: var(--fs-xl); color: var(--navy-800); margin: 0 0 var(--sp-1); display: flex; align-items: center; gap: var(--sp-2); }
+.src-section > h2 svg { width: 20px; height: 20px; color: var(--blue-600); }
+.src-section .src-sub { margin-bottom: var(--sp-3); }
+.credit-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-3); }
+.credit-group { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-4); box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: var(--sp-3); }
+.credit-group.lead { grid-column: 1 / -1; background: linear-gradient(135deg, var(--navy-900), var(--navy-700)); color: var(--card); border-color: transparent; }
+.credit-group.lead .credit-role { color: var(--blue-100); }
+.credit-role { font-size: var(--fs-xs); font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-600); }
+.credit-people { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-3); margin: 0; padding: 0; list-style: none; }
+.credit-person { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 44px; padding: 6px 12px 6px 6px; border-radius: var(--r-pill); border: 1px solid var(--border); background: var(--card-soft); color: var(--ink-900); font-weight: 600; text-decoration: none; }
+a.credit-person:hover, a.credit-person:focus-visible { border-color: var(--blue-500); background: var(--blue-50); color: var(--blue-700); }
+.credit-group.lead .credit-person { background: var(--overlay-90, rgba(255,255,255,.92)); }
+.credit-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--blue-600); color: var(--card); display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-xs); font-weight: 800; letter-spacing: .5px; flex-shrink: 0; }
+.credit-person.placeholder .credit-avatar { background: var(--ink-300); }
+.credit-person .ext { font-size: var(--fs-xs); color: var(--ink-400); font-weight: 500; }
+.inst-card { display: flex; align-items: center; gap: var(--sp-4); background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-4); box-shadow: var(--shadow-card); }
+.inst-card img { width: 64px; height: 64px; flex-shrink: 0; }
+.inst-card h3 { margin: 0 0 4px; font-size: var(--fs-lg); color: var(--navy-800); }
+.inst-card p { margin: 0; color: var(--ink-700); line-height: 1.5; }
+.ds-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--sp-3); }
+.ds-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-4); box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: var(--sp-2); }
+.ds-card h3 { margin: 0; font-size: var(--fs-lg); color: var(--ink-900); line-height: 1.3; }
+.ds-card .auth { color: var(--ink-600); font-size: var(--fs-sm); }
+.ds-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ds-chip { font-size: var(--fs-xs); font-weight: 700; padding: 3px 9px; border-radius: var(--r-pill); background: var(--blue-50); color: var(--blue-700); white-space: nowrap; }
+.ds-chip.lic { background: var(--green-100); color: var(--green-700, var(--green-600)); }
+.ds-chip.real { background: var(--purple-100); color: var(--purple-700, var(--purple-600)); }
+.ds-card .src-kv { margin-top: var(--sp-1); }
+.ds-card .src-kv a { color: var(--blue-700); text-decoration: none; word-break: break-all; }
+.ds-card .src-kv a:hover { text-decoration: underline; }
+.ds-cite { font-size: var(--fs-xs); color: var(--ink-600); line-height: 1.5; border-top: 1px dashed var(--border); padding-top: var(--sp-2); margin: var(--sp-1) 0 0; }
+.src-disclaimer { background: var(--orange-50, var(--orange-100)); border: 1px solid var(--orange-100); border-radius: var(--r-lg); padding: var(--sp-3) var(--sp-4); color: var(--amber-900, var(--ink-800)); display: flex; gap: var(--sp-2); align-items: flex-start; }
+.src-disclaimer svg { flex-shrink: 0; margin-top: 2px; }
+@media (max-width: 720px) { .credit-group.lead { grid-column: auto; } .inst-card { flex-direction: column; text-align: center; } }
+
+/* Kısa ekranlarda (1366×768 vb.) landing tek ekrana sığsın; footer kaydırmasız görünür */
+@media (max-height: 820px) and (min-width: 721px) {
+  .hero-logo { width: min(140px, 36vw); }
+  .start-hero { padding-top: 6px; padding-bottom: 10px; gap: 0; }
+  .hero-title { font-size: clamp(24px, 2.6vw, 34px); margin: 8px 0 6px; }
+  .hero-sub { margin: 0 0 12px; }
+  .why-grid { margin-top: 6px; }
+  .why-grid > * { padding-top: 8px; padding-bottom: 8px; }
+  .hero-audio-hint { margin-top: 8px; }
+}
+
+/* footer sağ atıf yalnız geniş ekranda (özgüllük: .eg-footer ile) */
+@media (max-width: 1500px) { .eg-footer .footer-attr2 { display: none; } }
