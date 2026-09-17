@@ -122,7 +122,7 @@ export function Footer() {
   return (
     <footer className="eg-footer">
       <div className="footer-left">
-        <img src="brand/logo-icon-web.png" alt="" className="footer-seal" />
+        <img src="brand/ege-tip-seal-128.png" alt="Ege Üniversitesi Tıp Fakültesi" className="footer-seal" />
         <span className="footer-text">
           <span className="footer-brand">EGEMED Ausculta<sup className="tm">™</sup></span>
           <span className="footer-sub"> Kardiyopulmoner Oskültasyon Simülatörü</span>

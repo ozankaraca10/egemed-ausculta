@@ -260,7 +260,7 @@ html { -webkit-text-size-adjust: 100%; }
 .footer-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .footer-mid { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 auto; justify-content: center; }
 .footer-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.footer-seal { width: 22px; height: 22px; display: block; }
+.footer-seal { width: 26px; height: 26px; display: block; }
 .footer-inst { font-weight: 700; color: var(--ink-800); }
 .footer-sub { color: var(--ink-600); }
 .footer-attr { color: var(--ink-600); }
@@ -922,7 +922,7 @@ html { -webkit-text-size-adjust: 100%; }
 /* footer revizyonu (madde 2): EcgDeco kaldırıldığı için footer artık üstte hiçbir şey
    binmeden net okunur; yine de kalıcı olarak kendi katmanına sabitlenir. */
 .eg-footer { gap: 12px; position: relative; z-index: 1; background: var(--card); color: var(--ink-600); height: var(--foot-h); }
-.footer-seal { width: 22px; height: 22px; }
+.footer-seal { width: 26px; height: 26px; }
 .footer-inst { font-size: var(--fs-sm); }
 .footer-sub { font-size: var(--fs-sm); color: var(--ink-600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .footer-copy { font-size: var(--fs-sm); color: var(--ink-600); white-space: nowrap; }
@@ -992,7 +992,7 @@ html { -webkit-text-size-adjust: 100%; }
 .hero-bg-seal {
   position: absolute; left: -6vw; top: 50%; transform: translateY(-50%);
   width: min(52vh, 34vw); max-width: 520px; height: auto;
-  opacity: .07; filter: grayscale(1); pointer-events: none; user-select: none; z-index: 0;
+  opacity: .08; filter: grayscale(1) contrast(1.05); pointer-events: none; user-select: none; z-index: 0;
 }
 @media (max-width: 720px) { .hero-bg-seal { width: 60vw; left: -14vw; opacity: .06; } }
 

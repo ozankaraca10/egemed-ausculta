@@ -119,7 +119,7 @@ export function SourcesScreen() {
           <section className="src-section" aria-labelledby="inst-h">
             <h2 id="inst-h"><IconDoc /> Kurum</h2>
             <div className="inst-card">
-              <img src="brand/logo-icon-web.png" alt="" />
+              <img src="brand/ege-tip-logo.png" alt="Ege Üniversitesi Tıp Fakültesi amblemi" />
               <div>
                 <h3>
                   {data.module.product}<sup className="tm">™</sup> — {data.module.subtitle}
