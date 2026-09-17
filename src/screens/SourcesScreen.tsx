@@ -38,7 +38,10 @@ interface Asset {
 }
 
 const data = sourcesData as unknown as {
-  module: { product: string; subtitle: string; developedBy: string; copyright: string }
+  module: {
+    product: string; subtitle: string; developedBy: string; copyright: string
+    evidence?: { statement: string; citation: string; doi: string; url: string }
+  }
   credits: CreditGroup[]
   datasets: Dataset[]
   assets?: Asset[]
@@ -75,7 +78,7 @@ export function SourcesScreen() {
       <EcgDeco />
       <div className="screen" style={{ position: 'relative', zIndex: 1 }}>
         <div className="src-wrap screen-body">
-          <h1 className="src-title">Kaynaklar ve Katkıda Bulunanlar</h1>
+          <h1 className="src-title">EGEMED Ausculta<sup className="tm">™</sup> Hakkında</h1>
           <p className="src-sub">
             {data.module.product}
             <sup className="tm">™</sup> {data.module.subtitle}'nü geliştiren ekip, kurum bilgisi ve modülde kullanılan
@@ -85,10 +88,9 @@ export function SourcesScreen() {
           {/* ---- Geliştiriciler ---- */}
           <section className="src-section" aria-labelledby="credits-h" style={{ marginTop: 0 }}>
             <h2 id="credits-h"><IconHeart /> Geliştiriciler</h2>
-            <p className="src-sub">Kişi adları Ege Üniversitesi Akademik Veri Yönetim Sistemi (Ünisis) profillerine bağlanır.</p>
             <div className="credit-groups">
-              {data.credits.map((g, gi) => (
-                <div className={`credit-group ${gi === 0 ? 'lead' : ''}`} key={g.role}>
+              {data.credits.map((g) => (
+                <div className="credit-group lead" key={g.role}>
                   <div className="credit-role">{g.role}</div>
                   <ul className="credit-people">
                     {g.people.map((p) =>
@@ -128,6 +130,17 @@ export function SourcesScreen() {
                   {data.module.developedBy} tarafından, tıp fakültesi öğrencilerinin kardiyopulmoner oskültasyon
                   becerilerini geliştirmek amacıyla hazırlanmıştır. {data.module.copyright}.
                 </p>
+                {data.module.evidence && (
+                  <p className="inst-evidence">
+                    {data.module.evidence.statement}
+                    <sup><a href={data.module.evidence.url} target="_blank" rel="noreferrer" aria-label="Kaynak: McKinney ve ark., 2013">[1]</a></sup>
+                    <br />
+                    <span className="inst-cite">
+                      [1] {data.module.evidence.citation}{' '}
+                      <a href={data.module.evidence.url} target="_blank" rel="noreferrer">doi:{data.module.evidence.doi}</a>
+                    </span>
+                  </p>
+                )}
               </div>
             </div>
           </section>

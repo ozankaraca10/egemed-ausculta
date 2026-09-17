@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { HelpModal } from './HelpModal'
 import { ConfirmModal } from './ConfirmModal'
 import { useStore } from '../core/store'
-import { IconBook, IconHelpCircle, IconFullscreen, IconFullscreenExit, IconSwap } from './icons'
+import { IconHelpCircle, IconFullscreen, IconFullscreenExit, IconSwap, IconInfo } from './icons'
 
 export function BrandMark({ size = 30 }: { size?: number }) {
   return <img src="brand/logo-icon-white-web.png" alt="" width={size} height={size} className="brand-mark" />
@@ -90,12 +90,12 @@ export function Header() {
       <button
         className="eg-header-chip clickable"
         onClick={() => dispatch({ type: 'goto', screen: 'sources' })}
-        aria-label="Kaynaklar"
-        title="Kaynaklar"
+        aria-label="Hakkında"
+        title="EGEMED Ausculta Hakkında"
       >
-        <IconBook /> <span className="chip-text">Kaynaklar</span>
+        <IconInfo /> <span className="chip-text">Hakkında</span>
       </button>
-      {/* wave 2 madde 0: DEV rozeti header'ın en sağında, Kaynaklar'dan sonra — footer'a hiç binmez */}
+      {/* wave 2 madde 0: DEV rozeti header'ın en sağında, Hakkında'dan sonra — footer'a hiç binmez */}
       {runtime?.flags.dev && !(typeof window !== 'undefined' && window.location.search.includes('dev=1')) && (
         <span className="eg-dev-badge" title="Geliştirici build — teşhis paneli için ?dev=1 ekleyin">DEV</span>
       )}
@@ -122,7 +122,7 @@ export function Footer() {
   return (
     <footer className="eg-footer">
       <div className="footer-left">
-        <img src="brand/ege-tip-seal-128.png" alt="Ege Üniversitesi Tıp Fakültesi" className="footer-seal" />
+        <img src="brand/logo-icon-web.png" alt="" className="footer-seal" />
         <span className="footer-text">
           <span className="footer-brand">EGEMED Ausculta<sup className="tm">™</sup></span>
           <span className="footer-sub"> Kardiyopulmoner Oskültasyon Simülatörü</span>

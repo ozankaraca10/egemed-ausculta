@@ -63,7 +63,7 @@ export function HelpModal({ open, onClose }: { open: boolean; onClose: () => voi
               <li>En iyi deneyim için kulaklık kullanın; ses düzeyi denetimi alt araç çubuğundadır, başlangıç ekranında kulaklık test tonu vardır.</li>
               <li>Bölge listesini klavyeyle de kullanabilirsiniz (Tab ile odaklanın).</li>
               <li>Çalma sırasında sağdaki paneldeki Dalga Formu sekmesi ve turuncu ipucu düğmesi öğrenmeyi destekler.</li>
-              <li>Kaynaklar ve veri seti lisansları için üstteki “Kaynaklar” düğmesine bakın.</li>
+              <li>Geliştiriciler, kaynaklar ve lisanslar için üstteki “Hakkında” düğmesine bakın.</li>
             </ul>
           </div>
           <p className="help-note">Bu simülatör eğitim amaçlıdır; tanı koydurmaz. Klinik karar her zaman hasta bağlamıyla verilir.</p>

@@ -1001,9 +1001,10 @@ html { -webkit-text-size-adjust: 100%; }
 .src-section > h2 { font-size: var(--fs-xl); color: var(--navy-800); margin: 0 0 var(--sp-1); display: flex; align-items: center; gap: var(--sp-2); }
 .src-section > h2 svg { width: 20px; height: 20px; color: var(--blue-600); }
 .src-section .src-sub { margin-bottom: var(--sp-3); }
-.credit-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-3); }
+.credit-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); }
+@media (max-width: 1024px) { .credit-groups { grid-template-columns: 1fr; } }
 .credit-group { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-4); box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: var(--sp-3); }
-.credit-group.lead { grid-column: 1 / -1; background: linear-gradient(135deg, var(--navy-900), var(--navy-700)); color: var(--card); border-color: transparent; }
+.credit-group.lead { background: linear-gradient(135deg, var(--navy-900), var(--navy-700)); color: var(--card); border-color: transparent; }
 .credit-group.lead .credit-role { color: var(--blue-100); }
 .credit-role { font-size: var(--fs-xs); font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-600); }
 .credit-people { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-3); margin: 0; padding: 0; list-style: none; }
@@ -1031,7 +1032,7 @@ a.credit-person:hover, a.credit-person:focus-visible { border-color: var(--blue-
 .ds-cite { font-size: var(--fs-xs); color: var(--ink-600); line-height: 1.5; border-top: 1px dashed var(--border); padding-top: var(--sp-2); margin: var(--sp-1) 0 0; }
 .src-disclaimer { background: var(--orange-50, var(--orange-100)); border: 1px solid var(--orange-100); border-radius: var(--r-lg); padding: var(--sp-3) var(--sp-4); color: var(--amber-900, var(--ink-800)); display: flex; gap: var(--sp-2); align-items: flex-start; }
 .src-disclaimer svg { flex-shrink: 0; margin-top: 2px; }
-@media (max-width: 720px) { .credit-group.lead { grid-column: auto; } .inst-card { flex-direction: column; text-align: center; } }
+@media (max-width: 720px) { .inst-card { flex-direction: column; text-align: center; } }
 
 /* Kısa ekranlarda (1366×768 vb.) landing tek ekrana sığsın; footer kaydırmasız görünür */
 @media (max-height: 820px) and (min-width: 721px) {
@@ -1046,3 +1047,20 @@ a.credit-person:hover, a.credit-person:focus-visible { border-color: var(--blue-
 
 /* footer sağ atıf yalnız geniş ekranda (özgüllük: .eg-footer ile) */
 @media (max-width: 1500px) { .eg-footer .footer-attr2 { display: none; } }
+
+.credit-group .credit-people { flex-direction: column; align-items: stretch; }
+.credit-group .credit-person { justify-content: flex-start; }
+.inst-evidence { margin-top: var(--sp-2) !important; color: var(--ink-700); }
+.inst-evidence sup a { color: var(--blue-700); text-decoration: none; font-weight: 700; margin-left: 2px; }
+.inst-cite { display: block; margin-top: var(--sp-1); font-size: var(--fs-xs); color: var(--ink-600); line-height: 1.5; }
+.inst-cite a { color: var(--blue-700); text-decoration: none; }
+.inst-cite a:hover { text-decoration: underline; }
+
+/* Landing kurum amblemi: sola yaslı, daha büyük, tamamı görünür */
+.hero-bg-seal { left: clamp(12px, 3vw, 56px); width: min(64vh, 30vw); max-width: 560px; }
+@media (max-width: 720px) { .hero-bg-seal { width: 62vw; left: 4vw; } }
+
+/* Footer: logo + metin birlikte ortalı */
+.eg-footer { justify-content: center; }
+.footer-left { flex: 0 1 auto; justify-content: center; }
+.footer-text { flex: 0 1 auto; }

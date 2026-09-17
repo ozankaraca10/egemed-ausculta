@@ -2,7 +2,7 @@ import { useStore } from '../core/store'
 import { engine } from '../audio/engineSingleton'
 import { bus } from '../core/events'
 import { Footer } from '../ui/chrome'
-import { IconArrowRight, IconBook, IconHeadphones } from '../ui/icons'
+import { IconArrowRight, IconHeadphones, IconInfo } from '../ui/icons'
 import { computeMetrics } from '../data/metrics'
 
 const M = computeMetrics()
@@ -78,7 +78,7 @@ export function StartScreen() {
           </button>
           <span className="hero-link-sep" aria-hidden="true" />
           <button className="hero-link" onClick={() => dispatch({ type: 'goto', screen: 'sources' })}>
-            <IconBook /> Kaynaklar ve veri setleri
+            <IconInfo /> Hakkında ve kaynaklar
           </button>
         </div>
         <div className="why-section" aria-label="Neden güvenilir?">

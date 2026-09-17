@@ -6,7 +6,13 @@
     "trademark": "EGEMED Ausculta™",
     "developedBy": "Ege Üniversitesi Tıp Fakültesi Dekanlığı",
     "copyright": "Tüm hakları saklıdır © 2026",
-    "logoSource": "https://egelogo.ege.edu.tr/ (Ege Üniversitesi Kurumsal Kimlik — Tıp Fakültesi amblemi)"
+    "logoSource": "https://egelogo.ege.edu.tr/ (Ege Üniversitesi Kurumsal Kimlik — Tıp Fakültesi amblemi)",
+    "evidence": {
+      "statement": "Simülasyon tabanlı eğitimin kardiyak oskültasyon becerilerini geliştirdiği sistematik derleme ve meta-analizle gösterilmiştir.",
+      "citation": "McKinney J, Cook DA, Wood D, Hatala R. Simulation-based training for cardiac auscultation skills: systematic review and meta-analysis. J Gen Intern Med. 2013;28(2):283–291.",
+      "doi": "10.1007/s11606-012-2198-y",
+      "url": "https://doi.org/10.1007/s11606-012-2198-y"
+    }
   },
   "credits": [
     {
